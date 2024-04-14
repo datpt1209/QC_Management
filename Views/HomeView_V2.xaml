@@ -1,0 +1,236 @@
+﻿<UserControl x:Class="QC_Management.Views.HomeView_V2"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:QC_Management.Views"
+             mc:Ignorable="d"          
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             TextElement.Foreground="{DynamicResource MaterialDesignBody}"
+             TextElement.FontWeight="Regular"
+             TextElement.FontSize="13"
+             TextOptions.TextFormattingMode="Ideal"
+             TextOptions.TextRenderingMode="Auto"
+             Background="{DynamicResource MaterialDesignPaper}"
+             FontFamily="{DynamicResource MaterialDesignFont}"
+             DataContext="{StaticResource HomeViewVM_V2}"
+             Name="Objectview" d:DesignHeight="600" d:DesignWidth="800">
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}">
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="130"></ColumnDefinition>
+            <ColumnDefinition ></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.ColumnSpan="3" Grid.Row ="0">
+            <materialDesign:Card  Margin="5">
+                <WrapPanel Margin="0 0 0 10">
+                    <ComboBox 
+                        Margin="5 5 15 -14"
+                        ItemsSource="{Binding DeviceList}"
+                        DisplayMemberPath="Name"
+                        SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ComboBoxAssist.MaxLength="2"
+                        materialDesign:HintAssist.Hint="Thiết bị"
+                        materialDesign:HintAssist.HintOpacity=".26"
+                        IsEditable="True" VerticalAlignment="Top" Width="150" Height="37">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding DeviceSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
+                    <DatePicker          
+                         Margin="5 5 15 5"
+                            SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}"                             
+                            materialDesign:HintAssist.Hint="Ngày thực hiện"                              
+                            materialDesign:TextFieldAssist.HasClearButton="True"                               
+                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41" />
+                    <DatePicker          
+                        Margin="5 5 15 5"
+                            SelectedDate="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}"                             
+                            materialDesign:HintAssist.Hint="Ngày thực hiện"                              
+                            materialDesign:TextFieldAssist.HasClearButton="True"                               
+                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41" />
+                    <CheckBox
+                        Command="{Binding appRangeCommand}"
+                        Content="AppRange"
+                        IsChecked="{Binding isCheck}"
+                        Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}">
+                        
+                    </CheckBox>
+                    <Button Command="{Binding PrintCommand}" Content="Print"  Margin="5" Width="100"/>
+                    <Button Command="{Binding PrintChartCommand}" Content="Print Chart"  Margin="5" Width="100"/>
+
+                </WrapPanel>
+            </materialDesign:Card>
+        </Grid>
+
+        <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="3">
+            <materialDesign:Card Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Stretch">
+                <ListView ItemsSource="{Binding TestList}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden" DisplayMemberPath="Name" SelectedItem="{Binding SelectedTest, Mode=OneWayToSource}" d:ItemsSource="{d:SampleData ItemCount=5}">
+                    <i:Interaction.Triggers>
+                        <i:EventTrigger EventName="SelectionChanged">
+                            <i:InvokeCommandAction Command="{Binding TestSelectionChangedCommand}" >
+                            </i:InvokeCommandAction>
+                        </i:EventTrigger>
+                    </i:Interaction.Triggers>
+                </ListView>
+            </materialDesign:Card>
+        </Grid>
+
+        <Grid Grid.Column="1" Grid.Row="1">
+            <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
+                <lvc:CartesianChart
+                    Visibility="{Binding Visibility1}">
+                    <lvc:CartesianChart.Series>
+                        <lvc:LineSeries 
+                            StrokeThickness="2" 
+                            Stroke="#1C8FC5" 
+                            Fill="Transparent"
+                            LineSmoothness="0" 
+                            PointGeometrySize="15" 
+                            PointForeground="#222E31"
+                            Values="{Binding ChartValues1}">
+                        </lvc:LineSeries>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding Dates1}">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator Step="1">
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+                    
+                    <lvc:CartesianChart.DataTooltip>
+                        <local:CustomersTooltip/>
+                    </lvc:CartesianChart.DataTooltip>
+
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis MaxValue="3" MinValue="-3">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator 
+                                    StrokeThickness="0.5" 
+                                    Step="1">
+                                    <lvc:Separator.Stroke>
+                                        <SolidColorBrush Color="#FF151F23">
+                                        </SolidColorBrush>
+                                    </lvc:Separator.Stroke>
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+            </materialDesign:Card>
+        </Grid>
+      
+        <Grid Grid.Column="1" Grid.Row="2">
+            <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
+                <lvc:CartesianChart
+                    Visibility="{Binding Visibility2}">
+                    <lvc:CartesianChart.Series>
+                        <lvc:LineSeries 
+                            StrokeThickness="2" 
+                            Stroke="#1C8FC5" 
+                            Fill="Transparent"
+                            LineSmoothness="0" 
+                            PointGeometrySize="15" 
+                            PointForeground="#222E31"
+                            Values="{Binding ChartValues2}">
+                        </lvc:LineSeries>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding Dates2}">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator Step="1">
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+
+                    <lvc:CartesianChart.DataTooltip>
+                        <local:CustomersTooltip/>
+                    </lvc:CartesianChart.DataTooltip>
+
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis MaxValue="3" MinValue="-3">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator 
+                                   StrokeThickness="0.5" 
+                                    Step="1">
+                                    <lvc:Separator.Stroke>
+                                        <SolidColorBrush Color="#FF151F23">
+                                        </SolidColorBrush>
+                                    </lvc:Separator.Stroke>
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+            </materialDesign:Card>
+        </Grid>
+       
+        <Grid Grid.Column="1" Grid.Row="3">
+            <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
+                <lvc:CartesianChart
+                    Visibility="{Binding Visibility3}">
+                    <lvc:CartesianChart.Series>
+                        <lvc:LineSeries 
+                            StrokeThickness="2" 
+                            Stroke="#1C8FC5" 
+                            Fill="Transparent"
+                            LineSmoothness="0" 
+                            PointGeometrySize="15" 
+                            PointForeground="#222E31"
+                            Values="{Binding ChartValues3}">
+                        </lvc:LineSeries>
+                    </lvc:CartesianChart.Series>
+                    <lvc:CartesianChart.AxisX>
+                        <lvc:Axis Labels="{Binding Dates3}">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator Step="1">
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisX>
+
+                    <lvc:CartesianChart.DataTooltip>
+                        <local:CustomersTooltip/>
+                    </lvc:CartesianChart.DataTooltip>
+
+                    <lvc:CartesianChart.AxisY>
+                        <lvc:Axis MaxValue="3" MinValue="-3">
+                            <lvc:Axis.Separator>
+                                <lvc:Separator 
+                                   StrokeThickness="0.5" 
+                                    Step="1">
+                                    <lvc:Separator.Stroke>
+                                        <SolidColorBrush Color="#FF151F23">
+                                        </SolidColorBrush>
+                                    </lvc:Separator.Stroke>
+                                </lvc:Separator>
+                            </lvc:Axis.Separator>
+                        </lvc:Axis>
+                    </lvc:CartesianChart.AxisY>
+                </lvc:CartesianChart>
+            </materialDesign:Card>
+        </Grid>
+       
+    </Grid>
+</UserControl>
+

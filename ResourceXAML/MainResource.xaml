@@ -1,0 +1,81 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:viewmodel="clr-namespace:QC_Management.ViewModels"
+                    xmlns:views="clr-namespace:QC_Management.Views"
+                    xmlns:local="clr-namespace:QC_Management">
+    
+    <viewmodel:MainViewModel x:Key="MainVM"></viewmodel:MainViewModel>
+    <viewmodel:ViewResultViewModel x:Key="ViewResultVM"></viewmodel:ViewResultViewModel>
+    <viewmodel:CategoryViewModel x:Key="CategoryVM"></viewmodel:CategoryViewModel>
+    <viewmodel:ServerConfigViewModel x:Key="ServerConfigVM"></viewmodel:ServerConfigViewModel>
+    <viewmodel:UnitTableViewModel x:Key="UnitTableVM"></viewmodel:UnitTableViewModel>
+    <viewmodel:UserRoleViewModel x:Key="UserRoleVM"></viewmodel:UserRoleViewModel>
+    <viewmodel:UserViewModel x:Key="UserVM"></viewmodel:UserViewModel>
+    <viewmodel:HomeViewModel_V2 x:Key="HomeViewVM_V2"></viewmodel:HomeViewModel_V2>
+    <viewmodel:QC_InformationViewModel x:Key="QC_InforVM"></viewmodel:QC_InformationViewModel>
+    <viewmodel:TestViewModel x:Key="TestVM"></viewmodel:TestViewModel>
+    <viewmodel:ResultViewModel x:Key="ResultVM"></viewmodel:ResultViewModel>
+    <viewmodel:DeviceViewModel x:Key="DeviceVM"></viewmodel:DeviceViewModel>
+    <viewmodel:QC_DetailViewModel x:Key="QC_DetailVM"></viewmodel:QC_DetailViewModel>
+    <viewmodel:LoginViewModel x:Key="LoginVM"></viewmodel:LoginViewModel>
+    <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
+    <local:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local:RelativeToAbsoluteConverter>
+
+
+    <DataTemplate DataType="{x:Type viewmodel:CategoryViewModel}">
+        <views:CategoryWindow></views:CategoryWindow>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:ServerConfigViewModel}">
+        <views:ServerConfig></views:ServerConfig>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:HomeViewModel_V2}">
+        <views:HomeView_V2></views:HomeView_V2>
+    </DataTemplate>
+    
+    <DataTemplate DataType="{x:Type viewmodel:LoginViewModel}">
+        <views:LoginView></views:LoginView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:RegisterViewModel}">
+        <views:RegisterView></views:RegisterView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:QC_InformationViewModel}">
+        <views:QC_InformationView></views:QC_InformationView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:ResultViewModel}">
+        <views:ResultView></views:ResultView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:TestViewModel}">
+        <views:TestView></views:TestView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:UnitTableViewModel}">
+        <views:UnitTableView></views:UnitTableView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:UserRoleViewModel}">
+        <views:UserRoleView></views:UserRoleView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:UserViewModel}">
+        <views:UserView></views:UserView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:DeviceViewModel}">
+        <views:DeviceView></views:DeviceView>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:QC_DetailViewModel}">
+        <views:QC_DetailView></views:QC_DetailView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:ViewResultViewModel}">
+        <views:ViewResultView></views:ViewResultView>
+    </DataTemplate>
+
+    <Style TargetType="{x:Type GridViewColumnHeader}">
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+
+    <local:TimeSpanToTimeStringConverter x:Key="TimeSpanConverter" />
+    <local:TextConverter x:Key="TextCoverter" />
+
+</ResourceDictionary>
