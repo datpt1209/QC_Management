@@ -72,9 +72,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="CrystalReport1.rpt">
-      <Generator>CrystalDecisions.VSDesigner.CodeGen.ReportCodeGenerator</Generator>
-    </None>
     <None Update="dsResult.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsResult.Designer.cs</LastGenOutput>

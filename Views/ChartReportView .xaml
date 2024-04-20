@@ -6,6 +6,7 @@
         xmlns:local="clr-namespace:QC_Management" 
         xmlns:winforms="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.ReportViewer.WinForms"
         mc:Ignorable="d"
+        WindowStartupLocation="CenterScreen"
         Title="ReportView" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
         <WindowsFormsHost>

@@ -49,7 +49,7 @@ namespace QC_Management
                 {
                      NameDevice = s.IdDeviceNavigation.Name,
                      Index = s.IndexQc,
-                     LOTQC = s.IdControlDetailNavigation.IdControlInfoNavigation.Lot,
+                     LOTQC = s.IdControlDetailNavigation.Lot,
                      NameTest = s.IdTestNavigation.Name,
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
@@ -73,7 +73,7 @@ namespace QC_Management
                 {
                      NameDevice = s.IdDeviceNavigation.Name,
                      Index = s.IndexQc,
-                     LOTQC = s.IdControlDetailNavigation.IdControlInfoNavigation.Lot,
+                     LOTQC = s.IdControlDetailNavigation.Lot,
                      NameTest = s.IdTestNavigation.Name,
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
