@@ -11,6 +11,7 @@ public partial class Result
 
     public double Result1 { get; set; }
 
+
     public int IdDevice { get; set; }
 
     public int IdLevel { get; set; }
@@ -26,6 +27,8 @@ public partial class Result
     public int? IndexQc { get; set; }
 
     public string? WestgardRule { get; set; }
+
+    public string? Comment { get; set; }
 
     public virtual ControlInfoDetail? IdControlDetailNavigation { get; set; }
 

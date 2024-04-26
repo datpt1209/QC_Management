@@ -13,7 +13,7 @@ namespace QC_Management
     /// <summary>
     /// Interaction logic for ReportView.xaml
     /// </summary>
-    
+
     public class ReportSource
     {
         public string NameDevice { get; set; }

@@ -6,14 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
 
-namespace QC_Management
+namespace QC_Management.Converters
 {
     public class TextConverter : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             //convert the int to a string:
-            if(value != null)
+            if (value != null)
                 return value.ToString();
             else
             {
@@ -35,7 +35,7 @@ namespace QC_Management
             {
                 return string.Empty;
             }
-            
+
         }
     }
 }

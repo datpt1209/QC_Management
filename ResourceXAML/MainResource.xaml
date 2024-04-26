@@ -2,7 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:viewmodel="clr-namespace:QC_Management.ViewModels"
                     xmlns:views="clr-namespace:QC_Management.Views"
-                    xmlns:local="clr-namespace:QC_Management">
+                    xmlns:local="clr-namespace:QC_Management" 
+                    xmlns:local1="clr-namespace:QC_Management.Converters">
     
     <viewmodel:MainViewModel x:Key="MainVM"></viewmodel:MainViewModel>
     <viewmodel:ViewResultViewModel x:Key="ViewResultVM"></viewmodel:ViewResultViewModel>
@@ -19,7 +20,7 @@
     <viewmodel:QC_DetailViewModel x:Key="QC_DetailVM"></viewmodel:QC_DetailViewModel>
     <viewmodel:LoginViewModel x:Key="LoginVM"></viewmodel:LoginViewModel>
     <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
-    <local:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local:RelativeToAbsoluteConverter>
+    <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
     <DataTemplate DataType="{x:Type viewmodel:CategoryViewModel}">
@@ -75,7 +76,9 @@
         <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
 
-    <local:TimeSpanToTimeStringConverter x:Key="TimeSpanConverter" />
-    <local:TextConverter x:Key="TextCoverter" />
+    <local1:TimeSpanToTimeStringConverter x:Key="TimeSpanConverter" />
+    <local1:TextConverter x:Key="TextCoverter" />
+    <local1:DataGridColorConverter x:Key="DataGridConverter" />
+    
 
 </ResourceDictionary>

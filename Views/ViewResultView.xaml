@@ -3,11 +3,9 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:local="clr-namespace:QC_Management.Views"
              mc:Ignorable="d" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
-            
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
@@ -81,9 +79,6 @@
                         </i:Interaction.Triggers>
                     </ComboBox>
 
-
-                    
-
                     <ComboBox 
                         Margin="5 5 15 5"
                         ItemsSource="{Binding IndexList}"
@@ -104,9 +99,7 @@
                             <Button Command="{Binding PrintCommand}" Content="In"  Margin="5" Width="100"/>
                             <Button Command="{Binding EditCommand}" Background="Orange"  
                                     Margin="5" Content="Sửa" 
-                                    Width="100"
-                                    Visibility="{Binding IsVisibility}"/>
-                           
+                                    Width="100"/>
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>
@@ -123,11 +116,25 @@
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.IdControlInfoNavigation.Lot }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanNsx }" IsReadOnly="True" />
                         <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdNsx }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Result" IsReadOnly="False" Binding="{Binding Result1}" />
+                        <DataGridTextColumn Header="Result" IsReadOnly="False" Binding="{Binding Result1}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="Green" />
+                                    <!-- Màu mặc định -->
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Result1}" Value="">
+                                            <Setter Property="Foreground" Value="Red" />
+                                            <!-- Thay đổi màu nền nếu ngoài 2 SD -->
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+                        </DataGridTextColumn>
                         <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName}"/>
                         <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date, StringFormat=dd/MM/yyyy}"/>
                         <DataGridTextColumn Header="Giờ thực hiện" IsReadOnly="True" Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
                         <DataGridTextColumn Header="Lỗi Westgard"  Binding="{Binding WestgardRule}"/>
+                        <DataGridTextColumn Header="Ghi chú"  Binding="{Binding Comment}"/>
                     </DataGrid.Columns>
                 </DataGrid>
             </materialDesign:Card>

@@ -36,6 +36,7 @@ namespace QC_Management.ViewModels
         public ICommand InputCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
+        public ICommand CheckRangeCommand { get; set; }
 
         private ResultView _SelectedItem;
         public ResultView SelectedItem
@@ -44,6 +45,29 @@ namespace QC_Management.ViewModels
             set
             {
                 _SelectedItem = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isOutOfRange;
+        public  bool isOutOfRange
+        {
+            get => _isOutOfRange;
+            set
+            {
+                _isOutOfRange = SelectedItem.isOutOfRange;
+                OnPropertyChanged();
+            }
+
+        }
+
+        private string _Comment;
+        public string Comment
+        {
+            get => _Comment;
+            set
+            {
+                _Comment = value;
                 OnPropertyChanged();
             }
         }
@@ -134,6 +158,15 @@ namespace QC_Management.ViewModels
                 }
             });
 
+            CheckRangeCommand = new RelayCommand<ControlInfoDetail>((p) =>
+            {
+               return true;
+
+            }, (p) =>
+            {
+                isOutOfRange = SelectedItem.isOutOfRange;
+            });
+
             InputCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 if (SelectedDevice == null || SelectedLevel == null) return false;
@@ -141,7 +174,6 @@ namespace QC_Management.ViewModels
                     return true;
             }, (p) =>
             {
-                
                 IndexList = new List<int?>();
                 int index = 0;
                 var indexList = List.Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate && s.IdLevel == SelectedLevel.Id).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
@@ -187,8 +219,10 @@ namespace QC_Management.ViewModels
                             Sd = qcInfor.SdNsx,
                             Max = qcInfor.MeanNsx + 2 * qcInfor.SdNsx,
                             Min = qcInfor.MeanNsx - 2 * qcInfor.SdNsx,
-                            IdControlDetailNavigation = qcInfor
-                        });
+                            IdControlDetailNavigation = qcInfor,
+                            isOutOfRange = false
+
+                        }) ;
                     }
 
                 }
@@ -217,7 +251,8 @@ namespace QC_Management.ViewModels
                             IdUser = UserManager.Instance.CurrentUser.Id,
                             IndexQc = SelectedIndex,
                             IdControlDetail = item.IdControlDetailNavigation.Id,
-                            IdControlDetailNavigation = item.IdControlDetailNavigation
+                            IdControlDetailNavigation = item.IdControlDetailNavigation,
+                            Comment = item.Comment
                         };
                         results.Add(result);
                     }

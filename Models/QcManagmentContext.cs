@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
-using QC_Management.Models;
 
-namespace QC_Management;
+namespace QC_Management.Models;
 
 public partial class QcManagmentContext : DbContext
 {
@@ -26,11 +25,7 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<DeviceTest> DeviceTests { get; set; }
 
-    public virtual DbSet<District> Districts { get; set; }
-
     public virtual DbSet<LevelQc> LevelQcs { get; set; }
-
-    public virtual DbSet<Province> Provinces { get; set; }
 
     public virtual DbSet<Result> Results { get; set; }
 
@@ -139,26 +134,6 @@ public partial class QcManagmentContext : DbContext
                 .HasConstraintName("FK_Device_Test_Test");
         });
 
-        modelBuilder.Entity<District>(entity =>
-        {
-            entity.HasKey(e => e.DistrictId).HasName("PK__district__2521322BA69B7C4C");
-
-            entity.ToTable("district");
-
-            entity.Property(e => e.DistrictId)
-                .ValueGeneratedNever()
-                .HasColumnName("district_id");
-            entity.Property(e => e.Name)
-                .HasMaxLength(64)
-                .HasColumnName("name");
-            entity.Property(e => e.ProvinceId).HasColumnName("province_id");
-
-            entity.HasOne(d => d.Province).WithMany(p => p.Districts)
-                .HasForeignKey(d => d.ProvinceId)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_district_province");
-        });
-
         modelBuilder.Entity<LevelQc>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__LevelQC__3214EC07139AC1F0");
@@ -168,20 +143,6 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsUnicode(false);
-        });
-
-        modelBuilder.Entity<Province>(entity =>
-        {
-            entity.HasKey(e => e.ProvinceId).HasName("PK__province__08DCB60F35297065");
-
-            entity.ToTable("province");
-
-            entity.Property(e => e.ProvinceId)
-                .ValueGeneratedNever()
-                .HasColumnName("province_id");
-            entity.Property(e => e.Name)
-                .HasMaxLength(64)
-                .HasColumnName("name");
         });
 
         modelBuilder.Entity<Result>(entity =>

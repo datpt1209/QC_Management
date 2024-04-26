@@ -5,14 +5,13 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
 using System.Windows.Input;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace QC_Management.ViewModels
 {
     public class QC_DetailViewModel : BaseViewModel
     {
-        private List<ControlInfoDetail> _List;
-        public List<ControlInfoDetail> List { get => _List; set { _List = value; OnPropertyChanged(); } }
+        private ObservableCollection<ControlInfoDetail> _List;
+        public ObservableCollection<ControlInfoDetail> List { get => _List; set { _List = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ControlInfoDetail> _ListDB;
         public ObservableCollection<ControlInfoDetail> ListDB { get => _ListDB; set { _ListDB = value; OnPropertyChanged(); } }
@@ -159,10 +158,12 @@ namespace QC_Management.ViewModels
 
                  try
                  {
+                     
                      DataProvider.Ins.DB.ControlInfoDetails.Add(QC_Infor);
                      DataProvider.Ins.DB.SaveChanges();
                      MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                      List.Add(QC_Infor);
+
                  }
                  catch (Exception ex)
                  {
@@ -185,7 +186,7 @@ namespace QC_Management.ViewModels
             {
                 ControlInfoList = new ObservableCollection<ControlInfo>(ControlInfoListDB);
                 TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-                List = ListDB.Where(s => s.IdDevice == SelectedDevice.Id).ToList();
+                List = new ObservableCollection<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id).ToList());
             });
 
             QC_InfoSelectionChangedCommand = new RelayCommand<Test>((p) =>
@@ -195,7 +196,7 @@ namespace QC_Management.ViewModels
                     return true;
             }, (p) =>
             {
-                List = ListDB.Where(s => s.IdDevice == SelectedDevice.Id && s.IdControlInfo == SelectedControlInfo.Id).ToList();
+                List = new ObservableCollection<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id && s.IdControlInfo == SelectedControlInfo.Id).ToList());
             });
 
             EditCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -234,9 +235,9 @@ namespace QC_Management.ViewModels
                 {
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    List = ListDB.Where(s => 
+                    List =new ObservableCollection<ControlInfoDetail>(ListDB.Where(s =>
                     s.IdDevice == SelectedDevice.Id 
-                    && s.IdControlInfo == SelectedControlInfo.Id).ToList();
+                    && s.IdControlInfo == SelectedControlInfo.Id).ToList());
                 }
                 catch (Exception ex)
                 {
@@ -280,7 +281,7 @@ namespace QC_Management.ViewModels
         }
         private void LoadNew()
         {
-            List = new List<ControlInfoDetail>();
+            List = new ObservableCollection<ControlInfoDetail> ();
             ListDB = new ObservableCollection<ControlInfoDetail>(DataProvider.Ins.DB.ControlInfoDetails);
             TestList = new ObservableCollection<Test>(DataProvider.Ins.DB.Tests);
             LevelList = new ObservableCollection<LevelQc>(DataProvider.Ins.DB.LevelQcs);

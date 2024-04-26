@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Input;
 
@@ -124,6 +125,19 @@ namespace QC_Management.ViewModels
             set
             {
                 _SelectedDate = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isOutRange = false;
+        public bool isOutRange
+        {
+            get => _isOutRange;
+            set
+            {
+                if (SelectedItem.Result1 > (SelectedItem.IdControlDetailNavigation.MeanApp + SelectedItem.IdControlDetailNavigation.SdApp * 2)
+                    || SelectedItem.Result1 < (SelectedItem.IdControlDetailNavigation.MeanApp - SelectedItem.IdControlDetailNavigation.SdApp * 2))
+                    _isOutRange = true;
                 OnPropertyChanged();
             }
         }
