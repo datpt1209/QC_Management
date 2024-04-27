@@ -154,6 +154,7 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.DateRun).HasColumnType("date");
             entity.Property(e => e.IdUser).HasColumnName("idUser");
             entity.Property(e => e.IndexQc).HasColumnName("index_QC");
+            entity.Property(e => e.IsOutRange).HasColumnName("isOutRange");
             entity.Property(e => e.Result1).HasColumnName("Result");
 
             entity.HasOne(d => d.IdControlDetailNavigation).WithMany(p => p.Results)

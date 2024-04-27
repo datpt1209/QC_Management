@@ -14,7 +14,8 @@ namespace QC_Management.Converters
         {
             if (value is TimeSpan timeSpan)
             {
-                return DateTime.Now.Add((TimeSpan)value).ToString("hh:mm:ss");
+                //return DateTime.Now.Add((TimeSpan)value).ToString("hh:mm:ss");
+                return timeSpan.ToString(@"hh\:mm\:ss");
             }
             return string.Empty;
         }

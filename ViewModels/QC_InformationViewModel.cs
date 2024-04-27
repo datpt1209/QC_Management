@@ -110,7 +110,7 @@ namespace QC_Management.ViewModels
                     DataProvider.Ins.DB.ControlInfos.Add(QC_Infor);
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    List.Add(QC_Infor);
+                    
                     ReLoad();
                 }
                 catch (Exception ex)
@@ -185,11 +185,14 @@ namespace QC_Management.ViewModels
 
             List = new List<ControlInfo>();
             
+            
             CategoryList = new ObservableCollection<Category>(DataProvider.Ins.DB.Categories);
         }
         public void ReLoad()
         {
             DisplayName = null;
+            ListDB = new ObservableCollection<ControlInfo>(DataProvider.Ins.DB.ControlInfos);
+            List = ListDB.ToList();
         }
 
     }

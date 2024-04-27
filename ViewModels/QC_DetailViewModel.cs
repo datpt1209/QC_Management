@@ -158,7 +158,6 @@ namespace QC_Management.ViewModels
 
                  try
                  {
-                     
                      DataProvider.Ins.DB.ControlInfoDetails.Add(QC_Infor);
                      DataProvider.Ins.DB.SaveChanges();
                      MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);

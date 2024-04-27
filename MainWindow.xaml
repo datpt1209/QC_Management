@@ -265,7 +265,6 @@
                         </ListViewItem.ToolTip>
                     </ListViewItem>
 
-
                     <!--Device-->
                     <ListViewItem 
                          Visibility="{Binding visibility1}"
@@ -289,7 +288,7 @@
 
                     <!--// User //-->
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding visibility2}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -308,10 +307,9 @@
                         </ListViewItem.ToolTip>
                     </ListViewItem>
 
-                  
                     <!--// User_role //-->
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding visibility2}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -339,11 +337,7 @@
                             <TextBlock Text="{Binding currentUser.DisplayName}" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                     </ListViewItem>
-
-
-
                     <!--// Listview items style template //-->
-
                     <ListView.ItemContainerStyle>
                         <Style TargetType="ListViewItem">
                             <Setter Property="Template">

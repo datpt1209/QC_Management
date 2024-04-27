@@ -16,6 +16,9 @@ namespace QC_Management.ViewModels
 
         private Visibility _visibility1;
         public Visibility visibility1 { get => _visibility1; set { _visibility1 = value; OnPropertyChanged(); } }
+
+        private Visibility _visibility2;
+        public Visibility visibility2 { get => _visibility2; set { _visibility2 = value; OnPropertyChanged(); } }
         public ICommand LoadHomePageCommand { get; set; }
         public ICommand LoadResultViewCommand { get; set; }
         public ICommand LoadViewResultViewCommand { get; set; }
@@ -49,14 +52,23 @@ namespace QC_Management.ViewModels
         {
             LoadedWindowCommand = new RelayCommand<Window>((p) => { return true; }, (p) => {
              
-               if(UserManager.Instance.CurrentUser.Role != 1)
+               if(UserManager.Instance.CurrentUser.Role == 1)
                     {
-                       
-                        visibility1 = Visibility.Collapsed;
+                        visibility1 = Visibility.Visible;
+                        visibility2 = Visibility.Collapsed;
                     }
+               else if(UserManager.Instance.CurrentUser.Role == 2)
+                {
+                    visibility1 = Visibility.Collapsed;
+                    visibility2 = Visibility.Collapsed;
+                }
+               else
+                {
+                    visibility1 = Visibility.Visible;
+                    visibility2 = Visibility.Visible;
+                }
            
-            }
-              );
+            });
             currentUser = UserManager.Instance.CurrentUser;
             CurrentView = new HomeViewModel_V2();
             LoadHomePageCommand = new RelayCommand<Object>((p) => { return true; }, (p) => { CurrentView = new HomeViewModel_V2(); OnPropertyChanged(); });

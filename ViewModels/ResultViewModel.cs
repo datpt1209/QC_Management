@@ -219,9 +219,7 @@ namespace QC_Management.ViewModels
                             Sd = qcInfor.SdNsx,
                             Max = qcInfor.MeanNsx + 2 * qcInfor.SdNsx,
                             Min = qcInfor.MeanNsx - 2 * qcInfor.SdNsx,
-                            IdControlDetailNavigation = qcInfor,
-                            isOutOfRange = false
-
+                            IdControlDetailNavigation = qcInfor
                         }) ;
                     }
 
@@ -252,7 +250,8 @@ namespace QC_Management.ViewModels
                             IndexQc = SelectedIndex,
                             IdControlDetail = item.IdControlDetailNavigation.Id,
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
-                            Comment = item.Comment
+                            Comment = item.Comment,
+                            IsOutRange = item.isOutOfRange
                         };
                         results.Add(result);
                     }

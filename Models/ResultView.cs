@@ -1,5 +1,6 @@
 ﻿
 
+using Microsoft.Xaml.Behaviors.Core;
 using QC_Management.ViewModels;
 
 namespace QC_Management.Models
@@ -33,7 +34,18 @@ namespace QC_Management.Models
         public double? Min { get; set; }
         public double? Max { get; set; }
         public string? Comment { get; set; }
-        public bool isOutOfRange { get; set; }
+
+        private bool _isOutOfRange;
+        public bool isOutOfRange
+        {
+            get => _isOutOfRange;
+
+            set
+            {
+                _isOutOfRange = value;
+                OnPropertyChanged();
+            }
+        }
         public virtual ControlInfoDetail IdControlDetailNavigation { get; set; } = null!;
 
 
