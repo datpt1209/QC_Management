@@ -124,6 +124,7 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsOutRange}" Value="true">
                                             <Setter Property="Foreground" Value="Red" />
+                                            <Setter Property="Background" Value="Yellow" />
                                             <!-- Thay đổi màu nền nếu ngoài 2 SD -->
                                         </DataTrigger>
                                     </Style.Triggers>

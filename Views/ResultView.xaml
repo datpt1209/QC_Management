@@ -16,7 +16,6 @@
              FontFamily="{DynamicResource MaterialDesignFont}"
              DataContext="{StaticResource ResultVM}"
              Name="Objectview" d:DesignHeight="600" d:DesignWidth="800">
-
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}">
@@ -100,7 +99,6 @@
                             <Button Command="{Binding AddCommand}" Content="Lưu" Margin="5" Width="100"/>
                             <Button Command="{Binding InputCommand}" Content="Load"  Margin="5" Width="100"/>
                         </StackPanel>
-
                     </materialDesign:Card>
                 </Grid>
 
@@ -110,7 +108,7 @@
             <materialDesign:Card  Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
                 <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
                           SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
-                          CanUserAddRows="False" >
+                          CanUserAddRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding TestName}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" IsReadOnly="True" />
@@ -125,7 +123,8 @@
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
                                             <Setter Property="Foreground" Value="Red" />
-                                             <!--Thay đổi màu nền nếu ngoài 2 SD--> 
+                                            <Setter Property="Background" Value="Yellow" />
+                                            <!--Thay đổi màu nền nếu ngoài 2 SD--> 
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
