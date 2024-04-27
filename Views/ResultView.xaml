@@ -116,7 +116,7 @@
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Mean" Binding="{Binding Mean }" IsReadOnly="True" />
                         <DataGridTextColumn Header="SD" Binding="{Binding Sd }" IsReadOnly="True" />
-                        <DataGridTextColumn  Header="Kết quả" IsReadOnly="False" Binding="{Binding Result}">
+                        <DataGridTextColumn  Header="Kết quả" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
@@ -133,7 +133,7 @@
 
                         </DataGridTextColumn>
                         
-                        <DataGridTextColumn Header="Ghi chú" Width="500" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                        <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </materialDesign:Card>

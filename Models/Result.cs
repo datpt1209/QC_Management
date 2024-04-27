@@ -3,13 +3,30 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class Result
+public partial class Result:BaseViewModel
 {
     public int Id { get; set; }
 
     public int IdTest { get; set; }
 
-    public double Result1 { get; set; }
+
+    private double _Result1;
+    public double Result1
+    {
+        get => _Result1;
+        set
+        {
+            _Result1 = value;
+            if (value > (IdControlDetailNavigation.MeanApp + 2*IdControlDetailNavigation.SdApp) || value < (IdControlDetailNavigation.MeanApp - 2 * IdControlDetailNavigation.SdApp))
+            {
+                IsOutRange = true;
+            }
+            else
+            {
+                IsOutRange = false;
+            }
+        }
+    }
 
     public int IdDevice { get; set; }
 
@@ -29,7 +46,18 @@ public partial class Result
 
     public string? Comment { get; set; }
 
-    public bool? IsOutRange { get; set; }
+
+    private bool? _isOutOfRange;
+    public bool? IsOutRange
+    {
+        get => _isOutOfRange;
+
+        set
+        {
+            _isOutOfRange = value;
+            OnPropertyChanged();
+        }
+    }
 
     public virtual ControlInfoDetail? IdControlDetailNavigation { get; set; }
 

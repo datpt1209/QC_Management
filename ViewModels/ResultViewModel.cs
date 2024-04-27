@@ -72,8 +72,8 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private int _SelectedIndex;
-        public int SelectedIndex
+        private int? _SelectedIndex;
+        public int? SelectedIndex
         {
             get => _SelectedIndex;
             set
@@ -82,8 +82,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-      
 
         private Device _SelectedDevice;
         public Device SelectedDevice
@@ -240,7 +238,7 @@ namespace QC_Management.ViewModels
                     {
                         Result result = new Result()
                         {
-                            Result1 = (double)item.Result,
+                            
                             IdTest = item.idTest,
                             IdDevice = SelectedDevice.Id,
                             IdLevel = SelectedLevel.Id,
@@ -251,7 +249,8 @@ namespace QC_Management.ViewModels
                             IdControlDetail = item.IdControlDetailNavigation.Id,
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
                             Comment = item.Comment,
-                            IsOutRange = item.isOutOfRange
+                            IsOutRange = item.isOutOfRange,
+                            Result1 = (double)item.Result,
                         };
                         results.Add(result);
                     }
@@ -288,7 +287,7 @@ namespace QC_Management.ViewModels
             IndexList =new List<int?>();
             ResutlViewList = null;
             SelectedLevel = null;
-           
+            SelectedIndex = null;
         }
         public void ReLoad()
         {
