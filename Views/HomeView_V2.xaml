@@ -44,7 +44,7 @@
                         SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Thiết bị"
-                        materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="150" Height="37">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -57,13 +57,13 @@
                     <DatePicker          
                          Margin="5 5 15 5"
                             SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}"                             
-                            materialDesign:HintAssist.Hint="Ngày thực hiện"                              
+                            materialDesign:HintAssist.Hint="Ngày bắt đầu"                              
                             materialDesign:TextFieldAssist.HasClearButton="True"                               
                             Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41" />
                     <DatePicker          
                         Margin="5 5 15 5"
                             SelectedDate="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}"                             
-                            materialDesign:HintAssist.Hint="Ngày thực hiện"                              
+                            materialDesign:HintAssist.Hint="Ngày kết thúc"                              
                             materialDesign:TextFieldAssist.HasClearButton="True"                               
                             Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41" />
                     <CheckBox
@@ -96,6 +96,7 @@
         <Grid Grid.Column="1" Grid.Row="1">
             <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
                 <lvc:CartesianChart
+                    Zoom="X" Pan="X"
                     Visibility="{Binding Visibility1}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 
@@ -109,7 +110,8 @@
                         </lvc:LineSeries>
                     </lvc:CartesianChart.Series>
                     <lvc:CartesianChart.AxisX>
-                        <lvc:Axis Labels="{Binding Dates1}">
+                        <lvc:Axis  
+                                  Labels="{Binding Dates1}">
                             <lvc:Axis.Separator>
                                 <lvc:Separator Step="1">
                                 </lvc:Separator>
@@ -142,6 +144,7 @@
         <Grid Grid.Column="1" Grid.Row="2">
             <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
                 <lvc:CartesianChart
+                    Zoom="X" Pan="X"
                     Visibility="{Binding Visibility2}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 
@@ -188,6 +191,7 @@
         <Grid Grid.Column="1" Grid.Row="3">
             <materialDesign:Card Margin="5,5,5,10"  Grid.Row="1">
                 <lvc:CartesianChart
+                    Zoom="X" Pan="X"
                     Visibility="{Binding Visibility3}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 

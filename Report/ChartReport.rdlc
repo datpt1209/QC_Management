@@ -53,10 +53,6 @@
           <DataField>UserName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Device">
-          <DataField>Device</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="Mean">
           <DataField>Mean</DataField>
           <rd:TypeName>System.Double</rd:TypeName>
@@ -185,7 +181,6 @@
                   <ChartDataPoints>
                     <ChartDataPoint>
                       <ChartDataPointValues>
-                        <X>=Fields!DateRun.Value</X>
                         <Y>=Fields!SDs.Value</Y>
                       </ChartDataPointValues>
                       <ChartDataLabel>
@@ -196,6 +191,8 @@
                         <Border>
                           <Width>2.5pt</Width>
                         </Border>
+                        <BackgroundGradientType>None</BackgroundGradientType>
+                        <BackgroundGradientEndColor>#00ffffff</BackgroundGradientEndColor>
                       </Style>
                       <ChartMarker>
                         <Type>Auto</Type>
@@ -208,9 +205,18 @@
                   <Type>Line</Type>
                   <Style />
                   <ChartEmptyPoints>
-                    <Style />
+                    <Style>
+                      <Border>
+                        <Width>2.5pt</Width>
+                      </Border>
+                      <Color>Red</Color>
+                    </Style>
                     <ChartMarker>
-                      <Style />
+                      <Style>
+                        <Border>
+                          <Width>3pt</Width>
+                        </Border>
+                      </Style>
                     </ChartMarker>
                     <ChartDataLabel>
                       <Style />
@@ -241,7 +247,7 @@
                       <FontSize>6pt</FontSize>
                     </Style>
                     <ChartAxisTitle>
-                      <Caption />
+                      <Caption>Ngày thực hiện</Caption>
                       <Style>
                         <FontSize>9pt</FontSize>
                       </Style>
@@ -265,13 +271,14 @@
                       </Style>
                     </ChartMinorGridLines>
                     <ChartMajorTickMarks>
+                      <Type>Cross</Type>
                       <Style>
                         <Border>
                           <Color>Gainsboro</Color>
                           <Style>None</Style>
                         </Border>
                       </Style>
-                      <Length>7</Length>
+                      <Length>3</Length>
                       <Interval>0.5</Interval>
                       <IntervalOffset>0.5</IntervalOffset>
                     </ChartMajorTickMarks>
@@ -288,8 +295,10 @@
                     <Scalar>true</Scalar>
                     <Minimum>NaN</Minimum>
                     <Maximum>NaN</Maximum>
+                    <PreventWordWrap>true</PreventWordWrap>
                     <IncludeZero>false</IncludeZero>
-                    <MaxFontSize>6pt</MaxFontSize>
+                    <MinFontSize>5pt</MinFontSize>
+                    <MaxFontSize>7pt</MaxFontSize>
                     <ChartAxisScaleBreak>
                       <Style />
                     </ChartAxisScaleBreak>
@@ -362,7 +371,9 @@
                     </Style>
                     <ChartAxisTitle>
                       <Caption>Độ lệch chuẩn (SD)</Caption>
-                      <Style />
+                      <Style>
+                        <FontSize>9pt</FontSize>
+                      </Style>
                     </ChartAxisTitle>
                     <Interval>1</Interval>
                     <ChartMajorGridLines>
@@ -1725,7 +1736,7 @@
         <Height>14.74613cm</Height>
         <Style />
       </Body>
-      <Width>28.69755cm</Width>
+      <Width>29.97288cm</Width>
       <Page>
         <PageHeader>
           <Height>2.92663cm</Height>

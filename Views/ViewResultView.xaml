@@ -60,6 +60,7 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Thiết bị"
                         materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="189" Height="37"/>
                     <ComboBox  
                         Margin="5 5 15 5"
@@ -69,6 +70,7 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="189" Height="37">
 
                         <i:Interaction.Triggers>
@@ -87,6 +89,7 @@
                         materialDesign:HintAssist.Hint="Lần QC"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="100" Height="37"/>
 
                 </WrapPanel>

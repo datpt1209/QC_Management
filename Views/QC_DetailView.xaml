@@ -43,7 +43,7 @@
                         SelectedItem="{Binding SelectedDevice}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Deivce"
-                        materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" Width="132" Height="37">
 
                         <i:Interaction.Triggers>
@@ -59,7 +59,7 @@
                         SelectedItem="{Binding SelectedControlInfo}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="QC Infor"
-                        materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" Width="237" Height="37">
 
                         <i:Interaction.Triggers>
@@ -88,7 +88,7 @@
                         SelectedItem="{Binding SelectedTest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Xét nghiệm"
-                        materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" Width="132" Height="37">
 
                     </ComboBox>
@@ -101,6 +101,7 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" Width="78" Height="37"/>
 
                     <TextBox

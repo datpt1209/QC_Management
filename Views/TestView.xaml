@@ -100,6 +100,7 @@
                             materialDesign:ComboBoxAssist.MaxLength="2"
                             materialDesign:HintAssist.Hint="Nhóm xét nghiệm"
                             materialDesign:HintAssist.HintOpacity=".26"
+                            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                             IsEditable="True" Height="42"/>
 
                         <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
@@ -122,6 +123,7 @@
                         SelectedItem="{Binding SelectedUnitTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Đơn vị tính"
+                            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
                         IsEditable="True" Height="42"/>
 

@@ -43,6 +43,7 @@
                         SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Loại xét nghiệm"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
                         IsEditable="True" Height="45"/>
 

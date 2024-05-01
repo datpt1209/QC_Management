@@ -117,6 +117,27 @@ namespace QC_Management.ViewModels
             }
         }
 
+        private double _Min;
+        public double Min
+        {
+            get => _Min;
+            set
+            {
+                _Min = value;
+                OnPropertyChanged();
+            }
+        }
+        private double _Max;
+        public double Max
+        {
+            get => _Max;
+            set
+            {
+                _Max = value;
+                OnPropertyChanged();
+            }
+        }
+
         private Device _SelectedDevice;
         public Device SelectedDevice
         {
@@ -405,6 +426,7 @@ namespace QC_Management.ViewModels
 
         private void LoadChart(bool isCheck)
         {
+           
             var mapper1 = Mappers.Xy<Result>()
                   .X((value, index) => index) // lets use the position of the item as X
                   .Y(value => Math.Round((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx, 2))
@@ -419,11 +441,11 @@ namespace QC_Management.ViewModels
 
             if (isCheck == false)
             {
-                LiveCharts.Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
+               Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
             }
             else
             {
-                LiveCharts.Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
+                Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
             }
         }
     }

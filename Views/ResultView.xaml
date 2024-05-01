@@ -44,6 +44,7 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Thiết bị"
                         materialDesign:HintAssist.HintOpacity="0.26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                          materialDesign:HintAssist.IsFloating="True"
                         IsEditable="True" VerticalAlignment="Top" Width="189" Height="37"/>
                     <ComboBox 
@@ -55,6 +56,7 @@
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="189" Height="37">
                       
 

@@ -297,8 +297,6 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnUserName;
             
-            private global::System.Data.DataColumn columnDevice;
-            
             private global::System.Data.DataColumn columnMean;
             
             private global::System.Data.DataColumn columnSD;
@@ -424,14 +422,6 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn DeviceColumn {
-                get {
-                    return this.columnDevice;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public global::System.Data.DataColumn MeanColumn {
                 get {
                     return this.columnMean;
@@ -549,7 +539,6 @@ namespace QC_Management {
                         double Result, 
                         System.DateTime DateRun, 
                         string UserName, 
-                        string Device, 
                         double Mean, 
                         double SD, 
                         string SDs, 
@@ -570,7 +559,6 @@ namespace QC_Management {
                         Result,
                         DateRun,
                         UserName,
-                        Device,
                         Mean,
                         SD,
                         SDs,
@@ -611,7 +599,6 @@ namespace QC_Management {
                 this.columnResult = base.Columns["Result"];
                 this.columnDateRun = base.Columns["DateRun"];
                 this.columnUserName = base.Columns["UserName"];
-                this.columnDevice = base.Columns["Device"];
                 this.columnMean = base.Columns["Mean"];
                 this.columnSD = base.Columns["SD"];
                 this.columnSDs = base.Columns["SDs"];
@@ -644,8 +631,6 @@ namespace QC_Management {
                 base.Columns.Add(this.columnDateRun);
                 this.columnUserName = new global::System.Data.DataColumn("UserName", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnUserName);
-                this.columnDevice = new global::System.Data.DataColumn("Device", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnDevice);
                 this.columnMean = new global::System.Data.DataColumn("Mean", typeof(double), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnMean);
                 this.columnSD = new global::System.Data.DataColumn("SD", typeof(double), null, global::System.Data.MappingType.Element);
@@ -950,22 +935,6 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Device {
-                get {
-                    try {
-                        return ((string)(this[this.tabledtResult.DeviceColumn]));
-                    }
-                    catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Device\' in table \'dtResult\' is DBNull.", e);
-                    }
-                }
-                set {
-                    this[this.tabledtResult.DeviceColumn] = value;
-                }
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public double Mean {
                 get {
                     try {
@@ -1214,18 +1183,6 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetUserNameNull() {
                 this[this.tabledtResult.UserNameColumn] = global::System.Convert.DBNull;
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsDeviceNull() {
-                return this.IsNull(this.tabledtResult.DeviceColumn);
-            }
-            
-            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetDeviceNull() {
-                this[this.tabledtResult.DeviceColumn] = global::System.Convert.DBNull;
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
