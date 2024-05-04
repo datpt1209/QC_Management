@@ -54,7 +54,7 @@ namespace QC_Management
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
                      UserName = s.IdUserNavigation.DisplayName,
-                     DateRun = s.DateRun.ToShortDateString(),
+                     DateRun = s.DateRun.ToShortDateString() + $" ({s.IndexQc})",
                      Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                      Mean = s.IdControlDetailNavigation.MeanNsx,
                      SD = s.IdControlDetailNavigation.SdNsx,

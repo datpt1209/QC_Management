@@ -51,8 +51,6 @@ namespace QC_Management.ViewModels
         private double _SdPXN;
         public double SdPXN { get => _SdPXN; set { _SdPXN = value; OnPropertyChanged(); } }
 
-
-     
         private string _LOT;
         public string LOT { get => _LOT; set { _LOT = value; OnPropertyChanged(); } }
 
@@ -204,7 +202,6 @@ namespace QC_Management.ViewModels
                     return false;
 
                 else if (
-
                 SelectedItem.IdControlInfoNavigation == SelectedControlInfo 
                 && SelectedItem.IdLevelNavigation == SelectedLevel 
                 && SelectedItem.IdTestNavigation == SelectedTest 

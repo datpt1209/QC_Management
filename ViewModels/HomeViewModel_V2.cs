@@ -92,7 +92,7 @@ namespace QC_Management.ViewModels
         private string _DisplayName;
         public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
 
-        private DateTime _StartDate = DateTime.Now.AddDays(-7);
+        private DateTime _StartDate = DateTime.Now.AddDays(-14);
         public DateTime StartDate { get => _StartDate; set { _StartDate = value; OnPropertyChanged(); } }
 
         private DateTime _EndDate = DateTime.Now;
