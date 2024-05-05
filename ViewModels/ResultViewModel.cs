@@ -130,7 +130,6 @@ namespace QC_Management.ViewModels
 
         public ResultViewModel()
         {
-            
             QcManagmentContext DB = DataProvider.Ins.DB;
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -213,10 +212,10 @@ namespace QC_Management.ViewModels
                             idTest = item.Id,
                             QCName = qcInfor.IdControlInfoNavigation.Name,
                             LOT = qcInfor.IdControlInfoNavigation.Lot,
-                            Mean = qcInfor.MeanNsx,
-                            Sd = qcInfor.SdNsx,
-                            Max = qcInfor.MeanNsx + 2 * qcInfor.SdNsx,
-                            Min = qcInfor.MeanNsx - 2 * qcInfor.SdNsx,
+                            Mean = qcInfor.MeanApp,
+                            Sd = qcInfor.SdApp,
+                            Max = qcInfor.MeanApp + 2 * qcInfor.SdApp,
+                            Min = qcInfor.MeanApp - 2 * qcInfor.SdApp,
                             IdControlDetailNavigation = qcInfor
                         }) ;
                     }

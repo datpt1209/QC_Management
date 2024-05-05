@@ -115,11 +115,11 @@
                           SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
                           CanUserAddRows="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Test" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.IdControlInfoNavigation.Lot }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanNsx }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdNsx }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Result" IsReadOnly="False" Binding="{Binding Result1}">
+                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanApp }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdApp }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Kết quả" IsReadOnly="False" Binding="{Binding Result1}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="Green" />
@@ -137,8 +137,9 @@
                         <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName}"/>
                         <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date, StringFormat=dd/MM/yyyy}"/>
                         <DataGridTextColumn Header="Giờ thực hiện" IsReadOnly="True" Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
-                        <DataGridTextColumn Header="Lỗi Westgard"  Binding="{Binding WestgardRule}"/>
                         <DataGridTextColumn Header="Ghi chú"  Binding="{Binding Comment}"/>
+                        <DataGridTextColumn Header="Lỗi Westgard"  Binding="{Binding WestgardRule}"/>
+                       
                     </DataGrid.Columns>
                 </DataGrid>
             </materialDesign:Card>
