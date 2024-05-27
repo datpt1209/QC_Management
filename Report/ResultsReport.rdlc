@@ -53,10 +53,6 @@
           <DataField>UserName</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Device">
-          <DataField>Device</DataField>
-          <rd:TypeName>System.String</rd:TypeName>
-        </Field>
         <Field Name="Mean">
           <DataField>Mean</DataField>
           <rd:TypeName>System.Double</rd:TypeName>
@@ -89,6 +85,14 @@
           <DataField>SDPXN</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="Index">
+          <DataField>Index</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Comment">
+          <DataField>Comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -111,10 +115,10 @@
                   <Width>2.10556cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.94323cm</Width>
+                  <Width>1.92221cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>3.30672cm</Width>
+                  <Width>2.9534cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -298,14 +302,14 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
-                        <Textbox Name="WestgardRule">
+                        <Textbox Name="Comment">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
                           <Paragraphs>
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!WestgardRule.Value</Value>
+                                  <Value>=Fields!Comment.Value</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -314,7 +318,7 @@
                               </Style>
                             </Paragraph>
                           </Paragraphs>
-                          <rd:DefaultName>WestgardRule</rd:DefaultName>
+                          <rd:DefaultName>Comment</rd:DefaultName>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -694,7 +698,7 @@
             <Top>2.89361cm</Top>
             <Left>0.86052cm</Left>
             <Height>1.708cm</Height>
-            <Width>16.12259cm</Width>
+            <Width>14.74825cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -1992,7 +1996,7 @@
         <Height>6.37824cm</Height>
         <Style />
       </Body>
-      <Width>20.06196cm</Width>
+      <Width>19.59629cm</Width>
       <Page>
         <PageHeader>
           <Height>2.70792cm</Height>
@@ -2052,7 +2056,7 @@
               </Paragraphs>
               <rd:DefaultName>Textbox6</rd:DefaultName>
               <Top>0.31433cm</Top>
-              <Left>15.65659cm</Left>
+              <Left>15.31199cm</Left>
               <Height>1.13772cm</Height>
               <Width>3.93933cm</Width>
               <ZIndex>1</ZIndex>

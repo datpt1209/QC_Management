@@ -17,12 +17,17 @@ namespace QC_Management.Models
             set
             {
                 _Result = value;
-                if(value > Max || value < Min)
+                if(value > Mean*2*Sd || value < Mean - 2 * Sd)
                 {
-                    isOutOfRange = true;
+                    isOut2SD = true;
+                    if (value > Max || value < Min)
+                    {
+                        isOutOfRange = true;
+                    }
                 }
                 else
                 {
+                    isOut2SD = false;
                     isOutOfRange = false;
                 }
             }
@@ -43,6 +48,17 @@ namespace QC_Management.Models
             set
             {
                 _isOutOfRange = value;
+                OnPropertyChanged();
+            }
+        }
+        private bool _isOut2SD;
+        public bool isOut2SD
+        {
+            get => _isOutOfRange;
+
+            set
+            {
+                _isOut2SD = value;
                 OnPropertyChanged();
             }
         }

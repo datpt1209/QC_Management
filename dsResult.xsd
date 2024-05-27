@@ -32,7 +32,8 @@
               <xs:element name="WestgardRule" msprop:Generator_ColumnPropNameInTable="WestgardRuleColumn" msprop:Generator_ColumnPropNameInRow="WestgardRule" msprop:Generator_UserColumnName="WestgardRule" msprop:Generator_ColumnVarNameInTable="columnWestgardRule" type="xs:string" minOccurs="0" />
               <xs:element name="MeanPXN" msprop:Generator_ColumnPropNameInTable="MeanPXNColumn" msprop:Generator_ColumnPropNameInRow="MeanPXN" msprop:Generator_UserColumnName="MeanPXN" msprop:Generator_ColumnVarNameInTable="columnMeanPXN" type="xs:string" minOccurs="0" />
               <xs:element name="SDPXN" msprop:Generator_ColumnPropNameInTable="SDPXNColumn" msprop:Generator_ColumnPropNameInRow="SDPXN" msprop:Generator_UserColumnName="SDPXN" msprop:Generator_ColumnVarNameInTable="columnSDPXN" type="xs:string" minOccurs="0" />
-              <xs:element name="Index" msprop:Generator_UserColumnName="Index" msprop:Generator_ColumnPropNameInTable="IndexColumn" msprop:Generator_ColumnPropNameInRow="Index" msprop:Generator_ColumnVarNameInTable="columnIndex" type="xs:string" minOccurs="0" />
+              <xs:element name="Index" msprop:Generator_ColumnPropNameInTable="IndexColumn" msprop:Generator_ColumnPropNameInRow="Index" msprop:Generator_UserColumnName="Index" msprop:Generator_ColumnVarNameInTable="columnIndex" type="xs:string" minOccurs="0" />
+              <xs:element name="Comment" msprop:Generator_ColumnPropNameInRow="Comment" msprop:Generator_ColumnPropNameInTable="CommentColumn" msprop:Generator_ColumnVarNameInTable="columnComment" msprop:Generator_UserColumnName="Comment" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

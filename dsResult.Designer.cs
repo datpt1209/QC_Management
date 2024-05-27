@@ -315,6 +315,8 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnIndex;
             
+            private global::System.Data.DataColumn columnComment;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtResultDataTable() {
@@ -494,6 +496,14 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn CommentColumn {
+                get {
+                    return this.columnComment;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -547,7 +557,8 @@ namespace QC_Management {
                         string WestgardRule, 
                         string MeanPXN, 
                         string SDPXN, 
-                        string Index) {
+                        string Index, 
+                        string Comment) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -567,7 +578,8 @@ namespace QC_Management {
                         WestgardRule,
                         MeanPXN,
                         SDPXN,
-                        Index};
+                        Index,
+                        Comment};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -608,6 +620,7 @@ namespace QC_Management {
                 this.columnMeanPXN = base.Columns["MeanPXN"];
                 this.columnSDPXN = base.Columns["SDPXN"];
                 this.columnIndex = base.Columns["Index"];
+                this.columnComment = base.Columns["Comment"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -649,6 +662,8 @@ namespace QC_Management {
                 base.Columns.Add(this.columnSDPXN);
                 this.columnIndex = new global::System.Data.DataColumn("Index", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIndex);
+                this.columnComment = new global::System.Data.DataColumn("Comment", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnComment);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1079,6 +1094,22 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Comment {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.CommentColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Comment\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.CommentColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -1291,6 +1322,18 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetIndexNull() {
                 this[this.tabledtResult.IndexColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsCommentNull() {
+                return this.IsNull(this.tabledtResult.CommentColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetCommentNull() {
+                this[this.tabledtResult.CommentColumn] = global::System.Convert.DBNull;
             }
         }
         

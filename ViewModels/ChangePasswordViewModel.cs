@@ -1,18 +1,18 @@
 ﻿using QC_Management.Models;
-using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
-using System.Windows;
+using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows;
 using XSystem.Security.Cryptography;
 
 namespace QC_Management.ViewModels
 {
-    public class RegisterViewModel: BaseViewModel
+    public class ChangePasswordViewModel: BaseViewModel
     {
         public bool IsLogin { get; set; }
         public User currentUser { get; set; }
@@ -39,62 +39,50 @@ namespace QC_Management.ViewModels
 
 
         public ICommand CloseCommand { get; set; }
-        public ICommand PasswordChangedCommand { get; set; }
         public ICommand NewPasswordChangedCommand { get; set; }
         public ICommand RepeatPasswordChangedCommand { get; set; }
         public ICommand RegisterCommand { get; set; }
         public ICommand ChangePasswordCommand { get; set; }
         // mọi thứ xử lý sẽ nằm trong này
-        public RegisterViewModel()
+        public ChangePasswordViewModel()
         {
-            ListRole = new ObservableCollection<UserRole>(DataProvider.Ins.DB.UserRoles);
             Password = "";
             UserName = "";
-            RegisterCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { Regis(p); });
             CloseCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { p.Close(); });
-            PasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { Password = p.Password; });
-            RepeatPasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { RepeatPassword = p.Password; });
+            NewPasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { NewPassword = p.Password; });
+            RepeatPasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { RepeatPassword =p.Password; });
+            ChangePasswordCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { ChangePassword(p); });
         }
-
-        void Regis(Window p)
+        void ChangePassword(Window p)
         {
             var accCount = DataProvider.Ins.DB.Users.Where(x => x.UserName == UserName).Count();
-
-            if (accCount > 0)
+            if (accCount == 0)
             {
-                MessageBox.Show("Tài khoản đã tồn tại, vui lòng tạo tài khoản với tên đăng nhập khác");
+                MessageBox.Show("Tài khoản không tồn tại, vui lòng kiểm tra lại");
             }
-            else if (Password != RepeatPassword)
+            
+            else if (NewPassword != RepeatPassword)
             {
-                MessageBox.Show("Nhập mật khẩu lặp lại không đúng");
+                MessageBox.Show("Nhập lại mật khẩu không đúng, Vui lòng kiểm tra lại");
             }
             else
             {
-                string passEncode = MD5Hash(Base64Encode(Password));
-                var user = new User
-                {
-                    UserName = UserName,
-                    Password = passEncode,
-                    DisplayName = FullName,
-                    RoleNavigation = SelectedRole,
-                    Role = SelectedRole.Id
-                };
+                string passEncode = MD5Hash(Base64Encode(NewPassword));
+                var user = DataProvider.Ins.DB.Users.Where(s => s.UserName == UserName).FirstOrDefault();
+                user.Password = passEncode;
                 try
                 {
-                    DataProvider.Ins.DB.Add(user);
                     DataProvider.Ins.DB.SaveChanges();
-                    MessageBox.Show("Đăng ký tài khoản thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     p.Close();
-
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
                 }
 
             }
         }
-
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);

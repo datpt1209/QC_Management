@@ -14,21 +14,43 @@ namespace QC_Management.Converters
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            double result = (double)value;
+            /*        double result = (double)value;
+                    double mean = (double)parameter;
+                    double sd = (double)parameter;
+
+                    double lowerLimit = mean - 2 * sd;
+                    double upperLimit = mean + 2 * sd;
+
+                    if (result < lowerLimit || result > upperLimit)
+                    {
+                        return Brushes.Red;
+                    }
+                    else
+                    {
+                        return Brushes.Black;
+                    }*/
+            double result;
             double mean = (double)parameter;
             double sd = (double)parameter;
-
-            double lowerLimit = mean - 2 * sd;
-            double upperLimit = mean + 2 * sd;
-
-            if (result < lowerLimit || result > upperLimit)
+            if (double.TryParse((string?)value, out result))
             {
-                return Brushes.Red;
+                double lowerLimit = mean - 2 * sd;
+                double upperLimit = mean + 2 * sd;
+                if (result < lowerLimit || result > upperLimit)
+                {
+                    return Brushes.Red;
+                }
+                else
+                {
+                    return Brushes.Black;
+                }
             }
             else
             {
-                return Brushes.Black;
+                MessageBox.Show("Số vừa nhập không đúng định dạng, Vui lòng nhập lại");
+                return null;
             }
+
 
         }
 

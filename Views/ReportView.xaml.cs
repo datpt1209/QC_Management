@@ -45,6 +45,7 @@ namespace QC_Management
                     SD = s.IdControlDetailNavigation.SdNsx,
                     Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
                     WestgardRule = s.WestgardRule,
+                    Comment = s.Comment,
                     SDPXN = s.IdControlDetailNavigation.SdApp,
                     MeanPXN = s.IdControlDetailNavigation.MeanApp,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
@@ -70,6 +71,7 @@ namespace QC_Management
                     SD = s.IdControlDetailNavigation.SdNsx,
                     Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
                     WestgardRule = s.WestgardRule,
+                    Comment = s.Comment,
                     SDPXN = (double) s.IdControlDetailNavigation.SdApp,
                     MeanPXN =(double) s.IdControlDetailNavigation.MeanApp,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
@@ -78,8 +80,6 @@ namespace QC_Management
 
                 });
             }
-            
-           
             reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ResultsReport.rdlc";
             ReportDataSource rds = new ReportDataSource();
             rds.Name = "DataSet1";

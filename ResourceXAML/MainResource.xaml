@@ -6,6 +6,7 @@
                     xmlns:local1="clr-namespace:QC_Management.Converters">
     
     <viewmodel:MainViewModel x:Key="MainVM"></viewmodel:MainViewModel>
+    <viewmodel:ChangePasswordViewModel x:Key="ChangePasswordVM"></viewmodel:ChangePasswordViewModel>
     <viewmodel:ViewResultViewModel x:Key="ViewResultVM"></viewmodel:ViewResultViewModel>
     <viewmodel:CategoryViewModel x:Key="CategoryVM"></viewmodel:CategoryViewModel>
     <viewmodel:ServerConfigViewModel x:Key="ServerConfigVM"></viewmodel:ServerConfigViewModel>
@@ -25,6 +26,10 @@
 
     <DataTemplate DataType="{x:Type viewmodel:CategoryViewModel}">
         <views:CategoryWindow></views:CategoryWindow>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:ChangePasswordViewModel}">
+        <views:ChangePassword></views:ChangePassword>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodel:ServerConfigViewModel}">

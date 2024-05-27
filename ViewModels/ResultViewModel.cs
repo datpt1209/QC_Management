@@ -214,8 +214,8 @@ namespace QC_Management.ViewModels
                             LOT = qcInfor.IdControlInfoNavigation.Lot,
                             Mean = qcInfor.MeanApp,
                             Sd = qcInfor.SdApp,
-                            Max = qcInfor.MeanApp + 2 * qcInfor.SdApp,
-                            Min = qcInfor.MeanApp - 2 * qcInfor.SdApp,
+                            Max = qcInfor.MeanApp + 3 * qcInfor.SdApp,
+                            Min = qcInfor.MeanApp - 3 * qcInfor.SdApp,
                             IdControlDetailNavigation = qcInfor
                         }) ;
                     }

@@ -1,15 +1,12 @@
 ﻿using QC_Management.Models;
 using QC_Management.Views;
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using XSystem.Security.Cryptography;
 
 namespace QC_Management.ViewModels
 {
@@ -32,7 +29,7 @@ namespace QC_Management.ViewModels
 
         public ICommand Window_Loaded { get; set; }
 
-        public ICommand ServeConfigCommand { get; set; }
+        public ICommand ForgotPasswordCommand { get; set; }
 
         
         // mọi thứ xử lý sẽ nằm trong này
@@ -50,7 +47,7 @@ namespace QC_Management.ViewModels
             });
             LoginCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { Login(p); });
             RegisterCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { Regis(p); });
-            ServeConfigCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { ServerConfig(p); });
+            ForgotPasswordCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { ForgotPassword(p); });
             CloseCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { p.Close(); });
             PasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { Password = p.Password; });
         }
@@ -141,9 +138,9 @@ namespace QC_Management.ViewModels
             view.ShowDialog();
         }
 
-        void ServerConfig(Window p)
+        void ForgotPassword(Window p)
         {
-            ServerConfig view = new ServerConfig();
+            ChangePassword view = new ChangePassword();
             view.ShowDialog();
         }
 

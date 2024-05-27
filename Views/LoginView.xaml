@@ -105,8 +105,8 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Grid.Column="1" Content="Server Config" Cursor="Hand" Canvas.Left="102"
-                                       Command="{Binding ServeConfigCommand}" Margin="0,10,0,18">
+                    <Button Grid.Column="1" Content="Quên mật khẩu" Cursor="Hand" Canvas.Left="102"
+                                       Command="{Binding ForgotPasswordCommand}" Margin="0,10,0,18">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <TextBlock TextDecorations="Underline">
