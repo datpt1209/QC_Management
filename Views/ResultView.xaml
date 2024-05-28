@@ -26,7 +26,7 @@
             <RowDefinition Height="auto"></RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
-        <Grid Grid.Row="1" Margin="0,0,0,-14">
+        <Grid Grid.Row="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -34,9 +34,9 @@
             </Grid.RowDefinitions>
             <!--các element binding từ selected item-->
             <materialDesign:Card Grid.Row="0" Margin="5">
-                <WrapPanel Margin="0 0 0 10">
-                    <ComboBox 
-                        Margin="5 5 15 -14"
+                <WrapPanel >
+                    <ComboBox
+                        Margin="5"
                         ItemsSource="{Binding DeviceList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -45,9 +45,9 @@
                         materialDesign:HintAssist.HintOpacity="0.26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                          materialDesign:HintAssist.IsFloating="True"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="37"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="46"/>
                     <ComboBox 
-                        Margin="5 5 15 5"
+                        Margin="5"
                         ItemsSource="{Binding LevelList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -56,18 +56,18 @@
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="37">
-                      
+                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="46">
+
 
                     </ComboBox>
 
                     <DatePicker          
-                        Margin="5 5 15 5"  
+                        Margin="5"  
                         SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:HintAssist.Hint="Ngày thực hiện"
                         materialDesign:TextFieldAssist.HasClearButton="True"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41">
-                        
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="46">
+
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectedDateChanged">
                                 <i:InvokeCommandAction Command="{Binding DateChangedCommand}">
@@ -85,7 +85,7 @@
                         materialDesign:HintAssist.Hint="Index"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="37"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="46"/>
                 </WrapPanel>
             </materialDesign:Card>
             <Grid Grid.Row="1">
@@ -108,22 +108,22 @@
                 <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
                           SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
                           CanUserAddRows="False">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding TestName}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding Mean }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding Sd }" IsReadOnly="True" />
-                        <DataGridTextColumn  Header="Kết quả" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
+                    <DataGrid.Columns >
+                        <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mean" Binding="{Binding Mean }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding Sd }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="Green" />
-                                     <!--Màu mặc định--> 
+                                    <!--Màu mặc định-->
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
                                             <Setter Property="Foreground" Value="Red" />
                                             <Setter Property="Background" Value="Yellow" />
-                                            <!--Thay đổi màu nền nếu ngoài 3 SD--> 
+                                            <!--Thay đổi màu nền nếu ngoài 3 SD-->
                                         </DataTrigger>
                                         <DataTrigger Binding="{Binding isOut2SD}" Value="True">
                                             <Setter Property="Foreground" Value="Red" />
@@ -134,7 +134,7 @@
                             </DataGridTextColumn.ElementStyle>
 
                         </DataGridTextColumn>
-                        
+
                         <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                     </DataGrid.Columns>
                 </DataGrid>

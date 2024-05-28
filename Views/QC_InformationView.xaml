@@ -34,10 +34,10 @@
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
             <!--các element binding từ selected item-->
-            <materialDesign:Card Grid.Row="0" Margin="5,5,5,1">
-                <WrapPanel Margin="0 0 0 10">
+            <materialDesign:Card Grid.Row="0" Margin="5">
+                <WrapPanel Margin="5">
                     <ComboBox
-                        Margin="5, 0, 0 , 0"
+                        Margin="5"
                         ItemsSource="{Binding CategoryList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -45,38 +45,49 @@
                         materialDesign:HintAssist.Hint="Loại xét nghiệm"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="45"/>
+                        IsEditable="True" Height="40">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding CategorySelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
 
                     <TextBox 
-                        Margin="5, 0, 0 , 0"
+                        Margin="5"
                         VerticalAlignment="Center"
                         materialDesign:HintAssist.Hint="Tên QC"
                         Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="128" />
+                        TextWrapping="Wrap" Width="auto" Height="40" />
                     <TextBox 
-                        Margin="5, 0, 0 , 0"
+                        Margin="5"
                         VerticalAlignment="Center" 
                         materialDesign:HintAssist.Hint="LOT"
                         Text="{Binding LOT, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="110" />
+                        TextWrapping="Wrap" Width="auto" Height="40"/>
                     <DatePicker          
-                        Margin="5, 0, 0 , 0" 
+                        Margin="5"
+                        
                         SelectedDate="{Binding ProductionDate, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:HintAssist.Hint="Ngày sản xuất"
                         materialDesign:TextFieldAssist.HasClearButton="True"    
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41" />
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="40" />
                     <DatePicker               
-                        Margin="5, 0, 10 , 5" 
+                        Margin="5"
+                        
                         SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" 
                         materialDesign:HintAssist.Hint="Hạn sử dụng" 
                         materialDesign:TextFieldAssist.HasClearButton="True"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="42" />
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="40" />
                     <CheckBox
                         Content="Kích hoạt"
+                     
                         IsChecked="{Binding isChecked}"
                         />
                 </WrapPanel>

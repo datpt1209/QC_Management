@@ -22,6 +22,7 @@ namespace QC_Management.ViewModels
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
+        public ICommand CategorySelectionChangedCommand { get; set; }
 
         private string _DisplayName;
         public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
@@ -177,6 +178,15 @@ namespace QC_Management.ViewModels
                 return false;
 
             }, (p) => { });
+
+            CategorySelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
+            {
+                return true;
+
+            }, (p) =>
+            {
+                List = ListDB.Where(s => s.IdCategory == SelectedCategory.Id).ToList();
+            });
         }
 
         private  void LoadNew()

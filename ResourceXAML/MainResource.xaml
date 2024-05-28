@@ -39,10 +39,6 @@
     <DataTemplate DataType="{x:Type viewmodel:HomeViewModel_V2}">
         <views:HomeView_V2></views:HomeView_V2>
     </DataTemplate>
-    
-    <DataTemplate DataType="{x:Type viewmodel:LoginViewModel}">
-        <views:LoginView></views:LoginView>
-    </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodel:RegisterViewModel}">
         <views:RegisterView></views:RegisterView>
@@ -51,24 +47,31 @@
     <DataTemplate DataType="{x:Type viewmodel:QC_InformationViewModel}">
         <views:QC_InformationView></views:QC_InformationView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:ResultViewModel}">
         <views:ResultView></views:ResultView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:TestViewModel}">
         <views:TestView></views:TestView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:UnitTableViewModel}">
         <views:UnitTableView></views:UnitTableView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:UserRoleViewModel}">
         <views:UserRoleView></views:UserRoleView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:UserViewModel}">
         <views:UserView></views:UserView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:DeviceViewModel}">
         <views:DeviceView></views:DeviceView>
     </DataTemplate>
+    
     <DataTemplate DataType="{x:Type viewmodel:QC_DetailViewModel}">
         <views:QC_DetailView></views:QC_DetailView>
     </DataTemplate>

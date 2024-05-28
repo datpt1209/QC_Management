@@ -514,7 +514,6 @@
                       </TablixMembers>
                     </TablixMember>
                   </TablixMembers>
-                  <KeepWithGroup>After</KeepWithGroup>
                 </TablixMember>
                 <TablixMember>
                   <Group Name="DateRun">
@@ -1996,7 +1995,7 @@
         <Height>6.37824cm</Height>
         <Style />
       </Body>
-      <Width>19.59629cm</Width>
+      <Width>20.60877cm</Width>
       <Page>
         <PageHeader>
           <Height>2.70792cm</Height>

@@ -13,22 +13,20 @@ namespace QC_Management
     /// <summary>
     /// Interaction logic for ReportView.xaml
     /// </summary>
-    public partial class ReportView : Window
+    public partial class ReivewReportView : Window
     {
         List<Result> resultList;
-        private bool isCheck;
-        public ReportView(List<Result> resultList, bool isCheck)
+        
+        public ReivewReportView(List<Result> resultList)
         {
             InitializeComponent();
             this.resultList = resultList;
-            this.isCheck = isCheck;
-
         }
+
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             var reportSource = new Object();
-            if (isCheck)
-            {
+        
                 reportSource = resultList.Select(s => new
                 {
                     NameDevice = s.IdDeviceNavigation.Name,
@@ -47,39 +45,11 @@ namespace QC_Management
                     Comment = s.Comment,
                     SDPXN = s.IdControlDetailNavigation.SdApp,
                     MeanPXN = s.IdControlDetailNavigation.MeanApp,
-                    ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
-                    ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                     SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
 
                 });
-            }
-            else
-            {
-                reportSource = resultList.Select(s => new
-                {
-                    NameDevice = s.IdDeviceNavigation.Name,
-                    LOTQC = s.IdControlDetailNavigation.Lot,
-                    NameTest = s.IdTestNavigation.Name,
-                    Level = s.IdLevelNavigation.Name,
-                    Result = s.Result1,
-                    Index = s.IndexQc,
-                    UserName = s.IdUserNavigation.DisplayName,
-                    DateRun = s.DateRun.ToShortDateString(),
-                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
-                    Mean = s.IdControlDetailNavigation.MeanNsx,
-                    SD = s.IdControlDetailNavigation.SdNsx,
-                    Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
-                    WestgardRule = s.WestgardRule,
-                    Comment = s.Comment,
-                    SDPXN = (double) s.IdControlDetailNavigation.SdApp,
-                    MeanPXN =(double) s.IdControlDetailNavigation.MeanApp,
-                    ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
-                    ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
-
-                });
-            }
-            reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ResultsReport.rdlc";
+          
+            reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ReviewResultReport.rdlc";
             ReportDataSource rds = new ReportDataSource();
             rds.Name = "DataSet1";
             rds.Value = reportSource;

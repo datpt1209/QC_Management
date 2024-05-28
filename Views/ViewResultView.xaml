@@ -34,14 +34,14 @@
             </Grid.RowDefinitions>
             <!--các element binding từ selected item-->
             <materialDesign:Card Grid.Row="0" Margin="5">
-                <WrapPanel Margin="0 0 0 10">
+                <WrapPanel Margin="5">
 
                     <DatePicker          
-                         Margin="5, 0, 0 , 0" 
+                         Margin="5" 
                             SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"                             
                             materialDesign:HintAssist.Hint="Ngày thực hiện"                              
                             materialDesign:TextFieldAssist.HasClearButton="True"                               
-                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="41">
+                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="45">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectedDateChanged">
@@ -53,7 +53,7 @@
                     </DatePicker>
 
                     <ComboBox 
-                        Margin="5 5 15 -14"
+                        Margin="5"
                         ItemsSource="{Binding DeviceList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -61,9 +61,9 @@
                         materialDesign:HintAssist.Hint="Thiết bị"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="37"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="45"/>
                     <ComboBox  
-                        Margin="5 5 15 5"
+                        Margin="5"
                         ItemsSource="{Binding LevelList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -71,7 +71,7 @@
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="37">
+                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="45">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -82,7 +82,7 @@
                     </ComboBox>
 
                     <ComboBox 
-                        Margin="5 5 15 5"
+                        Margin="5"
                         ItemsSource="{Binding IndexList}"
                         SelectedItem="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
@@ -90,7 +90,7 @@
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="37"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="45"/>
 
                 </WrapPanel>
             </materialDesign:Card>

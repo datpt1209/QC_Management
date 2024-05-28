@@ -13,6 +13,7 @@
   <ItemGroup>
     <None Remove="Report\ChartReport.rdlc" />
     <None Remove="Report\ResultsReport.rdlc" />
+    <None Remove="Report\ReviewResultReport.rdlc" />
   </ItemGroup>
 
   <ItemGroup>
@@ -20,6 +21,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Report\ReviewResultReport.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\ResultsReport.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -62,7 +66,10 @@
     <Compile Update="Views\HomeView_V2.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Update="Views\ChartReportView .xaml.cs">
+    <Compile Update="Views\ChartReportView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\ReviewReportView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
