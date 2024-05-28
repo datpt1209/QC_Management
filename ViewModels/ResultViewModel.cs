@@ -264,7 +264,7 @@ namespace QC_Management.ViewModels
                     {
                         DB.AddRange(results);
                         DB.SaveChanges();
-                        var messageResult = MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        var messageResult = MessageBox.Show("Lưu kết quả thành công! Bạn có muốn in kết quả QC không?", "Thông báo", MessageBoxButton.OKCancel, MessageBoxImage.Information);
                         if(messageResult == MessageBoxResult.OK)
                         {
                             ReivewReportView rp = new ReivewReportView(results.ToList());
