@@ -87,6 +87,6 @@
     <local1:TimeSpanToTimeStringConverter x:Key="TimeSpanConverter" />
     <local1:TextConverter x:Key="TextCoverter" />
     <local1:DataGridColorConverter x:Key="DataGridConverter" />
-    
+
 
 </ResourceDictionary>

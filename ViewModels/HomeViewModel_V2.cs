@@ -21,6 +21,8 @@ namespace QC_Management.ViewModels
     {
         private ObservableCollection<Result> _List;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
+        public ChartValues<ObservablePoint> LineAtOneValues { get; set; }
+    
 
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
@@ -127,6 +129,9 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+        public int max1 { get; set; }
+        public int max2 { get; set; }
+        public int max3 { get; set; }
         private double _Max;
         public double Max
         {
@@ -270,6 +275,7 @@ namespace QC_Management.ViewModels
                         if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
                         {
                             var result = LoadChart1(resultByLevel);
+                           
                             ChartValues1 = result.Item1;
                             Visibility1 = result.Item2;
                             Dates1 = result.Item3;
@@ -301,7 +307,7 @@ namespace QC_Management.ViewModels
             var visibility = new Visibility();
             var dataPoints = new ChartValues<Result>();
             var dates = new ObservableCollection<string>();
-
+ 
             foreach (var item in results)
             {
                 dataPoints.Add(item);
@@ -312,6 +318,7 @@ namespace QC_Management.ViewModels
                 visibility = Visibility.Collapsed;
             }
             else visibility = Visibility.Visible;
+           
 
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }

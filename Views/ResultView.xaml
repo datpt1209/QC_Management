@@ -57,10 +57,8 @@
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="189" Height="46">
-
-
+                        
                     </ComboBox>
-
                     <DatePicker          
                         Margin="5"  
                         SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
@@ -76,7 +74,6 @@
                         </i:Interaction.Triggers>
 
                     </DatePicker>
-
                     <ComboBox 
                         Margin="5 5 15 5"
                         ItemsSource="{Binding IndexList}"
@@ -111,8 +108,8 @@
                     <DataGrid.Columns >
                         <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding Mean }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding Sd }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mean" Binding="{Binding MeanNSX }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding SdNSX }" CanUserSort="False" IsReadOnly="True" />
                         <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
                             <DataGridTextColumn.ElementStyle>
@@ -130,6 +127,7 @@
                                             <!--Thay đổi màu nền nếu ngoài 2 SD-->
                                         </DataTrigger>
                                     </Style.Triggers>
+                                    
                                 </Style>
                             </DataGridTextColumn.ElementStyle>
 

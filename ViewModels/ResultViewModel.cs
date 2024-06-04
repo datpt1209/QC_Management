@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Input;
 
 namespace QC_Management.ViewModels
@@ -31,7 +30,6 @@ namespace QC_Management.ViewModels
 
         private ObservableCollection<ControlInfo> _ControlInfoList;
         public ObservableCollection<ControlInfo> ControlInfolList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
-
         public ICommand AddCommand { get; set; }
         public ICommand InputCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
@@ -140,7 +138,6 @@ namespace QC_Management.ViewModels
                 LoadNew(DB);
             });
 
-
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 if (SelectedDevice == null || SelectedLevel == null) return false;
@@ -149,15 +146,15 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 var list = List.Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate && s.IdLevel == SelectedLevel.Id).GroupBy(s => s.IndexQc).Select(s => s.Key);
-                if(list != null)
+                if (list != null)
                 {
-                   IndexList = list.ToList();
+                    IndexList = list.ToList();
                 }
             });
 
             CheckRangeCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-               return true;
+                return true;
 
             }, (p) =>
             {
@@ -182,7 +179,7 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    foreach(var item in indexList)
+                    foreach (var item in indexList)
                     {
                         IndexList.Add(item);
                         index++;
@@ -196,7 +193,7 @@ namespace QC_Management.ViewModels
                 foreach (var item in view)
                 {
                     var qcInfor = item.ControlInfoDetails.Where(s =>
-                    s.IdLevel == SelectedLevel.Id 
+                    s.IdLevel == SelectedLevel.Id
                     && s.Status == true
                     && s.IdDevice == SelectedDevice.Id).FirstOrDefault();
                     if (qcInfor == null)
@@ -211,15 +208,16 @@ namespace QC_Management.ViewModels
                             TestName = item.Name,
                             idTest = item.Id,
                             QCName = qcInfor.IdControlInfoNavigation.Name,
-                            LOT = qcInfor.IdControlInfoNavigation.Lot,
-                            Mean = qcInfor.MeanApp,
-                            Sd = qcInfor.SdApp,
-                            Max = qcInfor.MeanApp + 3 * qcInfor.SdApp,
-                            Min = qcInfor.MeanApp - 3 * qcInfor.SdApp,
+                            LOT = qcInfor.Lot,
+                            MeanApp = qcInfor.MeanApp,
+                            SdApp = qcInfor.SdApp,
+                            MeanNSX = qcInfor.MeanNsx,
+                            SdNSX = qcInfor.SdNsx,
+                            Max = qcInfor.MeanNsx + 3 * qcInfor.SdNsx,
+                            Min = qcInfor.MeanNsx - 3 * qcInfor.SdNsx,
                             IdControlDetailNavigation = qcInfor
-                        }) ;
+                        });
                     }
-
                 }
             });
 
@@ -237,7 +235,6 @@ namespace QC_Management.ViewModels
                     {
                         Result result = new Result()
                         {
-                            
                             IdTest = item.idTest,
                             IdDevice = SelectedDevice.Id,
                             IdLevel = SelectedLevel.Id,
@@ -265,12 +262,12 @@ namespace QC_Management.ViewModels
                         DB.AddRange(results);
                         DB.SaveChanges();
                         var messageResult = MessageBox.Show("Lưu kết quả thành công! Bạn có muốn in kết quả QC không?", "Thông báo", MessageBoxButton.OKCancel, MessageBoxImage.Information);
-                        if(messageResult == MessageBoxResult.OK)
+                        if (messageResult == MessageBoxResult.OK)
                         {
                             ReivewReportView rp = new ReivewReportView(results.ToList());
                             rp.ShowDialog();
                         }
-                        
+
                         LoadNew(DB);
                     }
                     catch (Exception ex)

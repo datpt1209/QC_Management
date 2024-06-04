@@ -10,6 +10,7 @@ namespace QC_Management.Models
         public int? id { get; set; }
         public string TestName { get; set; }
         public string? QCName { get; set; }
+
         private double? _Result;
         public double? Result
         {
@@ -17,25 +18,31 @@ namespace QC_Management.Models
             set
             {
                 _Result = value;
-                if(value > Mean*2*Sd || value < Mean - 2 * Sd)
+
+                if(value > Max || value < Min)
                 {
-                    isOut2SD = true;
-                    if (value > Max || value < Min)
-                    {
-                        isOutOfRange = true;
-                    }
+                    isOutOfRange = true;
                 }
                 else
                 {
-                    isOut2SD = false;
                     isOutOfRange = false;
+                    if(value > MeanNSX + 2*SdNSX || value < MeanNSX - 2 * SdNSX)
+                    {
+                        isOut2SD = true;
+                    }
+                    else
+                    {
+                        isOut2SD = false;
+                    }
                 }
             }
         }
         public string? LOT { get; set; }
         public int idTest { get; set; }
-        public double? Mean { get; set; }
-        public double? Sd { get; set; }
+        public double? MeanApp { get; set; }
+        public double? SdApp { get; set; }
+        public double? MeanNSX { get; set; }
+        public double? SdNSX { get; set; }
         public double? Min { get; set; }
         public double? Max { get; set; }
         public string? Comment { get; set; }
@@ -54,7 +61,7 @@ namespace QC_Management.Models
         private bool _isOut2SD;
         public bool isOut2SD
         {
-            get => _isOutOfRange;
+            get => _isOut2SD;
 
             set
             {

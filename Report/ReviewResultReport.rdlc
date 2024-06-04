@@ -112,7 +112,7 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>3.72591cm</Width>
+                  <Width>3.22135cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>2.5cm</Width>
@@ -121,12 +121,12 @@
                   <Width>1.92221cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.9534cm</Width>
+                  <Width>4.0878cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>1.108cm</Height>
+                  <Height>0.87517cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -267,7 +267,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.6cm</Height>
+                  <Height>0.727cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -342,7 +342,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf((Fields!SDs.Value &lt;= 2 And Fields!SDs.Value &gt;= -2), "Đạt", "Không đạt")</Value>
+                                  <Value>= IIf(Fields!Result.Value &gt;= (Fields!Mean.Value - 2*Fields!SD.Value) or Fields!Result.Value &lt;= (Fields!Mean.Value + 2*Fields!SD.Value), "Đạt", "Không đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -450,7 +450,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>3.47222cm</Size>
+                        <Size>2.84238cm</Size>
                         <CellContents>
                           <Textbox Name="Textbox49">
                             <CanGrow>true</CanGrow>
@@ -576,7 +576,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>3.47222cm</Size>
+                        <Size>2.84238cm</Size>
                         <CellContents>
                           <Textbox Name="NameTest1">
                             <CanGrow>true</CanGrow>
@@ -658,7 +658,7 @@
             </SortExpressions>
             <Top>0.9175cm</Top>
             <Left>1.1498cm</Left>
-            <Height>1.708cm</Height>
+            <Height>1.60217cm</Height>
             <Width>18.10152cm</Width>
             <Style>
               <Border>
@@ -691,7 +691,7 @@
             <Top>0.14111cm</Top>
             <Left>1.1498cm</Left>
             <Height>0.6cm</Height>
-            <Width>6.37016cm</Width>
+            <Width>6.05266cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -720,8 +720,8 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>3.99318cm</Top>
-            <Left>13.29777cm</Left>
+            <Top>3.33133cm</Top>
+            <Left>12.7051cm</Left>
             <Height>0.6cm</Height>
             <Width>4.55317cm</Width>
             <ZIndex>2</ZIndex>
@@ -750,8 +750,8 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
-            <Top>3.28735cm</Top>
-            <Left>11.62171cm</Left>
+            <Top>2.69606cm</Top>
+            <Left>11.02904cm</Left>
             <Height>0.6cm</Height>
             <Width>7.46743cm</Width>
             <ZIndex>3</ZIndex>
@@ -765,14 +765,18 @@
               <PaddingBottom>2pt</PaddingBottom>
             </Style>
           </Textbox>
-          <Textbox Name="Textbox77">
+          <Textbox Name="Textbox75">
             <CanGrow>true</CanGrow>
             <KeepTogether>true</KeepTogether>
             <Paragraphs>
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value xml:space="preserve"> </Value>
+                    <Value>Level: </Value>
+                    <Style />
+                  </TextRun>
+                  <TextRun>
+                    <Value>=Fields!Level.Value</Value>
                     <Style>
                       <FontSize>11pt</FontSize>
                       <FontWeight>Bold</FontWeight>
@@ -782,11 +786,11 @@
                 <Style />
               </Paragraph>
             </Paragraphs>
-            <rd:DefaultName>Textbox77</rd:DefaultName>
+            <rd:DefaultName>Textbox74</rd:DefaultName>
             <Top>0.14111cm</Top>
             <Left>7.69635cm</Left>
             <Height>0.6cm</Height>
-            <Width>7.46717cm</Width>
+            <Width>6.37016cm</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -799,10 +803,10 @@
             </Style>
           </Textbox>
         </ReportItems>
-        <Height>6.37824cm</Height>
+        <Height>4.89657cm</Height>
         <Style />
       </Body>
-      <Width>20.13827cm</Width>
+      <Width>20.46875cm</Width>
       <Page>
         <PageHeader>
           <Height>2.70792cm</Height>

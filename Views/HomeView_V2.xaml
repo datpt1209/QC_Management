@@ -100,7 +100,7 @@
                     Visibility="{Binding Visibility1}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 
-                            StrokeThickness="2" 
+                            StrokeThickness="4" 
                             Stroke="#1C8FC5" 
                             Fill="Transparent"
                             LineSmoothness="0" 
@@ -118,7 +118,7 @@
                             </lvc:Axis.Separator>
                         </lvc:Axis>
                     </lvc:CartesianChart.AxisX>
-                    
+
                     <lvc:CartesianChart.DataTooltip>
                         <local:CustomersTooltip/>
                     </lvc:CartesianChart.DataTooltip>
@@ -148,7 +148,7 @@
                     Visibility="{Binding Visibility2}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 
-                            StrokeThickness="2" 
+                            StrokeThickness="4" 
                             Stroke="#1C8FC5" 
                             Fill="Transparent"
                             LineSmoothness="0" 
@@ -195,7 +195,7 @@
                     Visibility="{Binding Visibility3}">
                     <lvc:CartesianChart.Series>
                         <lvc:LineSeries 
-                            StrokeThickness="2" 
+                            StrokeThickness="4" 
                             Stroke="#1C8FC5" 
                             Fill="Transparent"
                             LineSmoothness="0" 

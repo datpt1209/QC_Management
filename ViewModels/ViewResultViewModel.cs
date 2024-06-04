@@ -178,20 +178,19 @@ namespace QC_Management.ViewModels
                 {
                     MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
-
             });
-
 
             PrintCommand = new RelayCommand<object>((p) =>
             {
                 if (ResultViewList.Count == 0 || ResultViewList == null) return false;
                 else
                     return true;
-
             }, (p) =>
             {
                 //ReportView rp = new ReportView(ResultViewList);
                 //rp.ShowDialog();
+                ReivewReportView rp = new ReivewReportView(ResultViewList.ToList());
+                rp.ShowDialog();
 
             });
 
@@ -265,8 +264,6 @@ namespace QC_Management.ViewModels
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
             UserList = new ObservableCollection<User>(DB.Users);
-            
         }
-
     }
 }
