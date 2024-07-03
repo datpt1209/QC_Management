@@ -278,7 +278,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf((Fields!SDs.Value &lt;= 2 And Fields!SDs.Value &gt;= -2), "Đạt", "Không đạt")</Value>
+                                  <Value>= IIf((Fields!SDs.Value &lt; -2 or Fields!SDs.Value &gt; 2), "Không đạt", "Đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>

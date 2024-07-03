@@ -117,8 +117,8 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.IdControlInfoNavigation.Lot }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanApp }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdApp }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanNsx }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdNsx }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Kết quả" IsReadOnly="False" Binding="{Binding Result1}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">

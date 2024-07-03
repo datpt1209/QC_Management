@@ -342,7 +342,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf(Fields!Result.Value &gt;= (Fields!Mean.Value - 2*Fields!SD.Value) or Fields!Result.Value &lt;= (Fields!Mean.Value + 2*Fields!SD.Value), "Đạt", "Không đạt")</Value>
+                                  <Value>= IIf(Fields!Result.Value &gt; (Fields!Mean.Value + 2*Fields!SD.Value) or Fields!Result.Value &lt; (Fields!Mean.Value - 2*Fields!SD.Value), "Không đạt", "Đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>

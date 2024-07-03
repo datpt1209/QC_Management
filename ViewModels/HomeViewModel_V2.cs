@@ -19,10 +19,27 @@ namespace QC_Management.ViewModels
 {
     public class HomeViewModel_V2 : BaseViewModel
     {
+
+        public ChartValues<double> MeanValues { get; set; } = new ChartValues<double> { /* Your Mean data */ };
+        public ChartValues<double> OneSDValues { get; set; } = new ChartValues<double> { /* Your 1SD data */ };
+        public ChartValues<double> MinusOneSDValues { get; set; } = new ChartValues<double> { /* Your -1SD data */ };
+        public ChartValues<double> PlusTwoSDValues { get; set; } = new ChartValues<double> { /* Your +2SD data */ };
+        public ChartValues<double> MinusTwoSDValues { get; set; } = new ChartValues<double> { /* Your -2SD data */ };
+
         private ObservableCollection<Result> _List;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
         public ChartValues<ObservablePoint> LineAtOneValues { get; set; }
-    
+
+        private Func<double, string> _yAxisLabelFormatter;
+        public Func<double, string> YAxisLabelFormatter
+        {
+            get { return _yAxisLabelFormatter; }
+            set
+            {
+                _yAxisLabelFormatter = value;
+                OnPropertyChanged(nameof(YAxisLabelFormatter));
+            }
+        }
 
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
@@ -180,6 +197,8 @@ namespace QC_Management.ViewModels
 
             QcManagmentContext DB = LoadNew();
 
+            InitializeYAxisLabelFormatter();
+
             LoadedCommand = new RelayCommand<Test>((p) =>
             {
                 return true;
@@ -251,6 +270,24 @@ namespace QC_Management.ViewModels
 
         }
 
+        private void InitializeYAxisLabelFormatter()
+        {
+            YAxisLabelFormatter = value =>
+            {
+                switch (value)
+                {
+                    case 0: return "Mean";
+                    case 1: return "1SD";
+                    case 2: return "2SD";
+                    case 3: return "3SD";
+                    case -1: return "-1SD";
+                    case -2: return "-2SD";
+                    case -3: return "-3SD";
+                    default: return value.ToString(); // Fallback for other values
+                }
+            };
+        }
+
         private async void ViewChart()
         {
             if (SelectedTest != null)
@@ -275,7 +312,6 @@ namespace QC_Management.ViewModels
                         if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
                         {
                             var result = LoadChart1(resultByLevel);
-                           
                             ChartValues1 = result.Item1;
                             Visibility1 = result.Item2;
                             Dates1 = result.Item3;
