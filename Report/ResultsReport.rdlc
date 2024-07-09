@@ -471,16 +471,16 @@
                           <TablixMembers>
                             <TablixMember>
                               <TablixHeader>
-                                <Size>2.08148cm</Size>
+                                <Size>2.5cm</Size>
                                 <CellContents>
-                                  <Textbox Name="Textbox51">
+                                  <Textbox Name="Textbox3">
                                     <CanGrow>true</CanGrow>
                                     <KeepTogether>true</KeepTogether>
                                     <Paragraphs>
                                       <Paragraph>
                                         <TextRuns>
                                           <TextRun>
-                                            <Value>LOT</Value>
+                                            <Value>LOTQC</Value>
                                             <Style>
                                               <FontWeight>Bold</FontWeight>
                                             </Style>
@@ -491,7 +491,7 @@
                                         </Style>
                                       </Paragraph>
                                     </Paragraphs>
-                                    <rd:DefaultName>Textbox51</rd:DefaultName>
+                                    <rd:DefaultName>Textbox3</rd:DefaultName>
                                     <Style>
                                       <Border>
                                         <Style>Solid</Style>
@@ -641,10 +641,20 @@
                           </TablixHeader>
                           <TablixMembers>
                             <TablixMember>
+                              <Group Name="LOTQC">
+                                <GroupExpressions>
+                                  <GroupExpression>=Fields!LOTQC.Value</GroupExpression>
+                                </GroupExpressions>
+                              </Group>
+                              <SortExpressions>
+                                <SortExpression>
+                                  <Value>=Fields!LOTQC.Value</Value>
+                                </SortExpression>
+                              </SortExpressions>
                               <TablixHeader>
-                                <Size>2.08148cm</Size>
+                                <Size>2.5cm</Size>
                                 <CellContents>
-                                  <Textbox Name="LOTQC">
+                                  <Textbox Name="LOTQC1">
                                     <CanGrow>true</CanGrow>
                                     <KeepTogether>true</KeepTogether>
                                     <Paragraphs>
@@ -660,7 +670,7 @@
                                         </Style>
                                       </Paragraph>
                                     </Paragraphs>
-                                    <rd:DefaultName>LOTQC</rd:DefaultName>
+                                    <rd:DefaultName>LOTQC1</rd:DefaultName>
                                     <Style>
                                       <Border>
                                         <Style>Solid</Style>
@@ -697,7 +707,7 @@
             <Top>2.89361cm</Top>
             <Left>0.86052cm</Left>
             <Height>1.708cm</Height>
-            <Width>14.74825cm</Width>
+            <Width>15.16677cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -789,9 +799,9 @@
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
             <Top>4.89602cm</Top>
-            <Left>13.45995cm</Left>
+            <Left>12.65537cm</Left>
             <Height>0.6cm</Height>
-            <Width>5.79137cm</Width>
+            <Width>6.59595cm</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
@@ -835,7 +845,7 @@
             <Top>0.14111cm</Top>
             <Left>7.69635cm</Left>
             <Height>0.6cm</Height>
-            <Width>7.46717cm</Width>
+            <Width>10.96654cm</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -2145,7 +2155,7 @@
               </Paragraphs>
               <rd:DefaultName>PageNumber</rd:DefaultName>
               <Top>0.28222cm</Top>
-              <Left>17.73744cm</Left>
+              <Left>17.39284cm</Left>
               <Height>0.6cm</Height>
               <Width>1.85848cm</Width>
               <Style>
