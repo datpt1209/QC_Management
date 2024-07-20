@@ -82,7 +82,7 @@
 
         <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="3">
             <materialDesign:Card Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Stretch">
-                <ListView ItemsSource="{Binding TestList}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden" DisplayMemberPath="Name" SelectedItem="{Binding SelectedTest, Mode=OneWayToSource}" d:ItemsSource="{d:SampleData ItemCount=5}">
+                <ListView  ItemsSource="{Binding TestList}" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.VerticalScrollBarVisibility="Hidden" DisplayMemberPath="Name" SelectedItem="{Binding SelectedTest, Mode=TwoWay}" d:ItemsSource="{d:SampleData ItemCount=5}">
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
                             <i:InvokeCommandAction Command="{Binding TestSelectionChangedCommand}" >

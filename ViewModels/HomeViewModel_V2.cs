@@ -253,9 +253,31 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
+
                 if (SelectedDevice != null)
                 {
-                    TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+                    // Update the TestList based on the selected device
+                    var newTestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+
+                    // Check if the new list is different from the current one or if the SelectedTest is not in the new list
+                    if (!TestList.SequenceEqual(newTestList) || !newTestList.Contains(SelectedTest))
+                    {
+                        TestList = newTestList;
+                        OnPropertyChanged(nameof(TestList));
+
+                        // Set SelectedTest to the first test in the updated list or null if the list is empty
+                        SelectedTest = TestList.FirstOrDefault();
+                    }
+                    else
+                    {
+                        // Force refresh of SelectedTest even if the list hasn't changed
+                        var tempTest = SelectedTest;
+                        SelectedTest = null;
+                        OnPropertyChanged(nameof(SelectedTest));
+                        SelectedTest = tempTest;
+                    }
+
+                    OnPropertyChanged(nameof(SelectedTest));
                 }
             });
 
@@ -347,7 +369,7 @@ namespace QC_Management.ViewModels
             foreach (var item in results)
             {
                 dataPoints.Add(item);
-                dates.Add(item.DateRun.ToShortDateString());
+                dates.Add(item.DateRun.ToString("dd/MM"));
             }
             if (dataPoints == null || dataPoints.Count == 0)
             {
@@ -355,7 +377,6 @@ namespace QC_Management.ViewModels
             }
             else visibility = Visibility.Visible;
            
-
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }
 
@@ -433,17 +454,19 @@ namespace QC_Management.ViewModels
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
             UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
-            SelectedDevice = DeviceList.FirstOrDefault();
+            // Removed the line that sets SelectedDevice to the first device in the list
             TestListDB = new ObservableCollection<Test>(DB.Tests);
-            TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation));
+            // TestList initialization is now dependent on whether a device is selected
+            TestList = new ObservableCollection<Test>();
             ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
             ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-            SelectedTest = TestList.FirstOrDefault();
+            // Since TestList is now initially empty, SelectedTest is set to null
+            SelectedTest = null;
             Visibility1 = Visibility.Collapsed;
             Visibility2 = Visibility.Collapsed;
             Visibility3 = Visibility.Collapsed;
             isCheck = false;
-            
+
             return DB;
         }
         private double CalculateMean(ObservableCollection<double> values)
