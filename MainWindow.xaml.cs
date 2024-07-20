@@ -15,6 +15,7 @@ namespace QC_Management
         {
             
             InitializeComponent();
+
         }
 
         private void Tg_Btn_Checked(object sender, RoutedEventArgs e)
