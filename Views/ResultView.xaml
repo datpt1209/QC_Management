@@ -108,8 +108,8 @@
                     <DataGrid.Columns >
                         <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding MeanNSX }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding SdNSX }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mean" Binding="{Binding MeanApp }" CanUserSort="False" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding SdApp }" CanUserSort="False" IsReadOnly="True" />
                         <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
                             <DataGridTextColumn.ElementStyle>

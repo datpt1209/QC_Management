@@ -213,8 +213,8 @@ namespace QC_Management.ViewModels
                             SdApp = qcInfor.SdApp,
                             MeanNSX = qcInfor.MeanNsx,
                             SdNSX = qcInfor.SdNsx,
-                            Max = qcInfor.MeanNsx + 3 * qcInfor.SdNsx,
-                            Min = qcInfor.MeanNsx - 3 * qcInfor.SdNsx,
+                            Max = qcInfor.MeanApp + 3 * qcInfor.SdApp,
+                            Min = qcInfor.MeanApp - 3 * qcInfor.SdApp,
                             IdControlDetailNavigation = qcInfor
                         });
                     }
