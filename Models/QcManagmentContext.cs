@@ -27,6 +27,8 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<LevelQc> LevelQcs { get; set; }
 
+    public virtual DbSet<ReResult> ReResults { get; set; }
+
     public virtual DbSet<Result> Results { get; set; }
 
     public virtual DbSet<Test> Tests { get; set; }
@@ -48,7 +50,7 @@ public partial class QcManagmentContext : DbContext
     {
         modelBuilder.Entity<Category>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__Category__3214EC079AE19387");
+            entity.HasKey(e => e.Id).HasName("PK__Category__3214EC073108088C");
 
             entity.ToTable("Category");
         });
@@ -136,13 +138,36 @@ public partial class QcManagmentContext : DbContext
 
         modelBuilder.Entity<LevelQc>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK__LevelQC__3214EC07139AC1F0");
+            entity.HasKey(e => e.Id).HasName("PK__LevelQC__3214EC077164C6BF");
 
             entity.ToTable("LevelQC");
 
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<ReResult>(entity =>
+        {
+            entity.ToTable("Re_Result");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Date).HasColumnType("date");
+
+            entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.ReResults)
+                .HasForeignKey(d => d.IdDevice)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Re_Result_Device");
+
+            entity.HasOne(d => d.IdLevelNavigation).WithMany(p => p.ReResults)
+                .HasForeignKey(d => d.IdLevel)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Re_Result_LevelQC");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.ReResults)
+                .HasForeignKey(d => d.IdTest)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Re_Result_Test");
         });
 
         modelBuilder.Entity<Result>(entity =>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class Result:BaseViewModel
+public partial class Result : BaseViewModel
 {
     public int Id { get; set; }
 
@@ -17,7 +17,7 @@ public partial class Result:BaseViewModel
         set
         {
             _Result1 = value;
-            if (value > (IdControlDetailNavigation.MeanApp + 2*IdControlDetailNavigation.SdApp) || value < (IdControlDetailNavigation.MeanApp - 2 * IdControlDetailNavigation.SdApp))
+            if (value > (IdControlDetailNavigation.MeanApp + 2 * IdControlDetailNavigation.SdApp) || value < (IdControlDetailNavigation.MeanApp - 2 * IdControlDetailNavigation.SdApp))
             {
                 IsOutRange = true;
             }

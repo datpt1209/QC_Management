@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
 public partial class Device : BaseViewModel
 {
-
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
@@ -16,6 +16,8 @@ public partial class Device : BaseViewModel
     public virtual ICollection<DeviceTest> DeviceTests { get; set; } = new List<DeviceTest>();
 
     public virtual Category? IdCategoryNavigation { get; set; }
+
+    public virtual ICollection<ReResult> ReResults { get; set; } = new List<ReResult>();
 
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
 }

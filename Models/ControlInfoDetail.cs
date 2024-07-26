@@ -1,10 +1,9 @@
-﻿using QC_Management.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace QC_Management;
+namespace QC_Management.Models;
 
-public partial class ControlInfoDetail
+public partial class ControlInfoDetail : BaseViewModel
 {
     public int Id { get; set; }
 

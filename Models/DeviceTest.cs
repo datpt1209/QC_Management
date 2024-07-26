@@ -1,7 +1,9 @@
-﻿namespace QC_Management.Models;
+﻿using System;
+using System.Collections.Generic;
+
+namespace QC_Management.Models;
 
 public partial class DeviceTest : BaseViewModel
-
 {
     public int Id { get; set; }
 
