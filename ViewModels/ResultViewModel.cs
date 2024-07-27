@@ -1,4 +1,5 @@
 ﻿using QC_Management.Models;
+using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -14,8 +15,8 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Result> _List;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<ResultView> _ResutlViewList;
-        public ObservableCollection<ResultView> ResutlViewList { get => _ResutlViewList; set { _ResutlViewList = value; OnPropertyChanged(); } }
+        private ObservableCollection<ResultReView> _ResutlViewList;
+        public ObservableCollection<ResultReView> ResutlViewList { get => _ResutlViewList; set { _ResutlViewList = value; OnPropertyChanged(); } }
 
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
@@ -30,14 +31,34 @@ namespace QC_Management.ViewModels
 
         private ObservableCollection<ControlInfo> _ControlInfoList;
         public ObservableCollection<ControlInfo> ControlInfolList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
+
+        private ObservableCollection<ReResultGroup> _GroupedReResults;
+        public ObservableCollection<ReResultGroup> GroupedReResults
+        {
+            get => _GroupedReResults;
+            set { _GroupedReResults = value; OnPropertyChanged(); }
+        }
+
+        private ReResultGroup _SelectedReResultGroup;
+        public ReResultGroup SelectedReResultGroup
+        {
+            get => _SelectedReResultGroup;
+            set
+            {
+                _SelectedReResultGroup = value;
+                OnPropertyChanged();
+            }
+        }
+        public ICommand ShowDetailCommand { get; set; }
         public ICommand AddCommand { get; set; }
+        public ICommand AutoCommand { get; set; }
         public ICommand InputCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
         public ICommand CheckRangeCommand { get; set; }
 
-        private ResultView _SelectedItem;
-        public ResultView SelectedItem
+        private ResultReView _SelectedItem;
+        public ResultReView SelectedItem
         {
             get => _SelectedItem;
             set
@@ -128,6 +149,14 @@ namespace QC_Management.ViewModels
 
         public ResultViewModel()
         {
+            GroupedReResults = new ObservableCollection<ReResultGroup>();
+            
+
+            ShowDetailCommand = new RelayCommand<object>((p) => true, (p) =>
+            {
+                Re_ResultDetailView reResultWindow = new Re_ResultDetailView(SelectedReResultGroup);
+                reResultWindow.ShowDialog();
+            });
             QcManagmentContext DB = DataProvider.Ins.DB;
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -136,6 +165,7 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 LoadNew(DB);
+                LoadReResults();
             });
 
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -160,6 +190,7 @@ namespace QC_Management.ViewModels
             {
                 isOutOfRange = SelectedItem.isOutOfRange;
             });
+
 
             InputCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -188,7 +219,7 @@ namespace QC_Management.ViewModels
                     SelectedIndex = (int)IndexList[index];
                 }
 
-                ResutlViewList = new ObservableCollection<ResultView>();
+                ResutlViewList = new ObservableCollection<ResultReView>();
                 var view = TestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index).ToList();
                 foreach (var item in view)
                 {
@@ -202,7 +233,7 @@ namespace QC_Management.ViewModels
                     }
                     else
                     {
-                        ResutlViewList.Add(new ResultView()
+                        ResutlViewList.Add(new ResultReView()
                         {
                             Result = null,
                             TestName = item.Name,
@@ -277,6 +308,25 @@ namespace QC_Management.ViewModels
 
                 }
             });
+        }
+        private void LoadReResults()
+        {
+            QcManagmentContext DB = DataProvider.Ins.DB;
+            var reResults = DB.ReResults.ToList();
+            var groupedResults = reResults
+                .GroupBy(r => new { r.IdDevice, r.IdLevel, r.Date,r.Index })
+                .Select(g => new ReResultGroup
+                {
+                    DeviceName = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Name ?? "Unknown Device",
+                    LevelName = DB.LevelQcs.FirstOrDefault(l => l.Id == g.Key.IdLevel)?.Name ?? "Unknown Level",
+                    IdLevel = DB.LevelQcs.FirstOrDefault(l => l.Id == g.Key.IdLevel)?.Id ?? 0,
+                    Index = (int)g.Key.Index,
+                    DateTime = g.Key.Date,
+                    Results = new ObservableCollection<ReResult>(g.ToList())
+                })
+                .ToList();
+
+            GroupedReResults = new ObservableCollection<ReResultGroup>(groupedResults);
         }
         public void LoadNew(QcManagmentContext DB)
         {

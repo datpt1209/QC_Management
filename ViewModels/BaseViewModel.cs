@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QC_Management.ViewModels;
+using System;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Input;

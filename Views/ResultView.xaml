@@ -88,7 +88,7 @@
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"></ColumnDefinition>
-                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="0.7*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
 
                 <Grid Grid.Column="0">
@@ -99,44 +99,93 @@
                         </StackPanel>
                     </materialDesign:Card>
                 </Grid>
+                <Grid Grid.Column="1">
+                    <materialDesign:Card  Margin="5">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="Danh sách chuyển mạng" HorizontalAlignment="Center" FontSize="22"></TextBlock> 
+                        </StackPanel>
+                    </materialDesign:Card>
+                </Grid>
             </Grid>
+            <Grid Grid.Row="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"></ColumnDefinition>
+                    <ColumnDefinition Width="0.7*"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <materialDesign:Card  Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+                    <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
+               SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
+               CanUserAddRows="False">
+                        <DataGrid.Columns >
+                            <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
+                            <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Mean" Binding="{Binding MeanApp }" CanUserSort="False" IsReadOnly="True" />
+                            <DataGridTextColumn Header="SD" Binding="{Binding SdApp }" CanUserSort="False" IsReadOnly="True" />
+                            <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
-            <materialDesign:Card  Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
-                <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
-                          SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
-                          CanUserAddRows="False">
-                    <DataGrid.Columns >
-                        <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding MeanApp }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding SdApp }" CanUserSort="False" IsReadOnly="True" />
-                        <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Setter Property="Foreground" Value="Green" />
+                                        <!--Màu mặc định-->
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                                <Setter Property="Foreground" Value="Red" />
+                                                <Setter Property="Background" Value="Yellow" />
+                                                <!--Thay đổi màu nền nếu ngoài 3 SD-->
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding isOut2SD}" Value="True">
+                                                <Setter Property="Foreground" Value="Red" />
+                                                <!--Thay đổi màu nền nếu ngoài 2 SD-->
+                                            </DataTrigger>
+                                        </Style.Triggers>
 
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="Green" />
-                                    <!--Màu mặc định-->
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
-                                            <Setter Property="Foreground" Value="Red" />
-                                            <Setter Property="Background" Value="Yellow" />
-                                            <!--Thay đổi màu nền nếu ngoài 3 SD-->
-                                        </DataTrigger>
-                                        <DataTrigger Binding="{Binding isOut2SD}" Value="True">
-                                            <Setter Property="Foreground" Value="Red" />
-                                            <!--Thay đổi màu nền nếu ngoài 2 SD-->
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                    
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
 
-                        </DataGridTextColumn>
+                            </DataGridTextColumn>
 
-                        <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </materialDesign:Card>
+                            <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </materialDesign:Card>
+                <Grid Grid.Column="1">
+                    <ListView SelectedItem="{Binding SelectedReResultGroup}" ItemsSource="{Binding GroupedReResults}" Margin="10">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="MouseDoubleClick">
+                                <i:InvokeCommandAction Command="{Binding ShowDetailCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView}}"/>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal">
+                                            <TextBlock Text="Device: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Key.IdDevice}" Margin="5,0"/>
+                                            <TextBlock Text="Level: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Key.IdLevel}" Margin="5,0"/>
+                                            <TextBlock Text="Date: " FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Key.DateTime}" Margin="5,0"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+                        <ListView.View>
+                            <GridView>
+                                <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" Width="100"/>
+                                <GridViewColumn Header="Level" DisplayMemberBinding="{Binding LevelName}" Width="100"/>
+                                <GridViewColumn Header="Lần QC" DisplayMemberBinding="{Binding Index}" Width="100"/>
+                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding DateTime}" Width="100"/>
+                                <!-- Add more columns as needed -->
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+
+                </Grid>
+            </Grid>
+           
         </Grid>
     </Grid>
 </UserControl>

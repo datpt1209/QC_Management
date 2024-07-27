@@ -151,7 +151,6 @@ public partial class QcManagmentContext : DbContext
         {
             entity.ToTable("Re_Result");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.Date).HasColumnType("date");
 
             entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.ReResults)

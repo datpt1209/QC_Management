@@ -5,7 +5,7 @@ using QC_Management.ViewModels;
 
 namespace QC_Management.Models
 {
-    public class ResultView : BaseViewModel
+    public class ResultReView : BaseViewModel
     {
         public int? id { get; set; }
         public string TestName { get; set; }

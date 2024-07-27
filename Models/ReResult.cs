@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class ReResult : BaseViewModel
+public partial class ReResult:BaseViewModel
 {
     public int Id { get; set; }
 
@@ -18,6 +18,8 @@ public partial class ReResult : BaseViewModel
     public DateTime Date { get; set; }
 
     public TimeSpan Time { get; set; }
+
+    public int? Index { get; set; }
 
     public virtual Device IdDeviceNavigation { get; set; } = null!;
 

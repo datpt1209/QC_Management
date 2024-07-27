@@ -7,6 +7,7 @@
     
     <viewmodel:MainViewModel x:Key="MainVM"></viewmodel:MainViewModel>
     <viewmodel:ChangePasswordViewModel x:Key="ChangePasswordVM"></viewmodel:ChangePasswordViewModel>
+    <viewmodel:Re_ResultViewModel x:Key="Re_ResultVM"></viewmodel:Re_ResultViewModel>
     <viewmodel:ViewResultViewModel x:Key="ViewResultVM"></viewmodel:ViewResultViewModel>
     <viewmodel:CategoryViewModel x:Key="CategoryVM"></viewmodel:CategoryViewModel>
     <viewmodel:ServerConfigViewModel x:Key="ServerConfigVM"></viewmodel:ServerConfigViewModel>

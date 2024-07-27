@@ -1,4 +1,6 @@
-﻿using System;
+﻿using QC_Management.Models;
+using QC_Management.ViewModels;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -15,13 +17,14 @@ using System.Windows.Shapes;
 namespace QC_Management.Views
 {
     /// <summary>
-    /// Interaction logic for Re_Result.xaml
+    /// Interaction logic for Re_ResultDetailView.xaml
     /// </summary>
-    public partial class Re_Result : Window
+    public partial class Re_ResultDetailView : Window
     {
-        public Re_Result()
+        public Re_ResultDetailView(ReResultGroup reResultGroup)
         {
             InitializeComponent();
+            DataContext = new Re_ResultDetailViewModel(reResultGroup);
         }
     }
 }

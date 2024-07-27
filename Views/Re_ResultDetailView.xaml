@@ -1,0 +1,114 @@
+﻿<Window x:Class="QC_Management.Views.Re_ResultDetailView"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:QC_Management.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        mc:Ignorable="d"
+        Title="Re_ResultDetailView" Height="450" Width="800">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadCommand}">
+            </i:InvokeCommandAction>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"></RowDefinition>
+            <RowDefinition></RowDefinition>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*"></ColumnDefinition>
+                <ColumnDefinition ></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Grid Grid.Column="0">
+                <materialDesign:Card Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <Label Content="Thiết bị:" Margin="5"/>
+                        <Label Content="{Binding DeviceName}" Margin="5"/>
+                        <Label Content="Level:" Margin="5"/>
+                        <Label Content="{Binding LevelName}" Margin="5"/>
+                        <Label Content="Ngày" Margin="5"/>
+                        <DatePicker SelectedDate="{Binding Date}" Margin="5"/>
+                        <Label Content="Thời gian" Margin="5"/>
+                        <TextBox Text="{Binding Time}" Margin="5"/>
+                    </StackPanel>
+                </materialDesign:Card>
+            </Grid>
+            
+            <Grid Grid.Column="1">
+                <materialDesign:Card  Margin="5">
+                    <StackPanel Orientation="Horizontal">
+                        <Button Command="{Binding SaveCommand}" Content="Lưu" Margin="5" Width="100"/>
+                    </StackPanel>
+                </materialDesign:Card>
+            </Grid>
+           
+        </Grid>
+        
+        <Grid Grid.Row="1">
+            <!--<ListView ItemsSource="{Binding Results}" Margin="10">
+                <ListView.View>
+                    <GridView>
+                        <GridViewColumn Header="Test" 
+                                        DisplayMemberBinding="{Binding IdTestNavigation.Name}" Width="200"/>
+                        <GridViewColumn Header="Result" 
+                                        DisplayMemberBinding="{Binding Result}" Width="200"/>
+                        <GridViewColumn Header="Device"
+                                        DisplayMemberBinding="{Binding IdDeviceNavigation.Name}" Width="150"/>
+                        <GridViewColumn Header="Level" 
+                                        DisplayMemberBinding="{Binding IdLevelNavigation.Name}" Width="100"/>
+                        <GridViewColumn Header="Date" 
+                                        DisplayMemberBinding="{Binding Date}" Width="150"/>
+                        <GridViewColumn Header="Time" 
+                                        DisplayMemberBinding="{Binding Time}" Width="100"/>
+                    </GridView>
+                </ListView.View>
+            </ListView>-->
+
+            <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
+                        SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
+                        CanUserAddRows="False">
+                <DataGrid.Columns >
+                    
+                    <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False"
+                                        Binding="{Binding TestName}" IsReadOnly="True" />
+                    <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }"
+                                        CanUserSort="False" IsReadOnly="True" />
+                    <DataGridTextColumn Header="Mean" Binding="{Binding MeanApp }"
+                                        CanUserSort="False" IsReadOnly="True" />
+                    <DataGridTextColumn Header="SD" Binding="{Binding SdApp }" 
+                                        CanUserSort="False" IsReadOnly="True" />
+                    <DataGridTextColumn  Header="Kết quả" CanUserSort="False" 
+                                         IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
+
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="{x:Type TextBlock}">
+                                <Setter Property="Foreground" Value="Green" />
+                                <!--Màu mặc định-->
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                        <Setter Property="Foreground" Value="Red" />
+                                        <Setter Property="Background" Value="Yellow" />
+                                        <!--Thay đổi màu nền nếu ngoài 3 SD-->
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding isOut2SD}" Value="True">
+                                        <Setter Property="Foreground" Value="Red" />
+                                        <!--Thay đổi màu nền nếu ngoài 2 SD-->
+                                    </DataTrigger>
+                                </Style.Triggers>
+
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+    </Grid>
+</Window>
