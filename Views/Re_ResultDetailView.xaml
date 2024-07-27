@@ -5,7 +5,9 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QC_Management.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
-        Title="Re_ResultDetailView" Height="450" Width="800">
+        WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
+        Title="Danh sách kết quả QC" Height="450" Width="800">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -48,27 +50,8 @@
             </Grid>
            
         </Grid>
-        
-        <Grid Grid.Row="1">
-            <!--<ListView ItemsSource="{Binding Results}" Margin="10">
-                <ListView.View>
-                    <GridView>
-                        <GridViewColumn Header="Test" 
-                                        DisplayMemberBinding="{Binding IdTestNavigation.Name}" Width="200"/>
-                        <GridViewColumn Header="Result" 
-                                        DisplayMemberBinding="{Binding Result}" Width="200"/>
-                        <GridViewColumn Header="Device"
-                                        DisplayMemberBinding="{Binding IdDeviceNavigation.Name}" Width="150"/>
-                        <GridViewColumn Header="Level" 
-                                        DisplayMemberBinding="{Binding IdLevelNavigation.Name}" Width="100"/>
-                        <GridViewColumn Header="Date" 
-                                        DisplayMemberBinding="{Binding Date}" Width="150"/>
-                        <GridViewColumn Header="Time" 
-                                        DisplayMemberBinding="{Binding Time}" Width="100"/>
-                    </GridView>
-                </ListView.View>
-            </ListView>-->
 
+        <Grid Grid.Row="1">
             <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
                         SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
                         CanUserAddRows="False">

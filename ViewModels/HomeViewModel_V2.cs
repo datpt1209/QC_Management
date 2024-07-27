@@ -194,9 +194,6 @@ namespace QC_Management.ViewModels
         }
         public HomeViewModel_V2()
         {
-
-            QcManagmentContext DB = LoadNew();
-
             InitializeYAxisLabelFormatter();
 
             LoadedCommand = new RelayCommand<Test>((p) =>
@@ -266,7 +263,7 @@ namespace QC_Management.ViewModels
                         OnPropertyChanged(nameof(TestList));
 
                         // Set SelectedTest to the first test in the updated list or null if the list is empty
-                        SelectedTest = TestList.FirstOrDefault();
+                        //SelectedTest = TestList.FirstOrDefault();
                     }
                     else
                     {
@@ -312,52 +309,64 @@ namespace QC_Management.ViewModels
 
         private async void ViewChart()
         {
-            if (SelectedTest != null)
+            try
             {
-                Visibility1 = Visibility.Collapsed;
-                Visibility2 = Visibility.Collapsed;
-                Visibility3 = Visibility.Collapsed;
-                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate);
-
-                if (results.Count() == 0 || results == null)
+                if (SelectedDevice == null || SelectedTest == null)
                 {
-                    MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
-                 
                     return;
                 }
-                else
-                {
-                    var levelList = results.GroupBy(s => s.IdLevel);
-
-                    foreach (var resultByLevel in levelList)
+                    Visibility1 = Visibility.Collapsed;
+                    Visibility2 = Visibility.Collapsed;
+                    Visibility3 = Visibility.Collapsed;
+                    var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate);
+                    if (results.Count() == 0 || results == null)
                     {
-                        if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
-                        {
-                            var result = LoadChart1(resultByLevel);
-                            ChartValues1 = result.Item1;
-                            Visibility1 = result.Item2;
-                            Dates1 = result.Item3;
-                        }
-                        if (resultByLevel.Key == 2 || resultByLevel.Key == 5)
-                        {
-                            var result = LoadChart1(resultByLevel);
-                            ChartValues2 = result.Item1;
-                            Visibility2 = result.Item2;
-                            Dates2 = result.Item3;
-                        }
+                        MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                        if (resultByLevel.Key == 3 || resultByLevel.Key == 6)
-                        {
-                            var result = LoadChart1(resultByLevel);
-                            ChartValues3 = result.Item1;
-                            Visibility3 = result.Item2;
-                            Dates3 = result.Item3;
-                        }
-
+                        return;
                     }
-                    LoadChart(isCheck);
-                }
+
+                await Task.Run(() =>
+                {
+                        var levelList = results.GroupBy(s => s.IdLevel);
+
+                        foreach (var resultByLevel in levelList)
+                        {
+                            if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
+                            {
+                                var result = LoadChart1(resultByLevel);
+                                ChartValues1 = result.Item1;
+                                Visibility1 = result.Item2;
+                                Dates1 = result.Item3;
+                            }
+                            if (resultByLevel.Key == 2 || resultByLevel.Key == 5)
+                            {
+                                var result = LoadChart1(resultByLevel);
+                                ChartValues2 = result.Item1;
+                                Visibility2 = result.Item2;
+                                Dates2 = result.Item3;
+                            }
+
+                            if (resultByLevel.Key == 3 || resultByLevel.Key == 6)
+                            {
+                                var result = LoadChart1(resultByLevel);
+                                ChartValues3 = result.Item1;
+                                Visibility3 = result.Item2;
+                                Dates3 = result.Item3;
+                            }
+
+                        }
+                       
+                    // Các xử lý khác
+                });
+                LoadChart(isCheck);
+
             }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Lỗi khi tải biểu đồ: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            
         }
 
         private Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>> LoadChart1(IGrouping<int, Result> results)
@@ -445,7 +454,7 @@ namespace QC_Management.ViewModels
         }
         */
 
-        private QcManagmentContext LoadNew()
+        private void LoadNew()
         {
             var DB = DataProvider.Ins.DB;
             List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
@@ -454,20 +463,22 @@ namespace QC_Management.ViewModels
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
             UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
-            // Removed the line that sets SelectedDevice to the first device in the list
             TestListDB = new ObservableCollection<Test>(DB.Tests);
-            // TestList initialization is now dependent on whether a device is selected
-            TestList = new ObservableCollection<Test>();
+            if(SelectedDevice == null)
+            {
+                TestList = new ObservableCollection<Test>();
+            }
+            else
+            {
+                TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+            }
             ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
             ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-            // Since TestList is now initially empty, SelectedTest is set to null
-            SelectedTest = null;
+            //SelectedTest = null;
             Visibility1 = Visibility.Collapsed;
             Visibility2 = Visibility.Collapsed;
             Visibility3 = Visibility.Collapsed;
             isCheck = false;
-
-            return DB;
         }
         private double CalculateMean(ObservableCollection<double> values)
         {

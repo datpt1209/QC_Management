@@ -105,7 +105,7 @@ namespace QC_Management.ViewModels
                 DeviceName = reResultGroup.DeviceName;
                 LevelName = reResultGroup.LevelName;
                 Date = reResultGroup.DateTime.Date;
-                Time = reResultGroup.DateTime.TimeOfDay.ToString();
+                Time = DateTime.Now.ToString("HH:mm:ss");
                 var indexList = DataProvider.Ins.DB.Results.Where(s => s.IdDevice == 20 && s.DateRun.Date == reResultGroup.DateTime.Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
 
                 if (indexList == null || indexList.Count() == 0)

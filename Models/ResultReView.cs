@@ -26,7 +26,7 @@ namespace QC_Management.Models
                 else
                 {
                     isOutOfRange = false;
-                    if(value > MeanApp + 2*SdApp || value < MeanApp - 2 * MeanNSX)
+                    if(value > MeanApp + 2*SdApp || value < MeanApp - 2 * SdApp)
                     {
                         isOut2SD = true;
                     }
