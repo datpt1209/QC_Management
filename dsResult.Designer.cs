@@ -317,7 +317,7 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnComment;
             
-            private global::System.Data.DataColumn columnId;
+            private global::System.Data.DataColumn columnDateRunString;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -506,9 +506,9 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public global::System.Data.DataColumn IdColumn {
+            public global::System.Data.DataColumn DateRunStringColumn {
                 get {
-                    return this.columnId;
+                    return this.columnDateRunString;
                 }
             }
             
@@ -569,7 +569,7 @@ namespace QC_Management {
                         string SDPXN, 
                         string Index, 
                         string Comment, 
-                        string Id) {
+                        string DateRunString) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -591,7 +591,7 @@ namespace QC_Management {
                         SDPXN,
                         Index,
                         Comment,
-                        Id};
+                        DateRunString};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -633,7 +633,7 @@ namespace QC_Management {
                 this.columnSDPXN = base.Columns["SDPXN"];
                 this.columnIndex = base.Columns["Index"];
                 this.columnComment = base.Columns["Comment"];
-                this.columnId = base.Columns["Id"];
+                this.columnDateRunString = base.Columns["DateRunString"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -677,8 +677,8 @@ namespace QC_Management {
                 base.Columns.Add(this.columnIndex);
                 this.columnComment = new global::System.Data.DataColumn("Comment", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnComment);
-                this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
-                base.Columns.Add(this.columnId);
+                this.columnDateRunString = new global::System.Data.DataColumn("DateRunString", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDateRunString);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1125,17 +1125,17 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public string Id {
+            public string DateRunString {
                 get {
                     try {
-                        return ((string)(this[this.tabledtResult.IdColumn]));
+                        return ((string)(this[this.tabledtResult.DateRunStringColumn]));
                     }
                     catch (global::System.InvalidCastException e) {
-                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'dtResult\' is DBNull.", e);
+                        throw new global::System.Data.StrongTypingException("The value for column \'DateRunString\' in table \'dtResult\' is DBNull.", e);
                     }
                 }
                 set {
-                    this[this.tabledtResult.IdColumn] = value;
+                    this[this.tabledtResult.DateRunStringColumn] = value;
                 }
             }
             
@@ -1369,14 +1369,14 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public bool IsIdNull() {
-                return this.IsNull(this.tabledtResult.IdColumn);
+            public bool IsDateRunStringNull() {
+                return this.IsNull(this.tabledtResult.DateRunStringColumn);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
-            public void SetIdNull() {
-                this[this.tabledtResult.IdColumn] = global::System.Convert.DBNull;
+            public void SetDateRunStringNull() {
+                this[this.tabledtResult.DateRunStringColumn] = global::System.Convert.DBNull;
             }
         }
         

@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Windows;
 
@@ -20,6 +21,10 @@ namespace QC_Management
         private bool isCheck;
         public ChartReportView(List<Result> resultList, bool isCheck)
         {
+            CultureInfo cultureInfo = new CultureInfo("vi-VN");
+            CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+            CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
             InitializeComponent();
             this.resultList = resultList.ToList();
             this.isCheck = isCheck;
@@ -41,6 +46,7 @@ namespace QC_Management
                      Result = s.Result1,
                      UserName = s.IdUserNavigation.DisplayName,
                      DateRun = s.DateRun,
+                     DateRunString = s.DateRun.ToString("dd/MM/yyyy"),
                      Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                      Mean = s.IdControlDetailNavigation.MeanNsx,
                      SD = s.IdControlDetailNavigation.SdNsx,
@@ -68,7 +74,8 @@ namespace QC_Management
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
                      UserName = s.IdUserNavigation.DisplayName,
-                     DateRun = s.DateRun,
+                     DateRun = s.DateRun.Date,
+                     DateRunString = s.DateRun.ToString("dd/MM/yyyy"),
                      Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                      Mean = s.IdControlDetailNavigation.MeanNsx,
                      SD = s.IdControlDetailNavigation.SdNsx,
@@ -84,9 +91,11 @@ namespace QC_Management
                     .ThenBy(s=>s.Index)
                     .ToList();
             }
-           
-           
+
+
+            //var reportViewer = new ReportViewer();
             reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ChartReport.rdlc";
+         
             ReportDataSource rds = new ReportDataSource();
             rds.Name = "DataSet1";
             rds.Value = reportSource;

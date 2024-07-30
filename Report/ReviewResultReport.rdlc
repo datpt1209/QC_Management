@@ -788,9 +788,9 @@
             </Paragraphs>
             <rd:DefaultName>Textbox74</rd:DefaultName>
             <Top>0.14111cm</Top>
-            <Left>7.69635cm</Left>
+            <Left>7.27302cm</Left>
             <Height>0.6cm</Height>
-            <Width>6.37016cm</Width>
+            <Width>3.43328cm</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -802,8 +802,48 @@
               <PaddingBottom>2pt</PaddingBottom>
             </Style>
           </Textbox>
+          <Textbox Name="Textbox3">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Ngày thực hiện</Value>
+                    <Style>
+                      <FontWeight>Bold</FontWeight>
+                    </Style>
+                  </TextRun>
+                  <TextRun>
+                    <Value>: </Value>
+                    <Style />
+                  </TextRun>
+                  <TextRun>
+                    <Value>= Fields!DateRun.Value &amp; " : " &amp; Fields!Time.Value.ToString()</Value>
+                    <Style />
+                  </TextRun>
+                </TextRuns>
+                <Style />
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox3</rd:DefaultName>
+            <Top>0.14111cm</Top>
+            <Left>11.02904cm</Left>
+            <Height>0.6cm</Height>
+            <Width>8.22228cm</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
         </ReportItems>
-        <Height>4.89657cm</Height>
+        <Height>4.84365cm</Height>
         <Style />
       </Body>
       <Width>20.46875cm</Width>
@@ -924,7 +964,7 @@
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.17855cm</Height>
+          <Height>1.21383cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -955,10 +995,10 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PageNumber</rd:DefaultName>
-              <Top>0.28222cm</Top>
-              <Left>17.73744cm</Left>
-              <Height>0.6cm</Height>
-              <Width>1.85848cm</Width>
+              <Top>0.07056cm</Top>
+              <Left>16.54681cm</Left>
+              <Height>0.85223cm</Height>
+              <Width>2.70451cm</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -990,9 +1030,9 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox11</rd:DefaultName>
-              <Top>0.28222cm</Top>
-              <Left>0.60537cm</Left>
-              <Height>0.6cm</Height>
+              <Top>0.10583cm</Top>
+              <Left>0.60536cm</Left>
+              <Height>0.81695cm</Height>
               <Width>6.2465cm</Width>
               <ZIndex>1</ZIndex>
               <Style>

@@ -8,6 +8,7 @@ using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
@@ -237,6 +238,9 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
+               
+
+                // Thiết lập dữ liệu cho báo cáo
                 var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
                 ChartReportView rp = new ChartReportView(results, isCheck);
                 rp.ShowDialog();

@@ -93,8 +93,8 @@
           <DataField>Comment</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
-        <Field Name="Id">
-          <DataField>Id</DataField>
+        <Field Name="DateRunString">
+          <DataField>DateRunString</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
       </Fields>
@@ -154,7 +154,7 @@
                 <ChartMember>
                   <Group Name="Chart2_CategoryGroup">
                     <GroupExpressions>
-                      <GroupExpression>=Fields!DateRun.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
+                      <GroupExpression>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
                     </GroupExpressions>
                   </Group>
                   <SortExpressions>
@@ -162,7 +162,7 @@
                       <Value>=Fields!DateRun.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-                  <Label>=Fields!DateRun.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
+                  <Label>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
                 </ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>

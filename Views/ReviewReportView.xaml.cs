@@ -37,7 +37,7 @@ namespace QC_Management
                     Index = s.IndexQc,
                     UserName = s.IdUserNavigation.DisplayName,
                     DateRun = s.DateRun.ToShortDateString(),
-                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
+                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("HH:mm:ss"),
                     Mean = s.IdControlDetailNavigation.MeanNsx,
                     SD = s.IdControlDetailNavigation.SdNsx,
                     Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
