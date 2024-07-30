@@ -89,6 +89,14 @@
           <DataField>Index</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="Comment">
+          <DataField>Comment</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -146,7 +154,7 @@
                 <ChartMember>
                   <Group Name="Chart2_CategoryGroup">
                     <GroupExpressions>
-                      <GroupExpression>=Fields!DateRun.Value</GroupExpression>
+                      <GroupExpression>=Fields!DateRun.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
                     </GroupExpressions>
                   </Group>
                   <SortExpressions>
@@ -154,7 +162,7 @@
                       <Value>=Fields!DateRun.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-                  <Label>=Fields!DateRun.Value</Label>
+                  <Label>=Fields!DateRun.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
                 </ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>
@@ -245,6 +253,7 @@
                         <Style>None</Style>
                       </Border>
                       <FontSize>6pt</FontSize>
+                      <Format>dd/MM/yyyy - #</Format>
                     </Style>
                     <ChartAxisTitle>
                       <Caption>Ngày thực hiện</Caption>
@@ -292,7 +301,6 @@
                     </ChartMinorTickMarks>
                     <MarksAlwaysAtPlotEdge>true</MarksAlwaysAtPlotEdge>
                     <CrossAt>NaN</CrossAt>
-                    <Scalar>true</Scalar>
                     <Minimum>NaN</Minimum>
                     <Maximum>NaN</Maximum>
                     <PreventWordWrap>true</PreventWordWrap>

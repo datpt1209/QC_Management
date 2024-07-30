@@ -200,23 +200,23 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 IndexList = new List<int?>();
-                int index = 0;
+                //int index = 0;
                 var indexList = List.Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate && s.IdLevel == SelectedLevel.Id).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
                 if (indexList == null || indexList.Count() == 0)
                 {
                     IndexList.Add(1);
-                    SelectedIndex = (int)IndexList[index];
-                    index++;
+                    SelectedIndex = (int)IndexList[IndexList.Count() - 1];
+                    
                 }
                 else
                 {
                     foreach (var item in indexList)
                     {
                         IndexList.Add(item);
-                        index++;
+                        
                     }
-                    IndexList.Add(index + 1);
-                    SelectedIndex = (int)IndexList[index];
+                    IndexList.Add(indexList.Max() + 1);
+                    SelectedIndex = (int)IndexList[IndexList.Count() - 1];
                 }
 
                 ResutlViewList = new ObservableCollection<ResultReView>();

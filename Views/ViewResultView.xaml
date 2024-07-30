@@ -101,7 +101,10 @@
                             <Button Command="{Binding ViewCommand}" Content="Xem" Margin="5" Width="100"/>
                             <Button Command="{Binding PrintCommand}" Content="In"  Margin="5" Width="100"/>
                             <Button Command="{Binding EditCommand}" Background="Orange"  
-                                    Margin="5" Content="Sửa" 
+                                    Margin="5" Content="Cập nhật" 
+                                    Width="100"/>
+                            <Button Command="{Binding DeleteCommand}" Background="OrangeRed"  
+                                    Margin="5" Content="Xóa" 
                                     Width="100"/>
                         </StackPanel>
                     </materialDesign:Card>
@@ -116,7 +119,7 @@
                           CanUserAddRows="False">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.IdControlInfoNavigation.Lot }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.Lot }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanApp }" IsReadOnly="True" />
                         <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdApp }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Kết quả" IsReadOnly="False" Binding="{Binding Result1}">

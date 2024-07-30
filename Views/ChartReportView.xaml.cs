@@ -14,21 +14,6 @@ namespace QC_Management
     /// Interaction logic for ReportView.xaml
     /// </summary>
 
-    public class ReportSource
-    {
-        public string NameDevice { get; set; }
-        public string LOTQC { get; set; }
-        public string NameTest { get; set; }
-        public string Level { get; set; }
-        public double Result { get; set; }
-        public string UserName { get; set; }
-        public string DateRun { get; set; }
-        public string Time { get; set; }
-        public double Mean { get; set; }
-        public double SD { get; set; }
-        public double SDs { get; set; }
-        public string Comment { get; set; }
-    }
     public partial class ChartReportView : Window
     {
         private List<Result> resultList;
@@ -36,7 +21,7 @@ namespace QC_Management
         public ChartReportView(List<Result> resultList, bool isCheck)
         {
             InitializeComponent();
-            this.resultList = resultList;
+            this.resultList = resultList.ToList();
             this.isCheck = isCheck;
         }
 
@@ -47,6 +32,7 @@ namespace QC_Management
             {
                  reportSource = resultList.Select(s => new 
                 {
+                     Id = s.Id,
                      NameDevice = s.IdDeviceNavigation.Name,
                      Index = s.IndexQc,
                      LOTQC = s.IdControlDetailNavigation.Lot,
@@ -54,7 +40,7 @@ namespace QC_Management
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
                      UserName = s.IdUserNavigation.DisplayName,
-                     DateRun = s.DateRun.ToShortDateString() + $" ({s.IndexQc})",
+                     DateRun = s.DateRun,
                      Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                      Mean = s.IdControlDetailNavigation.MeanNsx,
                      SD = s.IdControlDetailNavigation.SdNsx,
@@ -65,12 +51,16 @@ namespace QC_Management
                      ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
-                 });
+                 }).OrderBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s=>s.Index)
+                    .ToList();
             }
             else
             {
                  reportSource = resultList.Select(s => new 
                 {
+                     Id = s.Id,
                      NameDevice = s.IdDeviceNavigation.Name,
                      Index = s.IndexQc,
                      LOTQC = s.IdControlDetailNavigation.Lot,
@@ -78,7 +68,7 @@ namespace QC_Management
                      Level = s.IdLevelNavigation.Name,
                      Result = s.Result1,
                      UserName = s.IdUserNavigation.DisplayName,
-                     DateRun = s.DateRun.ToShortDateString() + $" ({s.IndexQc})",
+                     DateRun = s.DateRun,
                      Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                      Mean = s.IdControlDetailNavigation.MeanNsx,
                      SD = s.IdControlDetailNavigation.SdNsx,
@@ -89,7 +79,10 @@ namespace QC_Management
                      ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
-                 });
+                 }).OrderBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s=>s.Index)
+                    .ToList();
             }
            
            

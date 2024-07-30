@@ -6,6 +6,7 @@ using System.Linq;
 using System.Security.AccessControl;
 using System.Windows;
 using System.Windows.Input;
+using XAct.Library.Settings;
 
 namespace QC_Management.ViewModels
 {
@@ -38,6 +39,7 @@ namespace QC_Management.ViewModels
         public ICommand LoadedCommand { get; set; }
         public ICommand PrintCommand { get; set; }
         public ICommand EditCommand { get; set; }
+        public ICommand DeleteCommand { get; set; }
         public ICommand LevelChangedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
 
@@ -63,8 +65,10 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private int _SelectedIndex;
-        public int SelectedIndex
+       
+
+        private int? _SelectedIndex;
+        public int? SelectedIndex
         {
             get => _SelectedIndex;
             set
@@ -218,6 +222,37 @@ namespace QC_Management.ViewModels
                 }
             });
 
+            DeleteCommand = new RelayCommand<object>((p) =>
+            {
+                if (ResultViewList.Count == 0 || ResultViewList == null) return false;
+                else
+                    return true;
+
+            }, (p) =>
+            {
+                var deleteItem = ResultViewList.ToList();
+
+                MessageBoxResult result = MessageBox.Show($"Bạn có muốn xóa các kết quả máy: {SelectedDevice.Name}, Level: {SelectedLevel.Name}, Ngày: {SelectedDate.Date} Index: {SelectedIndex.ToString()}?", "Confirmation", MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        DataProvider.Ins.DB.RemoveRange(deleteItem);
+                        DataProvider.Ins.DB.SaveChanges();
+                        MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        Reload(DB);
+                        FilterResults();
+
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                    }
+                }
+                else return;
+
+            });
+
             LevelChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 IndexList = new List<int?>();
@@ -226,14 +261,7 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var list = List.Where(s => s.IdDevice == SelectedDevice.Id 
-                && s.DateRun == SelectedDate 
-                && s.IdLevel == SelectedLevel.Id)
-                .GroupBy(s => s.IndexQc).Select(s => s.Key);
-                if (list != null)
-                {
-                    IndexList = list.ToList();
-                }
+                IndexList = LoadIndexList();
             });
 
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -247,6 +275,47 @@ namespace QC_Management.ViewModels
 
         }
 
+        private List<int?> LoadIndexList()
+        {
+            var IndexList = new List<int?>();
+            var listTest = List.Where(s => s.IdDevice == SelectedDevice.Id
+                            && s.DateRun == SelectedDate
+                            && s.IdLevel == SelectedLevel.Id);
+
+            var list = List.Where(s => s.IdDevice == SelectedDevice.Id
+            && s.DateRun == SelectedDate
+            && s.IdLevel == SelectedLevel.Id)
+            .GroupBy(s => s.IndexQc).Select(s => s.Key);
+            if (list != null)
+            {
+                IndexList = list.ToList();
+            }
+            return IndexList;
+        }
+
+        private void FilterResults()
+        {
+            if (SelectedDevice == null || SelectedLevel == null || SelectedDate == null) return;
+
+            if (SelectedIndex == 0)
+            {
+                ResultViewList = new ObservableCollection<Result>(List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdLevel == SelectedLevel.Id && s.DateRun == SelectedDate).ToList());
+            }
+            else
+            {
+                ResultViewList = new ObservableCollection<Result>(List.Where(s => s.IdDevice == SelectedDevice.Id
+                && s.IdLevel == SelectedLevel.Id
+                && s.DateRun == SelectedDate && s.IndexQc == SelectedIndex).ToList());
+            }
+
+            if (ResultViewList.Count() == 0 || ResultViewList == null)
+            {
+                SelectedIndex = null;
+                IndexList = LoadIndexList();
+               
+                MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
         public void LoadNew(QcManagmentContext DB)
         {
             if(UserManager.Instance.CurrentUser.Role == 1)
@@ -264,6 +333,14 @@ namespace QC_Management.ViewModels
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
             UserList = new ObservableCollection<User>(DB.Users);
+        }
+        public void Reload(QcManagmentContext DB)
+        {
+            List = new ObservableCollection<Result>(DB.Results);
+            //SelectedIndex = null;
+            //SelectedDevice = null;
+            //SelectedDate = DateTime.Now;
+            ResultViewList = new ObservableCollection<Result>();
         }
     }
 }

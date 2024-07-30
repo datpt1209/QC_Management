@@ -278,7 +278,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= Round(Fields!Mean.Value - 2*Fields!SD.Value,2) &amp; " - " &amp;  Round(Fields!Mean.Value + 2*Fields!SD.Value,2)</Value>
+                                  <Value>= Round(Fields!MeanPXN.Value - 2*Fields!SDPXN.Value,2) &amp; " - " &amp;  Round(Fields!MeanPXN.Value + 2*Fields!SDPXN.Value,2)</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -342,7 +342,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf(Fields!Result.Value &gt; (Fields!Mean.Value + 2*Fields!SD.Value) or Fields!Result.Value &lt; (Fields!Mean.Value - 2*Fields!SD.Value), "Không đạt", "Đạt")</Value>
+                                  <Value>= IIf(Fields!Result.Value &gt; (Fields!MeanPXN.Value + 2*Fields!SDPXN.Value) or Fields!Result.Value &lt; (Fields!MeanPXN.Value - 2*Fields!SDPXN.Value), "Không đạt", "Đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>

@@ -20,7 +20,7 @@ namespace QC_Management
         public ReportView(List<Result> resultList, bool isCheck)
         {
             InitializeComponent();
-            this.resultList = resultList;
+            this.resultList = resultList.ToList();
             this.isCheck = isCheck;
 
         }
@@ -38,7 +38,7 @@ namespace QC_Management
                     Result = s.Result1,
                     Index = s.IndexQc,
                     UserName = s.IdUserNavigation.DisplayName,
-                    DateRun = s.DateRun.ToShortDateString(),
+                    DateRun = s.DateRun,
                     Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                     Mean = s.IdControlDetailNavigation.MeanNsx,
                     SD = s.IdControlDetailNavigation.SdNsx,
@@ -51,7 +51,11 @@ namespace QC_Management
                     ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                     SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
 
-                });
+                })
+                    .OrderBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s => s.Index)
+                    .ToList();
             }
             else
             {
@@ -64,20 +68,24 @@ namespace QC_Management
                     Result = s.Result1,
                     Index = s.IndexQc,
                     UserName = s.IdUserNavigation.DisplayName,
-                    DateRun = s.DateRun.ToShortDateString(),
+                    DateRun = s.DateRun,
                     Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                     Mean = s.IdControlDetailNavigation.MeanNsx,
                     SD = s.IdControlDetailNavigation.SdNsx,
                     Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
                     WestgardRule = s.WestgardRule,
                     Comment = s.Comment,
-                    SDPXN = (double) s.IdControlDetailNavigation.SdApp,
-                    MeanPXN =(double) s.IdControlDetailNavigation.MeanApp,
+                    SDPXN = (double)s.IdControlDetailNavigation.SdApp,
+                    MeanPXN = (double)s.IdControlDetailNavigation.MeanApp,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                     ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                     SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
 
-                });
+                })
+                    .OrderBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s => s.Index)
+                    .ToList();
             }
             reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ResultsReport.rdlc";
             ReportDataSource rds = new ReportDataSource();
