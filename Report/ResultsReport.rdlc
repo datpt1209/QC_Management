@@ -112,18 +112,18 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>2.10556cm</Width>
+                  <Width>2.10791cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.92221cm</Width>
+                  <Width>1.92456cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.9534cm</Width>
+                  <Width>2.95575cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
                 <TablixRow>
-                  <Height>1.108cm</Height>
+                  <Height>1.09742cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -152,6 +152,7 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox45</rd:DefaultName>
+                          <RepeatWith>Tablix6</RepeatWith>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -186,6 +187,7 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox47</rd:DefaultName>
+                          <RepeatWith>Tablix6</RepeatWith>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -220,6 +222,7 @@
                             </Paragraph>
                           </Paragraphs>
                           <rd:DefaultName>Textbox4</rd:DefaultName>
+                          <RepeatWith>Tablix6</RepeatWith>
                           <Style>
                             <Border>
                               <Style>Solid</Style>
@@ -236,7 +239,7 @@
                   </TablixCells>
                 </TablixRow>
                 <TablixRow>
-                  <Height>0.6cm</Height>
+                  <Height>0.58942cm</Height>
                   <TablixCells>
                     <TablixCell>
                       <CellContents>
@@ -261,6 +264,7 @@
                             <Border>
                               <Style>Solid</Style>
                             </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
                             <PaddingLeft>2pt</PaddingLeft>
                             <PaddingRight>2pt</PaddingRight>
                             <PaddingTop>2pt</PaddingTop>
@@ -349,7 +353,9 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixMembers>
-                    <TablixMember />
+                    <TablixMember>
+                      <FixedData>true</FixedData>
+                    </TablixMember>
                   </TablixMembers>
                 </TablixMember>
                 <TablixMember />
@@ -360,7 +366,7 @@
               <TablixMembers>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>1.22471cm</Size>
+                    <Size>1.22706cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox69">
                         <CanGrow>true</CanGrow>
@@ -381,6 +387,7 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox69</rd:DefaultName>
+                        <RepeatWith>Tablix6</RepeatWith>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -397,7 +404,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>2.27834cm</Size>
+                        <Size>2.28069cm</Size>
                         <CellContents>
                           <Textbox Name="Textbox66">
                             <CanGrow>true</CanGrow>
@@ -418,6 +425,7 @@
                               </Paragraph>
                             </Paragraphs>
                             <rd:DefaultName>Textbox66</rd:DefaultName>
+                            <RepeatWith>Tablix6</RepeatWith>
                             <Style>
                               <Border>
                                 <Style>Solid</Style>
@@ -434,7 +442,7 @@
                       <TablixMembers>
                         <TablixMember>
                           <TablixHeader>
-                            <Size>2.18255cm</Size>
+                            <Size>2.1849cm</Size>
                             <CellContents>
                               <Textbox Name="Textbox72">
                                 <CanGrow>true</CanGrow>
@@ -455,6 +463,7 @@
                                   </Paragraph>
                                 </Paragraphs>
                                 <rd:DefaultName>Textbox72</rd:DefaultName>
+                                <RepeatWith>Tablix6</RepeatWith>
                                 <Style>
                                   <Border>
                                     <Style>Solid</Style>
@@ -471,7 +480,7 @@
                           <TablixMembers>
                             <TablixMember>
                               <TablixHeader>
-                                <Size>2.5cm</Size>
+                                <Size>2.50235cm</Size>
                                 <CellContents>
                                   <Textbox Name="Textbox3">
                                     <CanGrow>true</CanGrow>
@@ -492,6 +501,7 @@
                                       </Paragraph>
                                     </Paragraphs>
                                     <rd:DefaultName>Textbox3</rd:DefaultName>
+                                    <RepeatWith>Tablix6</RepeatWith>
                                     <Style>
                                       <Border>
                                         <Style>Solid</Style>
@@ -506,14 +516,20 @@
                                 </CellContents>
                               </TablixHeader>
                               <TablixMembers>
-                                <TablixMember />
+                                <TablixMember>
+                                  <RepeatOnNewPage>true</RepeatOnNewPage>
+                                </TablixMember>
                               </TablixMembers>
+                              <RepeatOnNewPage>true</RepeatOnNewPage>
                             </TablixMember>
                           </TablixMembers>
+                          <RepeatOnNewPage>true</RepeatOnNewPage>
                         </TablixMember>
                       </TablixMembers>
+                      <RepeatOnNewPage>true</RepeatOnNewPage>
                     </TablixMember>
                   </TablixMembers>
+                  <RepeatOnNewPage>true</RepeatOnNewPage>
                 </TablixMember>
                 <TablixMember>
                   <Group Name="DateRun">
@@ -527,7 +543,7 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixHeader>
-                    <Size>1.22471cm</Size>
+                    <Size>1.22706cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox71">
                         <CanGrow>true</CanGrow>
@@ -562,7 +578,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>2.27834cm</Size>
+                        <Size>2.28069cm</Size>
                         <CellContents>
                           <Textbox Name="DateRun">
                             <CanGrow>true</CanGrow>
@@ -607,7 +623,7 @@
                             </SortExpression>
                           </SortExpressions>
                           <TablixHeader>
-                            <Size>2.18255cm</Size>
+                            <Size>2.1849cm</Size>
                             <CellContents>
                               <Textbox Name="UserName1">
                                 <CanGrow>true</CanGrow>
@@ -652,7 +668,7 @@
                                 </SortExpression>
                               </SortExpressions>
                               <TablixHeader>
-                                <Size>2.5cm</Size>
+                                <Size>2.50235cm</Size>
                                 <CellContents>
                                   <Textbox Name="LOTQC1">
                                     <CanGrow>true</CanGrow>
@@ -698,15 +714,21 @@
                 </TablixMember>
               </TablixMembers>
             </TablixRowHierarchy>
+            <RepeatRowHeaders>true</RepeatRowHeaders>
+            <FixedRowHeaders>true</FixedRowHeaders>
             <DataSetName>DataSet1</DataSetName>
-            <Top>2.89361cm</Top>
-            <Left>0.86052cm</Left>
-            <Height>1.708cm</Height>
-            <Width>15.16677cm</Width>
+            <Top>3.06808cm</Top>
+            <Left>1.1498cm</Left>
+            <Height>1.68683cm</Height>
+            <Width>15.18324cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <PaddingLeft>3pt</PaddingLeft>
+              <PaddingRight>3pt</PaddingRight>
+              <PaddingTop>3pt</PaddingTop>
+              <PaddingBottom>3pt</PaddingBottom>
             </Style>
           </Tablix>
           <Textbox Name="Textbox74">
@@ -734,7 +756,7 @@
             <Top>0.14111cm</Top>
             <Left>1.1498cm</Left>
             <Height>0.6cm</Height>
-            <Width>5.39632cm</Width>
+            <Width>6.36999cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
               <Border>
@@ -754,7 +776,10 @@
                 <TextRuns>
                   <TextRun>
                     <Value>Người xem xét</Value>
-                    <Style />
+                    <Style>
+                      <FontFamily />
+                      <FontSize>11pt</FontSize>
+                    </Style>
                   </TextRun>
                 </TextRuns>
                 <Style>
@@ -763,15 +788,16 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>5.60185cm</Top>
-            <Left>13.45995cm</Left>
+            <Top>5.67241cm</Top>
+            <Left>14.85881cm</Left>
             <Height>0.6cm</Height>
-            <Width>4.55317cm</Width>
+            <Width>2.99213cm</Width>
             <ZIndex>2</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <VerticalAlign>Top</VerticalAlign>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
               <PaddingTop>2pt</PaddingTop>
@@ -786,22 +812,27 @@
                 <TextRuns>
                   <TextRun>
                     <Value>="Ngày " &amp; Day(Now()) &amp; " tháng " &amp; Month(Now()) &amp; " năm " &amp; Year(Now())</Value>
-                    <Style />
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                    </Style>
                   </TextRun>
                 </TextRuns>
-                <Style />
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
-            <Top>4.89602cm</Top>
-            <Left>12.65537cm</Left>
+            <Top>4.96658cm</Top>
+            <Left>13.29037cm</Left>
             <Height>0.6cm</Height>
-            <Width>6.59595cm</Width>
+            <Width>5.96095cm</Width>
             <ZIndex>3</ZIndex>
             <Style>
               <Border>
                 <Style>None</Style>
               </Border>
+              <VerticalAlign>Bottom</VerticalAlign>
               <PaddingLeft>2pt</PaddingLeft>
               <PaddingRight>2pt</PaddingRight>
               <PaddingTop>2pt</PaddingTop>
@@ -838,9 +869,9 @@
             </Paragraphs>
             <rd:DefaultName>Textbox77</rd:DefaultName>
             <Top>0.14111cm</Top>
-            <Left>6.72251cm</Left>
+            <Left>8.21378cm</Left>
             <Height>0.6cm</Height>
-            <Width>12.49353cm</Width>
+            <Width>11.00226cm</Width>
             <ZIndex>4</ZIndex>
             <Style>
               <Border>
@@ -1420,7 +1451,7 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>0.07938cm</Width>
+                  <Width>0.09761cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -1553,7 +1584,7 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixHeader>
-                    <Size>1.30923cm</Size>
+                    <Size>1.32746cm</Size>
                     <CellContents>
                       <Textbox Name="Level2">
                         <CanGrow>true</CanGrow>
@@ -1597,7 +1628,7 @@
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.75208cm</Size>
+                        <Size>1.77031cm</Size>
                         <CellContents>
                           <Textbox Name="LOTQC2">
                             <CanGrow>true</CanGrow>
@@ -1631,7 +1662,7 @@
                       <TablixMembers>
                         <TablixMember>
                           <TablixHeader>
-                            <Size>2.67604cm</Size>
+                            <Size>2.69427cm</Size>
                             <CellContents>
                               <Textbox Name="ExpirationDate2">
                                 <CanGrow>true</CanGrow>
@@ -1687,7 +1718,7 @@
                                     </SortExpression>
                                   </SortExpressions>
                                   <TablixHeader>
-                                    <Size>1.58063cm</Size>
+                                    <Size>1.59886cm</Size>
                                     <CellContents>
                                       <Textbox Name="Mean12">
                                         <CanGrow>true</CanGrow>
@@ -1721,7 +1752,7 @@
                                   <TablixMembers>
                                     <TablixMember>
                                       <TablixHeader>
-                                        <Size>1.46576cm</Size>
+                                        <Size>1.48399cm</Size>
                                         <CellContents>
                                           <Textbox Name="SD12">
                                             <CanGrow>true</CanGrow>
@@ -1755,7 +1786,7 @@
                                       <TablixMembers>
                                         <TablixMember>
                                           <TablixHeader>
-                                            <Size>1.78797cm</Size>
+                                            <Size>1.8062cm</Size>
                                             <CellContents>
                                               <Textbox Name="MeanPXN2">
                                                 <CanGrow>true</CanGrow>
@@ -1789,7 +1820,7 @@
                                           <TablixMembers>
                                             <TablixMember>
                                               <TablixHeader>
-                                                <Size>1.63998cm</Size>
+                                                <Size>1.65821cm</Size>
                                                 <CellContents>
                                                   <Textbox Name="SDPXN2">
                                                     <CanGrow>true</CanGrow>
@@ -1823,7 +1854,7 @@
                                               <TablixMembers>
                                                 <TablixMember>
                                                   <TablixHeader>
-                                                    <Size>1.52633cm</Size>
+                                                    <Size>1.54456cm</Size>
                                                     <CellContents>
                                                       <Textbox Name="Textbox17">
                                                         <CanGrow>true</CanGrow>
@@ -1857,7 +1888,7 @@
                                                   <TablixMembers>
                                                     <TablixMember>
                                                       <TablixHeader>
-                                                        <Size>1.5792cm</Size>
+                                                        <Size>1.59743cm</Size>
                                                         <CellContents>
                                                           <Textbox Name="Mean14">
                                                             <CanGrow>true</CanGrow>
@@ -1891,7 +1922,7 @@
                                                       <TablixMembers>
                                                         <TablixMember>
                                                           <TablixHeader>
-                                                            <Size>1.52633cm</Size>
+                                                            <Size>1.54456cm</Size>
                                                             <CellContents>
                                                               <Textbox Name="SD14">
                                                                 <CanGrow>true</CanGrow>
@@ -1925,7 +1956,7 @@
                                                           <TablixMembers>
                                                             <TablixMember>
                                                               <TablixHeader>
-                                                                <Size>1.43259cm</Size>
+                                                                <Size>1.45082cm</Size>
                                                                 <CellContents>
                                                                   <Textbox Name="Textbox13">
                                                                     <CanGrow>true</CanGrow>
@@ -1985,10 +2016,10 @@
               </TablixMembers>
             </TablixRowHierarchy>
             <DataSetName>DataSet1</DataSetName>
-            <Top>0.79756cm</Top>
-            <Left>0.8958cm</Left>
+            <Top>0.83989cm</Top>
+            <Left>1.1498cm</Left>
             <Height>1.835cm</Height>
-            <Width>18.35552cm</Width>
+            <Width>18.57424cm</Width>
             <ZIndex>5</ZIndex>
             <Style>
               <Border>
@@ -1997,13 +2028,13 @@
             </Style>
           </Tablix>
         </ReportItems>
-        <Height>6.37824cm</Height>
+        <Height>6.89682cm</Height>
         <Style />
       </Body>
-      <Width>22.40642cm</Width>
+      <Width>20.1397cm</Width>
       <Page>
         <PageHeader>
-          <Height>2.70792cm</Height>
+          <Height>2.81375cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -2012,7 +2043,7 @@
               <Value>ẢnhHeaderLogoBVTA</Value>
               <Sizing>FitProportional</Sizing>
               <Top>0.12375in</Top>
-              <Left>0.23833in</Left>
+              <Left>0.45268in</Left>
               <Height>0.4757in</Height>
               <Width>1.70416in</Width>
               <Style>
@@ -2060,7 +2091,7 @@
               </Paragraphs>
               <rd:DefaultName>Textbox6</rd:DefaultName>
               <Top>0.31433cm</Top>
-              <Left>15.31199cm</Left>
+              <Left>15.6871cm</Left>
               <Height>1.13772cm</Height>
               <Width>3.93933cm</Width>
               <ZIndex>1</ZIndex>
@@ -2097,7 +2128,7 @@
               <rd:DefaultName>Textbox15</rd:DefaultName>
               <Top>0.655in</Top>
               <Left>1.15293in</Left>
-              <Height>0.36944in</Height>
+              <Height>0.38333in</Height>
               <Width>5.875in</Width>
               <ZIndex>2</ZIndex>
               <Style>
@@ -2118,7 +2149,7 @@
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.17855cm</Height>
+          <Height>0.99334cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -2149,9 +2180,9 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>PageNumber</rd:DefaultName>
-              <Top>0.28222cm</Top>
+              <Top>0.14111cm</Top>
               <Left>17.39284cm</Left>
-              <Height>0.6cm</Height>
+              <Height>0.74111cm</Height>
               <Width>1.85848cm</Width>
               <Style>
                 <Border>
@@ -2184,9 +2215,9 @@
                 </Paragraph>
               </Paragraphs>
               <rd:DefaultName>Textbox11</rd:DefaultName>
-              <Top>0.28222cm</Top>
+              <Top>0.17639cm</Top>
               <Left>0.60537cm</Left>
-              <Height>0.6cm</Height>
+              <Height>0.70583cm</Height>
               <Width>6.2465cm</Width>
               <ZIndex>1</ZIndex>
               <Style>

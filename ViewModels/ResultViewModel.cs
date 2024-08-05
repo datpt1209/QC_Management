@@ -4,8 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
+using XAct.Library.Settings;
 
 namespace QC_Management.ViewModels
 {
@@ -257,7 +260,7 @@ namespace QC_Management.ViewModels
                 if (ResutlViewList == null) return false;
                 else return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
                 var results = new ObservableCollection<Result>();
                 foreach (var item in ResutlViewList)
@@ -288,24 +291,19 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    try
-                    {
-                        DB.AddRange(results);
-                        DB.SaveChanges();
-                        var messageResult = MessageBox.Show("Lưu kết quả thành công! Bạn có muốn in kết quả QC không?", "Thông báo", MessageBoxButton.OKCancel, MessageBoxImage.Information);
-                        if (messageResult == MessageBoxResult.OK)
-                        {
-                            ReivewReportView rp = new ReivewReportView(results.ToList());
-                            rp.ShowDialog();
-                        }
+                    // Gọi hàm lưu dữ liệu
+                    bool isSaved = await SaveDataAsync(DB,results);
 
+                    // Hiển thị thông báo thành công hoặc thất bại
+                    if (isSaved)
+                    {
+                        MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         LoadNew(DB);
                     }
-                    catch (Exception ex)
+                    else
                     {
-                        MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-
                 }
             });
         }
@@ -327,6 +325,23 @@ namespace QC_Management.ViewModels
                 .ToList();
 
             GroupedReResults = new ObservableCollection<ReResultGroup>(groupedResults);
+        }
+
+        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
+        {
+            try
+            {
+                DB.AddRange(results);
+                await DB.SaveChangesAsync();
+
+                return true; // Trả về true nếu lưu thành công
+            }
+            catch (Exception ex)
+            {
+                // Xử lý lỗi nếu có
+                MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false; // Trả về false nếu lưu thất bại
+            }
         }
         public void LoadNew(QcManagmentContext DB)
         {

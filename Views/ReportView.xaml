@@ -9,9 +9,8 @@
         WindowStartupLocation="CenterScreen"
         Title="ReportView" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
-        <WindowsFormsHost>
+        <WindowsFormsHost Name="windowsFormsHost">
             <winforms:ReportViewer x:Name="reportViewer">
-                
             </winforms:ReportViewer>
         </WindowsFormsHost>
     </Grid>

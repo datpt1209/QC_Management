@@ -168,7 +168,7 @@ namespace QC_Management.ViewModels
                             IdTest = item.idTest,
                             IdDevice = 20,
                             IdLevel = reResultGroup.IdLevel,
-                            DateRun = reResultGroup.DateTime.Date,
+                            DateRun = Date.Date,
                             Time = DateTime.Now.TimeOfDay,
                             IdUser = UserManager.Instance.CurrentUser.Id,
                             IndexQc = index,
