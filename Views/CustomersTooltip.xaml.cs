@@ -1,6 +1,8 @@
 ﻿using LiveCharts.Wpf;
 using LiveCharts;
 using System.ComponentModel;
+using System.Collections.Generic;
+using System.Linq;
 
 
 namespace QC_Management.Views
@@ -31,10 +33,22 @@ namespace QC_Management.Views
             {
                 _data = value;
                 OnPropertyChanged("Data");
+                OnPropertyChanged("FilteredPoints");
             }
         }
 
         public TooltipSelectionMode? SelectionMode { get; set; }
+
+
+        // Property to filter points
+        public IEnumerable<DataPointViewModel> FilteredPoints
+        {
+            get
+            {
+                if (_data == null) return null;
+                return _data.Points.Where(p => p.Series.Title == "result"); // Filter condition
+            }
+        }
 
         protected virtual void OnPropertyChanged(string propertyName = null)
         {

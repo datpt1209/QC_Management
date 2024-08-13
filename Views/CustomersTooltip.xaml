@@ -11,14 +11,13 @@
              d:DataContext="{d:DesignInstance local:CustomersTooltip}">
 
     <Grid>
-    <Border 
+        <Border 
         Background="#E4F3F1F1"
         Padding="20 10" 
         BorderThickness="2" 
         BorderBrush="#555555"
         CornerRadius="10">
-        
-            <ItemsControl ItemsSource="{Binding Data.Points}" Grid.IsSharedSizeScope="True">
+            <ItemsControl ItemsSource="{Binding FilteredPoints}" Grid.IsSharedSizeScope="True">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate DataType="{x:Type wpf:DataPointViewModel}">
                         <Grid Margin="2">
@@ -26,20 +25,27 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto" />
                                 <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0">
                         <Run Text="LOT: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.IdControlInfoNavigation.Lot}"></Run>
+                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.Lot}"></Run>
                             </TextBlock>
                             <TextBlock Grid.Row="1">
-                        <Run Text="Run Time: "></Run>
+                        <Run Text="Date: "></Run>
                         <Run Text="{Binding ChartPoint.Instance.DateRun, StringFormat=dd/MM/yyyy}"></Run>
                             </TextBlock>
                             <TextBlock Grid.Row="2">
                         <Run Text="Result: "></Run>
                         <Run Text="{Binding ChartPoint.Instance.Result1}"></Run>
                             </TextBlock>
-                           
+                            <TextBlock Grid.Row="3">
+                        <Run Text="Mean: "></Run>
+                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.MeanApp}"></Run>
+                        <Run Text="  -  "></Run>
+                        <Run Text="SD: "></Run>
+                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.SdApp}"></Run>
+                            </TextBlock>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

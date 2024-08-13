@@ -20,13 +20,6 @@ namespace QC_Management.ViewModels
 {
     public class HomeViewModel_V2 : BaseViewModel
     {
-
-        public ChartValues<double> MeanValues { get; set; } = new ChartValues<double> { /* Your Mean data */ };
-        public ChartValues<double> OneSDValues { get; set; } = new ChartValues<double> { /* Your 1SD data */ };
-        public ChartValues<double> MinusOneSDValues { get; set; } = new ChartValues<double> { /* Your -1SD data */ };
-        public ChartValues<double> PlusTwoSDValues { get; set; } = new ChartValues<double> { /* Your +2SD data */ };
-        public ChartValues<double> MinusTwoSDValues { get; set; } = new ChartValues<double> { /* Your -2SD data */ };
-
         private ObservableCollection<Result> _List;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
         public ChartValues<ObservablePoint> LineAtOneValues { get; set; }
@@ -98,6 +91,73 @@ namespace QC_Management.ViewModels
 
         private ChartValues<Result> _ChartValues3;
         public ChartValues<Result> ChartValues3 { get => _ChartValues3; set { _ChartValues3 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MeanValues1;
+        public ChartValues<double> MeanValues1 { get => _MeanValues1; set { _MeanValues1 = value; OnPropertyChanged();} }
+
+        private ChartValues<double> _MeanValues2;
+        public ChartValues<double> MeanValues2 { get => _MeanValues2; set { _MeanValues2 = value; OnPropertyChanged(); } }
+        private ChartValues<double> _MeanValues3;
+        public ChartValues<double> MeanValues3 { get => _MeanValues3; set { _MeanValues3 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusOneSDValues1;
+        public ChartValues<double> PlusOneSDValues1 { get => _PlusOneSDValues1; set { _PlusOneSDValues1 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusOneSDValues2;
+        public ChartValues<double> PlusOneSDValues2 { get => _PlusOneSDValues2; set { _PlusOneSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusOneSDValues3;
+        public ChartValues<double> PlusOneSDValues3 { get => _PlusOneSDValues3; set { _PlusOneSDValues3 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusOneSDValues1;
+        public ChartValues<double> MinusOneSDValues1 { get => _MinusOneSDValues1; set { _MinusOneSDValues1 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusOneSDValues2;
+        public ChartValues<double> MinusOneSDValues2 { get => _MinusOneSDValues2; set { _MinusOneSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusOneSDValues3;
+        public ChartValues<double> MinusOneSDValues3 { get => _MinusOneSDValues3; set { _MinusOneSDValues3 = value; OnPropertyChanged(); } }
+
+
+        private ChartValues<double> _PlusTwoSDValues2;
+        public ChartValues<double> PlusTwoSDValues2 { get => _PlusTwoSDValues2; set { _PlusTwoSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusTwoSDValues1;
+        public ChartValues<double> PlusTwoSDValues1 { get => _PlusTwoSDValues1; set { _PlusTwoSDValues1 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusTwoSDValues3;
+        public ChartValues<double> PlusTwoSDValues3 { get => _PlusTwoSDValues3; set { _PlusTwoSDValues3 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusTwoSDValues1;
+        public ChartValues<double> MinusTwoSDValues1 { get => _MinusTwoSDValues1; set { _MinusTwoSDValues1 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusTwoSDValues2;
+        public ChartValues<double> MinusTwoSDValues2 { get => _MinusTwoSDValues2; set { _MinusTwoSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusTwoSDValues3;
+        public ChartValues<double> MinusTwoSDValues3 { get => _MinusTwoSDValues3; set { _MinusTwoSDValues3 = value; OnPropertyChanged(); } }
+
+
+        private ChartValues<double> _PlusThreeSDValues1;
+        public ChartValues<double> PlusThreeSDValues1 { get => _PlusThreeSDValues1; set { _PlusThreeSDValues1 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusThreeSDValues2;
+        public ChartValues<double> PlusThreeSDValues2 { get => _PlusThreeSDValues2; set { _PlusThreeSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _PlusThreeSDValues3;
+        public ChartValues<double> PlusThreeSDValues3 { get => _PlusThreeSDValues3; set { _PlusThreeSDValues3 = value; OnPropertyChanged(); } }
+
+
+
+        private ChartValues<double> _MinusThreeSDValues3;
+        public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusThreeSDValues2;
+        public ChartValues<double> MinusThreeSDValues2 { get => _MinusThreeSDValues2; set { _MinusThreeSDValues2 = value; OnPropertyChanged(); } }
+
+        private ChartValues<double> _MinusThreeSDValues1;
+        public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
+
 
         public ICommand PrintCommand { get; set; }
         public ICommand PrintChartCommand { get; set; }
@@ -193,8 +253,35 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private LineSeries _oneSDLine;
+        public LineSeries oneSDLine
+        {
+            get => _oneSDLine;
+            set
+            {
+                _oneSDLine = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private LineSeries _twoSDLine;
+        public LineSeries twoSDLine
+        {
+            get => _twoSDLine;
+            set
+            {
+                _twoSDLine = value;
+                OnPropertyChanged();
+            }
+        }
+
+        
+        public Brush OneToTwoSDFill { get; set; }
+        public Brush TwoToThreeSDFill { get; set; }
         public HomeViewModel_V2()
         {
+           
             InitializeYAxisLabelFormatter();
 
             LoadedCommand = new RelayCommand<Test>((p) =>
@@ -336,26 +423,78 @@ namespace QC_Management.ViewModels
 
                         foreach (var resultByLevel in levelList)
                         {
-                            if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
+                        if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
                             {
+                                MeanValues1 = new ChartValues<double>();
+                            PlusOneSDValues1 = new ChartValues<double>();   
+                                MinusOneSDValues1 = new ChartValues<double>();
+                            PlusTwoSDValues1 = new ChartValues<double>();
+                                MinusTwoSDValues1 = new ChartValues<double>();
+                                PlusThreeSDValues1 = new ChartValues<double>();
+                                MinusThreeSDValues1 = new ChartValues<double>();
                                 var result = LoadChart1(resultByLevel);
                                 ChartValues1 = result.Item1;
                                 Visibility1 = result.Item2;
                                 Dates1 = result.Item3;
+                            for(int i = 0; i < result.Item1.Count + 1; i++)
+                            {
+                                PlusThreeSDValues1.Add(3);
+                                PlusTwoSDValues1.Add(2);
+                                PlusOneSDValues1.Add(1);
+                                MeanValues1.Add(0);
+                                MinusOneSDValues1.Add(-1);
+                                MinusTwoSDValues1.Add(-2);
+                                MinusThreeSDValues1.Add(-3);
                             }
+                        }
                             if (resultByLevel.Key == 2 || resultByLevel.Key == 5)
                             {
+                                MeanValues2 = new ChartValues<double>();
+                                PlusOneSDValues2 = new ChartValues<double>();
+                                MinusOneSDValues2 = new ChartValues<double>();
+                                    PlusTwoSDValues2 = new ChartValues<double>();
+                            MinusTwoSDValues2 = new ChartValues<double>();
+                            PlusThreeSDValues2 = new ChartValues<double>();
+                            MinusThreeSDValues2 = new ChartValues<double>();
                                 var result = LoadChart1(resultByLevel);
                                 ChartValues2 = result.Item1;
-                                Visibility2 = result.Item2;
+                            for (int i = 0; i < result.Item1.Count + 1; i++)
+                            {
+                                MeanValues2.Add(0);
+                                PlusOneSDValues2.Add(1);
+                                MinusOneSDValues2.Add(-1);
+                                PlusTwoSDValues2.Add(2);
+                                MinusTwoSDValues2.Add(-2);
+                                PlusThreeSDValues2.Add(3);
+                                MinusThreeSDValues2.Add(-3);
+                            }
+                            Visibility2 = result.Item2;
                                 Dates2 = result.Item3;
                             }
 
                             if (resultByLevel.Key == 3 || resultByLevel.Key == 6)
                             {
+                            MeanValues3 = new ChartValues<double>();
+                            PlusOneSDValues3 = new ChartValues<double>();
+                                MinusOneSDValues3 = new ChartValues<double>();
+                            PlusTwoSDValues3 = new ChartValues<double>();
+                            MinusTwoSDValues3 = new ChartValues<double>();  
+                                PlusThreeSDValues3 = new ChartValues<double>();
+                                MinusThreeSDValues3 = new ChartValues<double>();
+                                    
                                 var result = LoadChart1(resultByLevel);
                                 ChartValues3 = result.Item1;
-                                Visibility3 = result.Item2;
+                            for (int i = 0; i < result.Item1.Count + 1; i++)
+                            {
+                                MeanValues3.Add(0);
+                                PlusOneSDValues3.Add(1);
+                                MinusOneSDValues3.Add(-1);
+                                PlusTwoSDValues3.Add(2);
+                                MinusTwoSDValues3.Add(-2);
+                                PlusThreeSDValues3.Add(3);
+                                MinusThreeSDValues3.Add(-3);
+                            }
+                            Visibility3 = result.Item2;
                                 Dates3 = result.Item3;
                             }
 
@@ -381,6 +520,7 @@ namespace QC_Management.ViewModels
  
             foreach (var item in results)
             {
+                
                 dataPoints.Add(item);
                 dates.Add(item.DateRun.ToString("dd/MM"));
             }
@@ -507,7 +647,6 @@ namespace QC_Management.ViewModels
 
         private void LoadChart(bool isCheck)
         {
-           
             var mapper1 = Mappers.Xy<Result>()
                   .X((value, index) => index) // lets use the position of the item as X
                   .Y(value => Math.Round((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx, 2))
@@ -523,6 +662,7 @@ namespace QC_Management.ViewModels
             if (isCheck == false)
             {
                Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
+                
             }
             else
             {
