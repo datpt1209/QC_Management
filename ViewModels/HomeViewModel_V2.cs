@@ -3,6 +3,7 @@ using LiveCharts.Configurations;
 using LiveCharts.Defaults;
 using LiveCharts.Definitions.Charts;
 using LiveCharts.Wpf;
+using MaterialDesignThemes.Wpf.Converters;
 using QC_Management.Models;
 using QC_Management.Views;
 using System;
@@ -12,9 +13,11 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using XAct;
+using XAct.UI.Views;
 
 namespace QC_Management.ViewModels
 {
@@ -158,6 +161,12 @@ namespace QC_Management.ViewModels
         private ChartValues<double> _MinusThreeSDValues1;
         public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
 
+        private float _totalWidth1;
+        public float totalWidth1 { get => _totalWidth1; set { _totalWidth1 = value; OnPropertyChanged(); } }
+        private float _totalWidth2;
+        public float totalWidth2 { get => _totalWidth2; set { _totalWidth2 = value; OnPropertyChanged(); } }
+        private float _totalWidth3;
+        public float totalWidth3 { get => _totalWidth3; set { _totalWidth3 = value; OnPropertyChanged(); } }
 
         public ICommand PrintCommand { get; set; }
         public ICommand PrintChartCommand { get; set; }
@@ -168,6 +177,7 @@ namespace QC_Management.ViewModels
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand TestSelectionChangedCommand { get; set; }
         public ICommand appRangeCommand { get; set; }
+        public ICommand ScrollViewer_LoadedCommand { get; set; }
 
         private string _DisplayName;
         public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
@@ -231,6 +241,16 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+        private double _horizontalOffset;
+        public double HorizontalOffset
+        {
+            get => _horizontalOffset;
+            set
+            {
+                _horizontalOffset = value;
+                OnPropertyChanged();
+            }
+        }
 
         private ControlInfo _SelectedControlInfo;
         public ControlInfo SelectedControlInfo
@@ -283,8 +303,7 @@ namespace QC_Management.ViewModels
         {
            
             InitializeYAxisLabelFormatter();
-
-            LoadedCommand = new RelayCommand<Test>((p) =>
+        LoadedCommand = new RelayCommand<Test>((p) =>
             {
                 return true;
 
@@ -301,6 +320,15 @@ namespace QC_Management.ViewModels
             {
                 ViewChart();
             });
+
+            //ScrollViewer_LoadedCommand = new RelayCommand<ScrollViewer>((p) =>
+            //{
+            //    return true;
+
+            //}, (p) =>
+            //{
+            //    OnScrollViewerLoaded(p);
+            //});
 
             PrintCommand = new RelayCommand<object>((p) =>
             {
@@ -333,7 +361,6 @@ namespace QC_Management.ViewModels
                 rp.ShowDialog();
 
             });
-
 
             DeviceSelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
             {
@@ -398,6 +425,17 @@ namespace QC_Management.ViewModels
             };
         }
 
+        //private void OnScrollViewerLoaded(ScrollViewer scrollViewer)
+        //{
+           
+        //    if (scrollViewer != null)
+        //    {
+        //        MessageBox.Show("Loaded event has been called!");
+
+        //        scrollViewer.ScrollToHorizontalOffset(100);
+        //    }
+        //}
+
         private async void ViewChart()
         {
             try
@@ -446,6 +484,10 @@ namespace QC_Management.ViewModels
                                 MinusTwoSDValues1.Add(-2);
                                 MinusThreeSDValues1.Add(-3);
                             }
+                            float cmPerPoint = 2.0f; // 1 cm
+                            float pixelsPerPoint = CmToPixels(cmPerPoint);
+                            int numberOfPoints = result.Item1.Count;
+                            totalWidth1 = pixelsPerPoint * numberOfPoints;
                         }
                             if (resultByLevel.Key == 2 || resultByLevel.Key == 5)
                             {
@@ -470,7 +512,11 @@ namespace QC_Management.ViewModels
                             }
                             Visibility2 = result.Item2;
                                 Dates2 = result.Item3;
-                            }
+                            float cmPerPoint = 2.0f; // 1 cm
+                            float pixelsPerPoint = CmToPixels(cmPerPoint);
+                            int numberOfPoints = result.Item1.Count;
+                            totalWidth2 = pixelsPerPoint * numberOfPoints;
+                        }
 
                             if (resultByLevel.Key == 3 || resultByLevel.Key == 6)
                             {
@@ -496,7 +542,11 @@ namespace QC_Management.ViewModels
                             }
                             Visibility3 = result.Item2;
                                 Dates3 = result.Item3;
-                            }
+                            float cmPerPoint = 2.0f; // 1 cm
+                            float pixelsPerPoint = CmToPixels(cmPerPoint);
+                            int numberOfPoints = result.Item1.Count;
+                            totalWidth3 = pixelsPerPoint * numberOfPoints;
+                        }
 
                         }
                        
@@ -662,11 +712,22 @@ namespace QC_Management.ViewModels
             if (isCheck == false)
             {
                Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
-                
             }
             else
             {
                 Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
+            }
+        }
+        public static float CmToPixels(float cm)
+        {
+            // 1 inch = 2.54 cm
+            float inches = cm / 2.54f;
+
+            // Get the DPI (Dots Per Inch) of the screen
+            using (System.Drawing.Graphics g = System.Drawing.Graphics.FromHwnd(IntPtr.Zero))
+            {
+                float dpiX = g.DpiX;
+                return inches * dpiX;
             }
         }
     }
