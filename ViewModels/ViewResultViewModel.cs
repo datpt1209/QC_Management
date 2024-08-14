@@ -42,6 +42,9 @@ namespace QC_Management.ViewModels
         public ICommand DeleteCommand { get; set; }
         public ICommand LevelChangedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
+        public ICommand DeleteOneTestCommand { get; set; }
+
+        public ICommand AddCommand { get; set; }
 
         private bool _IsReadOnly;
         public bool IsReadOnly
@@ -222,6 +225,9 @@ namespace QC_Management.ViewModels
                 }
             });
 
+            AddCommand = new RelayCommand<Result>((p) => { return true; }, (p) => { OpenAddResultWindow(); });
+
+
             DeleteCommand = new RelayCommand<object>((p) =>
             {
                 if (ResultViewList.Count == 0 || ResultViewList == null) return false;
@@ -252,6 +258,12 @@ namespace QC_Management.ViewModels
                 else return;
 
             });
+
+            // Initialize other commands
+            DeleteOneTestCommand = new RelayCommand<Result>((p) => { return true; }, (p) => { DeleteResult(SelectedItem); });
+
+
+          
 
             LevelChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -293,6 +305,46 @@ namespace QC_Management.ViewModels
             return IndexList;
         }
 
+        //private void OpenAddResultWindow()
+        //{
+        //    var addResultWindow = new AddResultViewModel
+        //    {
+        //        DataContext = new AddResultViewModel
+        //        {
+        //            SelectedDate = this.SelectedDate,
+        //            SelectedDevice = this.SelectedDevice,
+        //            SelectedLevel = this.SelectedLevel
+        //        }
+        //    };
+        //    addResultWindow.ShowDialog();
+        //}
+        private async void DeleteResult(Result result)
+        {
+            if (result == null) return;
+
+            var messageBoxResult = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
+            if (messageBoxResult == MessageBoxResult.No) return;
+            // Remove from the database
+            try
+            {
+                using (var context = new QcManagmentContext())
+                {
+                    var entity = context.Results.Find(result.Id);
+                    if (entity != null)
+                    {
+                        context.Results.Remove(entity);
+                        await context.SaveChangesAsync();
+                    }
+                }
+
+                // Remove from the ObservableCollection
+                ResultViewList.Remove(result);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error deleting result: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
         private void FilterResults()
         {
             if (SelectedDevice == null || SelectedLevel == null || SelectedDate == null) return;
