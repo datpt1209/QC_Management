@@ -85,6 +85,16 @@ namespace QC_Management.ViewModels
         private Visibility _Visibility3;
         public Visibility Visibility3 { get => _Visibility3; set { _Visibility3 = value; OnPropertyChanged(); } }
 
+        private bool _isLoading;
+        public bool IsLoading
+        {
+            get => _isLoading;
+            set
+            {
+                _isLoading = value;
+                OnPropertyChanged();
+            }
+        }
 
         private ChartValues<Result> _ChartValues1;
         public ChartValues<Result> ChartValues1 { get => _ChartValues1; set { _ChartValues1 = value; OnPropertyChanged(); } }
@@ -207,30 +217,6 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private double _Min;
-        public double Min
-        {
-            get => _Min;
-            set
-            {
-                _Min = value;
-                OnPropertyChanged();
-            }
-        }
-        public int max1 { get; set; }
-        public int max2 { get; set; }
-        public int max3 { get; set; }
-        private double _Max;
-        public double Max
-        {
-            get => _Max;
-            set
-            {
-                _Max = value;
-                OnPropertyChanged();
-            }
-        }
-
         private Device _SelectedDevice;
         public Device SelectedDevice
         {
@@ -238,16 +224,6 @@ namespace QC_Management.ViewModels
             set
             {
                 _SelectedDevice = value;
-                OnPropertyChanged();
-            }
-        }
-        private double _horizontalOffset;
-        public double HorizontalOffset
-        {
-            get => _horizontalOffset;
-            set
-            {
-                _horizontalOffset = value;
                 OnPropertyChanged();
             }
         }
@@ -296,14 +272,11 @@ namespace QC_Management.ViewModels
             }
         }
 
-        
-        public Brush OneToTwoSDFill { get; set; }
-        public Brush TwoToThreeSDFill { get; set; }
         public HomeViewModel_V2()
         {
            
             InitializeYAxisLabelFormatter();
-        LoadedCommand = new RelayCommand<Test>((p) =>
+            LoadedCommand = new RelayCommand<Test>((p) =>
             {
                 return true;
 
@@ -436,7 +409,7 @@ namespace QC_Management.ViewModels
         //    }
         //}
 
-        private async void ViewChart()
+        private async Task ViewChart()
         {
             try
             {
@@ -444,142 +417,123 @@ namespace QC_Management.ViewModels
                 {
                     return;
                 }
-                    Visibility1 = Visibility.Collapsed;
-                    Visibility2 = Visibility.Collapsed;
-                    Visibility3 = Visibility.Collapsed;
-                    var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate);
-                    if (results.Count() == 0 || results == null)
-                    {
-                        MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
 
-                        return;
-                    }
+                IsLoading = true;
+                Visibility1 = Visibility.Collapsed;
+                Visibility2 = Visibility.Collapsed;
+                Visibility3 = Visibility.Collapsed;
+
+                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
+                if (!results.Any())
+                {
+                    MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                var levelList = results.GroupBy(s => s.IdLevel).ToList();
 
                 await Task.Run(() =>
                 {
-                        var levelList = results.GroupBy(s => s.IdLevel);
+                    foreach (var resultByLevel in levelList)
+                    {
+                        var result = LoadChart1(resultByLevel);
+                        var chartValues = result.Item1;
+                        var visibility = result.Item2;
+                        var dates = result.Item3;
 
-                        foreach (var resultByLevel in levelList)
+                        var meanValues = new ChartValues<double>(Enumerable.Repeat(0.0, chartValues.Count + 1));
+                        var plusOneSDValues = new ChartValues<double>(Enumerable.Repeat(1.0, chartValues.Count + 1));
+                        var minusOneSDValues = new ChartValues<double>(Enumerable.Repeat(-1.0, chartValues.Count + 1));
+                        var plusTwoSDValues = new ChartValues<double>(Enumerable.Repeat(2.0, chartValues.Count + 1));
+                        var minusTwoSDValues = new ChartValues<double>(Enumerable.Repeat(-2.0, chartValues.Count + 1));
+                        var plusThreeSDValues = new ChartValues<double>(Enumerable.Repeat(3.0, chartValues.Count + 1));
+                        var minusThreeSDValues = new ChartValues<double>(Enumerable.Repeat(-3.0, chartValues.Count + 1));
+
+                        float cmPerPoint = 2.0f; // 1 cm
+                        float pixelsPerPoint = CmToPixels(cmPerPoint);
+                        int numberOfPoints = chartValues.Count;
+                        float totalWidth = pixelsPerPoint * numberOfPoints;
+
+                        Application.Current.Dispatcher.Invoke(() =>
                         {
-                        if (resultByLevel.Key == 1 || resultByLevel.Key == 4)
+                            switch (resultByLevel.Key)
                             {
-                                MeanValues1 = new ChartValues<double>();
-                            PlusOneSDValues1 = new ChartValues<double>();   
-                                MinusOneSDValues1 = new ChartValues<double>();
-                            PlusTwoSDValues1 = new ChartValues<double>();
-                                MinusTwoSDValues1 = new ChartValues<double>();
-                                PlusThreeSDValues1 = new ChartValues<double>();
-                                MinusThreeSDValues1 = new ChartValues<double>();
-                                var result = LoadChart1(resultByLevel);
-                                ChartValues1 = result.Item1;
-                                Visibility1 = result.Item2;
-                                Dates1 = result.Item3;
-                            for(int i = 0; i < result.Item1.Count + 1; i++)
-                            {
-                                PlusThreeSDValues1.Add(3);
-                                PlusTwoSDValues1.Add(2);
-                                PlusOneSDValues1.Add(1);
-                                MeanValues1.Add(0);
-                                MinusOneSDValues1.Add(-1);
-                                MinusTwoSDValues1.Add(-2);
-                                MinusThreeSDValues1.Add(-3);
+                                case 1:
+                                case 4:
+                                    MeanValues1 = meanValues;
+                                    PlusOneSDValues1 = plusOneSDValues;
+                                    MinusOneSDValues1 = minusOneSDValues;
+                                    PlusTwoSDValues1 = plusTwoSDValues;
+                                    MinusTwoSDValues1 = minusTwoSDValues;
+                                    PlusThreeSDValues1 = plusThreeSDValues;
+                                    MinusThreeSDValues1 = minusThreeSDValues;
+                                    ChartValues1 = chartValues;
+                                    Visibility1 = visibility;
+                                    Dates1 = dates;
+                                    totalWidth1 = totalWidth;
+                                    break;
+                                case 2:
+                                case 5:
+                                    MeanValues2 = meanValues;
+                                    PlusOneSDValues2 = plusOneSDValues;
+                                    MinusOneSDValues2 = minusOneSDValues;
+                                    PlusTwoSDValues2 = plusTwoSDValues;
+                                    MinusTwoSDValues2 = minusTwoSDValues;
+                                    PlusThreeSDValues2 = plusThreeSDValues;
+                                    MinusThreeSDValues2 = minusThreeSDValues;
+                                    ChartValues2 = chartValues;
+                                    Visibility2 = visibility;
+                                    Dates2 = dates;
+                                    totalWidth2 = totalWidth;
+                                    break;
+                                case 3:
+                                case 6:
+                                    MeanValues3 = meanValues;
+                                    PlusOneSDValues3 = plusOneSDValues;
+                                    MinusOneSDValues3 = minusOneSDValues;
+                                    PlusTwoSDValues3 = plusTwoSDValues;
+                                    MinusTwoSDValues3 = minusTwoSDValues;
+                                    PlusThreeSDValues3 = plusThreeSDValues;
+                                    MinusThreeSDValues3 = minusThreeSDValues;
+                                    ChartValues3 = chartValues;
+                                    Visibility3 = visibility;
+                                    Dates3 = dates;
+                                    totalWidth3 = totalWidth;
+                                    break;
                             }
-                            float cmPerPoint = 2.0f; // 1 cm
-                            float pixelsPerPoint = CmToPixels(cmPerPoint);
-                            int numberOfPoints = result.Item1.Count;
-                            totalWidth1 = pixelsPerPoint * numberOfPoints;
-                        }
-                            if (resultByLevel.Key == 2 || resultByLevel.Key == 5)
-                            {
-                                MeanValues2 = new ChartValues<double>();
-                                PlusOneSDValues2 = new ChartValues<double>();
-                                MinusOneSDValues2 = new ChartValues<double>();
-                                    PlusTwoSDValues2 = new ChartValues<double>();
-                            MinusTwoSDValues2 = new ChartValues<double>();
-                            PlusThreeSDValues2 = new ChartValues<double>();
-                            MinusThreeSDValues2 = new ChartValues<double>();
-                                var result = LoadChart1(resultByLevel);
-                                ChartValues2 = result.Item1;
-                            for (int i = 0; i < result.Item1.Count + 1; i++)
-                            {
-                                MeanValues2.Add(0);
-                                PlusOneSDValues2.Add(1);
-                                MinusOneSDValues2.Add(-1);
-                                PlusTwoSDValues2.Add(2);
-                                MinusTwoSDValues2.Add(-2);
-                                PlusThreeSDValues2.Add(3);
-                                MinusThreeSDValues2.Add(-3);
-                            }
-                            Visibility2 = result.Item2;
-                                Dates2 = result.Item3;
-                            float cmPerPoint = 2.0f; // 1 cm
-                            float pixelsPerPoint = CmToPixels(cmPerPoint);
-                            int numberOfPoints = result.Item1.Count;
-                            totalWidth2 = pixelsPerPoint * numberOfPoints;
-                        }
-
-                            if (resultByLevel.Key == 3 || resultByLevel.Key == 6)
-                            {
-                            MeanValues3 = new ChartValues<double>();
-                            PlusOneSDValues3 = new ChartValues<double>();
-                                MinusOneSDValues3 = new ChartValues<double>();
-                            PlusTwoSDValues3 = new ChartValues<double>();
-                            MinusTwoSDValues3 = new ChartValues<double>();  
-                                PlusThreeSDValues3 = new ChartValues<double>();
-                                MinusThreeSDValues3 = new ChartValues<double>();
-                                    
-                                var result = LoadChart1(resultByLevel);
-                                ChartValues3 = result.Item1;
-                            for (int i = 0; i < result.Item1.Count + 1; i++)
-                            {
-                                MeanValues3.Add(0);
-                                PlusOneSDValues3.Add(1);
-                                MinusOneSDValues3.Add(-1);
-                                PlusTwoSDValues3.Add(2);
-                                MinusTwoSDValues3.Add(-2);
-                                PlusThreeSDValues3.Add(3);
-                                MinusThreeSDValues3.Add(-3);
-                            }
-                            Visibility3 = result.Item2;
-                                Dates3 = result.Item3;
-                            float cmPerPoint = 2.0f; // 1 cm
-                            float pixelsPerPoint = CmToPixels(cmPerPoint);
-                            int numberOfPoints = result.Item1.Count;
-                            totalWidth3 = pixelsPerPoint * numberOfPoints;
-                        }
-
-                        }
-                       
-                    // Các xử lý khác
+                        });
+                    }
                 });
-                LoadChart(isCheck);
 
+                LoadChart(isCheck);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Lỗi khi tải biểu đồ: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            
+            finally
+            {
+                IsLoading = false;
+            }
         }
 
         private Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>> LoadChart1(IGrouping<int, Result> results)
         {
-            var visibility = new Visibility();
+            var visibility = Visibility.Collapsed;
             var dataPoints = new ChartValues<Result>();
             var dates = new ObservableCollection<string>();
- 
+
             foreach (var item in results)
             {
-                
                 dataPoints.Add(item);
                 dates.Add(item.DateRun.ToString("dd/MM"));
             }
-            if (dataPoints == null || dataPoints.Count == 0)
+
+            if (dataPoints.Count > 0)
             {
-                visibility = Visibility.Collapsed;
+                visibility = Visibility.Visible;
             }
-            else visibility = Visibility.Visible;
-           
+
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }
 

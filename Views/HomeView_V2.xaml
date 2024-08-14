@@ -7,7 +7,7 @@
              mc:Ignorable="d"          
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:viewmodels="clr-namespace:QC_Management.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel_V2}"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
@@ -94,16 +94,12 @@
         </Grid>
 
         <Grid Grid.Column="1" Grid.Row="1">
-            <materialDesign:Card Margin="5">
+            <ProgressBar
+                IsIndeterminate="True"
+                Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Width="200" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"  Panel.ZIndex="1"/>
+            <materialDesign:Card Margin="5" Panel.ZIndex="0">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
-                    <!--<i:Interaction.Triggers>
-                        -->
-                    <!--<i:EventTrigger EventName="LayoutUpdated">
-                            <i:InvokeCommandAction Command="{Binding ScrollViewer_LoadedCommand}" >
-                            </i:InvokeCommandAction>
-                        </i:EventTrigger>-->
-                    <!--
-                    </i:Interaction.Triggers>-->
                     <lvc:CartesianChart 
                         x:Name="chart" Width="{Binding totalWidth1}"
                         HorizontalAlignment="Left"
