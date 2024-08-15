@@ -1,28 +1,63 @@
 ﻿<Window x:Class="QC_Management.Views.AddResultWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Add New Result" Height="300" Width="400">
+        Title="Add New Result" Height="400" Width="600">
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Vertical" Margin="10">
+        <StackPanel Orientation="Horizontal" Margin="10">
             <TextBlock Text="Ngày thực hiện" Margin="5"/>
-            <TextBox Text="{Binding SelectedDate, Mode=TwoWay}" Margin="5"/>
+            <TextBox Text="{Binding SelectedDate, Mode=OneWay}" Margin="5" IsReadOnly="True"/>
             <TextBlock Text="Thiết bị" Margin="5"/>
-            <TextBox Text="{Binding SelectedDevice.Name, Mode=TwoWay}" Margin="5"/>
+            <TextBox Text="{Binding SelectedDevice.Name, Mode=OneWay}" Margin="5" IsReadOnly="True"/>
             <TextBlock Text="Level" Margin="5"/>
-            <TextBox Text="{Binding SelectedLevel.Name, Mode=TwoWay}" Margin="5"/>
+            <TextBox Text="{Binding SelectedLevel.Name, Mode=OneWay}" Margin="5" IsReadOnly="True"/>
+            <TextBlock Text="Index" Margin="5"/>
+            <TextBox Text="{Binding SelectedIndex, Mode=OneWay}" Margin="5" IsReadOnly="True"/>
         </StackPanel>
-        <DataGrid Grid.Row="1" ItemsSource="{Binding NewResults}" AutoGenerateColumns="False" Margin="10">
+        <StackPanel Orientation="Horizontal" Margin="10" Grid.Row="1">
+            <ComboBox ItemsSource="{Binding TestList}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedTest}" Width="200" Margin="5"/>
+            <TextBox Text="{Binding Result}" Width="100" Margin="5"/>
+            <TextBox Text="{Binding Comment}" Width="100" Margin="5"/>
+
+            <Button Content="Add" Command="{Binding AddResultCommand}" Margin="5"/>
+        </StackPanel>
+        <DataGrid Grid.Row="2" ItemsSource="{Binding NewResults}" AutoGenerateColumns="False" Margin="10">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="Test" Binding="{Binding Test}" />
-                <DataGridTextColumn Header="Result" Binding="{Binding Result}" />
+                <DataGridTextColumn Header="Tên xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanApp}" IsReadOnly="True"/>
+                <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdApp}" IsReadOnly="True"/>
+                <DataGridTextColumn  Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result1, Converter= {StaticResource TextCoverter}}">
+
+                    <!--<DataGridTextColumn.ElementStyle>
+                        <Style TargetType="{x:Type TextBlock}">
+                            <Setter Property="Foreground" Value="Green" />
+                            --><!--Màu mặc định--><!--
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                    <Setter Property="Foreground" Value="Red" />
+                                    <Setter Property="Background" Value="Yellow" />
+                                    --><!--Thay đổi màu nền nếu ngoài 3 SD--><!--
+                                </DataTrigger>
+                                <DataTrigger Binding="{Binding isOut2SD}" Value="True">
+                                    <Setter Property="Foreground" Value="Red" />
+                                    --><!--Thay đổi màu nền nếu ngoài 2 SD--><!--
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </DataGridTextColumn.ElementStyle>-->
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Ghi chú" Binding="{Binding Comment}" IsReadOnly="True"/>
+
             </DataGrid.Columns>
+
+           
         </DataGrid>
-        <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>
             <Button Content="Cancel" Command="{Binding CancelCommand}" Margin="5"/>
         </StackPanel>

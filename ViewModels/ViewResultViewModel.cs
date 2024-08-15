@@ -1,4 +1,5 @@
 ﻿using QC_Management.Models;
+using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -43,7 +44,6 @@ namespace QC_Management.ViewModels
         public ICommand LevelChangedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
         public ICommand DeleteOneTestCommand { get; set; }
-
         public ICommand AddCommand { get; set; }
 
         private bool _IsReadOnly;
@@ -164,7 +164,7 @@ namespace QC_Management.ViewModels
 
             ViewCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                if (SelectedDevice == null || SelectedLevel == null||SelectedDate == null) return false;
+                if (SelectedDevice == null || SelectedLevel == null || SelectedIndex == null) return false;
                 else
                     return true;
 
@@ -225,7 +225,17 @@ namespace QC_Management.ViewModels
                 }
             });
 
-            AddCommand = new RelayCommand<Result>((p) => { return true; }, (p) => { OpenAddResultWindow(); });
+            AddCommand = new RelayCommand<Result>((p) => 
+            {
+                if (SelectedDevice == null || SelectedLevel == null  || SelectedIndex == null) return false;
+                else
+                    return true;
+            }, 
+            (p) => 
+            { 
+                OpenAddResultWindow(); 
+            }
+            );
 
 
             DeleteCommand = new RelayCommand<object>((p) =>
@@ -259,11 +269,14 @@ namespace QC_Management.ViewModels
 
             });
 
-            // Initialize other commands
-            DeleteOneTestCommand = new RelayCommand<Result>((p) => { return true; }, (p) => { DeleteResult(SelectedItem); });
-
-
-          
+            DeleteOneTestCommand = new RelayCommand<Result>((p) => 
+            {
+                if (SelectedDevice == null || SelectedLevel == null || SelectedIndex == null || SelectedDate == null) return false;
+                else return true;
+            }, (p) => 
+            {
+                DeleteResult(SelectedItem); 
+            });
 
             LevelChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -305,19 +318,30 @@ namespace QC_Management.ViewModels
             return IndexList;
         }
 
-        //private void OpenAddResultWindow()
-        //{
-        //    var addResultWindow = new AddResultViewModel
-        //    {
-        //        DataContext = new AddResultViewModel
-        //        {
-        //            SelectedDate = this.SelectedDate,
-        //            SelectedDevice = this.SelectedDevice,
-        //            SelectedLevel = this.SelectedLevel
-        //        }
-        //    };
-        //    addResultWindow.ShowDialog();
-        //}
+        private void AddNewResult()
+        {
+            var newResult = new Result
+            {
+                // Initialize with default values if needed
+                DateRun = DateTime.Now,
+                IdDevice = SelectedDevice?.Id ?? 0,
+                IdLevel = SelectedLevel?.Id ?? 0,
+                IndexQc = SelectedIndex
+            };
+            ResultViewList.Add(newResult);
+        }
+
+        private void OpenAddResultWindow()
+        {
+            var addResultWindow = new AddResultWindow();
+            var viewModel = new AddResultViewModel(SelectedDate, SelectedDevice, SelectedLevel, SelectedIndex, addResultWindow);
+            addResultWindow.DataContext = viewModel;
+            if (addResultWindow.ShowDialog() == true)
+            {
+                Reload(DataProvider.Ins.DB);
+                FilterResults();
+            }
+        }
         private async void DeleteResult(Result result)
         {
             if (result == null) return;

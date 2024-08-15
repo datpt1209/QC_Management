@@ -17,10 +17,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Page Remove="Views\AddResultWindow.xaml" />
-  </ItemGroup>
-
-  <ItemGroup>
     <Content Include="Logo.ico" />
   </ItemGroup>
 
@@ -34,12 +30,6 @@
     <EmbeddedResource Include="Report\ChartReport.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Views\AddResultWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-    </None>
   </ItemGroup>
 
   <ItemGroup>
