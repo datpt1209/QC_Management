@@ -40,7 +40,7 @@ namespace QC_Management.ViewModels
             //ShowDetailCommand = new RelayCommand<ReResultGroup>(ShowDetail);
             ShowDetailCommand = new RelayCommand<object>((p) => true, (p) =>
             {
-                Re_ResultDetailView reResultWindow = new Re_ResultDetailView(SelectedItem);
+                Re_ResultDetailView reResultWindow = new Re_ResultDetailView();
                 reResultWindow.ShowDialog();
             });
         }
@@ -49,7 +49,7 @@ namespace QC_Management.ViewModels
         {
             if (reResultGroup != null)
             {
-                Re_ResultDetailView detailWindow = new Re_ResultDetailView(reResultGroup);
+                Re_ResultDetailView detailWindow = new Re_ResultDetailView();
                 detailWindow.ShowDialog();
             }
         }

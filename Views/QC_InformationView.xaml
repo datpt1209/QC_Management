@@ -45,7 +45,7 @@
                         materialDesign:HintAssist.Hint="Loại xét nghiệm"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="40">
+                        IsEditable="True" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -62,7 +62,7 @@
                         Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="auto" Height="40" />
+                        TextWrapping="Wrap" Width="auto" Height="50" />
                     <TextBox 
                         Margin="5"
                         VerticalAlignment="Center" 
@@ -70,21 +70,21 @@
                         Text="{Binding LOT, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="auto" Height="40"/>
+                        TextWrapping="Wrap" Width="auto" Height="50"/>
                     <DatePicker          
                         Margin="5"
                         
                         SelectedDate="{Binding ProductionDate, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:HintAssist.Hint="Ngày sản xuất"
                         materialDesign:TextFieldAssist.HasClearButton="True"    
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="40" />
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="50" />
                     <DatePicker               
                         Margin="5"
                         
                         SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" 
                         materialDesign:HintAssist.Hint="Hạn sử dụng" 
                         materialDesign:TextFieldAssist.HasClearButton="True"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="40" />
+                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="50" />
                     <CheckBox
                         Content="Kích hoạt"
                      

@@ -423,7 +423,11 @@ namespace QC_Management.ViewModels
                 Visibility2 = Visibility.Collapsed;
                 Visibility3 = Visibility.Collapsed;
 
-                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
+                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate)
+                    .OrderBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s => s.IndexQc)
+                    .ToList();
                 if (!results.Any())
                 {
                     MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -526,7 +530,7 @@ namespace QC_Management.ViewModels
             foreach (var item in results)
             {
                 dataPoints.Add(item);
-                dates.Add(item.DateRun.ToString("dd/MM"));
+                dates.Add($"{item.DateRun.ToString("dd/MM")} - {item.IndexQc}");
             }
 
             if (dataPoints.Count > 0)

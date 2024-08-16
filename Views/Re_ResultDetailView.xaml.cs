@@ -21,10 +21,10 @@ namespace QC_Management.Views
     /// </summary>
     public partial class Re_ResultDetailView : Window
     {
-        public Re_ResultDetailView(ReResultGroup reResultGroup)
+        public Re_ResultDetailView()
         {
             InitializeComponent();
-            DataContext = new Re_ResultDetailViewModel(reResultGroup);
+            
         }
     }
 }

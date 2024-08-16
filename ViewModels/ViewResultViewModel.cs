@@ -227,7 +227,7 @@ namespace QC_Management.ViewModels
 
             AddCommand = new RelayCommand<Result>((p) => 
             {
-                if (SelectedDevice == null || SelectedLevel == null  || SelectedIndex == null) return false;
+                if (ResultViewList.Count == 0 || ResultViewList == null) return false;
                 else
                     return true;
             }, 
@@ -371,7 +371,7 @@ namespace QC_Management.ViewModels
         }
         private void FilterResults()
         {
-            if (SelectedDevice == null || SelectedLevel == null || SelectedDate == null) return;
+            if (SelectedDevice == null || SelectedLevel == null ) return;
 
             if (SelectedIndex == 0)
             {

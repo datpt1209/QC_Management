@@ -152,15 +152,15 @@ namespace QC_Management.ViewModels
 
         public ResultViewModel()
         {
+            QcManagmentContext DB = DataProvider.Ins.DB;
+
             GroupedReResults = new ObservableCollection<ReResultGroup>();
-            
 
             ShowDetailCommand = new RelayCommand<object>((p) => true, (p) =>
             {
-                Re_ResultDetailView reResultWindow = new Re_ResultDetailView(SelectedReResultGroup);
-                reResultWindow.ShowDialog();
+                OpenResultDetailWindow();
             });
-            QcManagmentContext DB = DataProvider.Ins.DB;
+           
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 return true;
@@ -355,9 +355,21 @@ namespace QC_Management.ViewModels
             SelectedLevel = null;
             SelectedIndex = null;
         }
-        public void ReLoad()
+
+        private void OpenResultDetailWindow()
         {
-         
+            var resultDetailWindow = new Re_ResultDetailView();
+            var viewModel = new Re_ResultDetailViewModel(SelectedReResultGroup, resultDetailWindow);
+            resultDetailWindow.DataContext = viewModel;
+            if (resultDetailWindow.ShowDialog() == true)
+            {
+                ReLoad();
+                
+            }
+        }
+        private void ReLoad()
+        {
+         LoadReResults();
         }
 
     }

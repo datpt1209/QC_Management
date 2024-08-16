@@ -5,12 +5,14 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Input;
 using XAct.Library.Settings;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace QC_Management.ViewModels
@@ -37,6 +39,8 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private System.Windows.Window _window;
 
         private string _Comment;
         public string Comment
@@ -68,6 +72,29 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private int _idLevel;
+        public int IdLevel
+        {
+            get => _idLevel;
+            set
+            {
+                _idLevel = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private int _index;
+        public int Index
+        {
+            get => _index;
+            set
+            {
+                _index = value;
+                OnPropertyChanged();
+            }
+        }
+
         private DateTime _Date;
         public DateTime Date
         {
@@ -90,35 +117,39 @@ namespace QC_Management.ViewModels
         }
         public ICommand SaveCommand { get; set; }
 
+        public ICommand CancelCommand { get; set; }
+
         public ICommand LoadCommand { get; set; }
 
-        public Re_ResultDetailViewModel(ReResultGroup reResultGroup)
+        public Re_ResultDetailViewModel(ReResultGroup reResultGroup, System.Windows.Window window)
         {
             Results = reResultGroup.Results;
-            int index = 0;
+            _window = window;
+            Index = 0;
 
             LoadCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                    return true;
+                return true;
             }, (p) =>
             {
                 DeviceName = reResultGroup.DeviceName;
                 LevelName = reResultGroup.LevelName;
+                IdLevel = reResultGroup.IdLevel;
                 Date = reResultGroup.DateTime.Date;
                 Time = DateTime.Now.ToString("HH:mm:ss");
                 var indexList = DataProvider.Ins.DB.Results.Where(s => s.IdDevice == 20 && s.DateRun.Date == reResultGroup.DateTime.Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
 
                 if (indexList == null || indexList.Count() == 0)
                 {
-                    index = 1;
+                    Index = 1;
                 }
                 else
                 {
-                   index = (int)(indexList.Max() + 1);
+                    Index = (int)(indexList.Max() + 1);
                 }
 
                 ResutlViewList = new ObservableCollection<ResultReView>();
-                
+
                 foreach (var item in Results)
                 {
                     var qcInfor = item.IdTestNavigation.ControlInfoDetails.Where(s =>
@@ -133,7 +164,7 @@ namespace QC_Management.ViewModels
                     else
                     {
                         ResutlViewList.Add(new ResultReView()
-                        {                            
+                        {
                             TestName = item.IdTestNavigation.Name,
                             idTest = item.IdTest,
                             QCName = qcInfor.IdControlInfoNavigation.Name,
@@ -150,6 +181,9 @@ namespace QC_Management.ViewModels
                     }
                 }
             });
+
+            CancelCommand = new RelayCommand<Result>((p) => true, (p) => Cancel());
+
 
             SaveCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -171,7 +205,7 @@ namespace QC_Management.ViewModels
                             DateRun = Date.Date,
                             Time = DateTime.Now.TimeOfDay,
                             IdUser = UserManager.Instance.CurrentUser.Id,
-                            IndexQc = index,
+                            IndexQc = Index,
                             IdControlDetail = item.IdControlDetailNavigation.Id,
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
                             Comment = item.Comment,
@@ -187,52 +221,59 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                   SaveResults(results);
+                    SaveAsync(results);
 
                 }
             });
         }
 
-        private void SaveResults(ObservableCollection<Result> reResults)
+        private async Task SaveAsync(ObservableCollection<Result> results)
         {
-            try
-            {
-                QcManagmentContext DB = DataProvider.Ins.DB; 
+        
 
-                DB.Results.AddRange(reResults);
+            // Gọi hàm lưu dữ liệu
+            bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, results);
 
-                // Save changes to the database
-                int rowsAffected = DB.SaveChanges();
-
-                if (rowsAffected > 0)
+                // Hiển thị thông báo thành công hoặc thất bại
+                if (isSaved)
                 {
-                    // Delete the saved ReResult entries
-                    DB.ReResults.RemoveRange(Results);
+                  
+                    DataProvider.Ins.DB.ReResults.RemoveRange(Results);
+                    await DataProvider.Ins.DB.SaveChangesAsync();
+                     Results.Clear();
 
-                    // Save changes to the database
-                    DB.SaveChanges();
-
-                    // Clear the Results collection
-                    Results.Clear();
-
-                    // Hiển thị thông báo thành công
-                    MessageBox.Show("Lưu dữ liệu thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-
-                    // Đóng cửa sổ Re_Resultdetail
-                    Application.Current.Windows.OfType<Window>().SingleOrDefault(w => w.DataContext == this)?.Close();
+                    MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _window.DialogResult = true;
+                    _window.Close();
                 }
                 else
                 {
-                    // Hiển thị thông báo lỗi
-                    MessageBox.Show("Lưu dữ liệu thất bại!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
+
+        }
+        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
+        {
+            try
+            {
+                DB.AddRange(results);
+                await DB.SaveChangesAsync();
+
+                return true; // Trả về true nếu lưu thành công
             }
             catch (Exception ex)
             {
-                // Hiển thị thông báo lỗi
-                MessageBox.Show($"Lỗi khi lưu dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Xử lý lỗi nếu có
+                MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false; // Trả về false nếu lưu thất bại
             }
-
         }
+
+        private void Cancel()
+        {
+            _window.DialogResult = false;
+            _window.Close();
+        }
+
     }
 }
