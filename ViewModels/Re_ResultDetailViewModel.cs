@@ -155,7 +155,7 @@ namespace QC_Management.ViewModels
                     var qcInfor = item.IdTestNavigation.ControlInfoDetails.Where(s =>
                        s.IdLevel == item.IdLevel
                        && s.Status == true
-                       && s.IdDevice == 20).FirstOrDefault();
+                       && s.IdDevice == item.IdDevice).FirstOrDefault();
 
                     if (qcInfor == null)
                     {

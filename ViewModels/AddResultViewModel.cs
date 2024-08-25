@@ -11,20 +11,56 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace QC_Management.ViewModels
 {
 
-public class AddResultViewModel : BaseViewModel
+    public class AddResultViewModel : BaseViewModel
     {
         private DateTime _selectedDate;
         private Device _selectedDevice;
         private LevelQc _selectedLevel;
         private Test _selectedTest;
         private int _selectedIndex;
-        private double? _result;
         private System.Windows.Window _window;
         private ObservableCollection<Result> _newResults;
         private ObservableCollection<DeviceTest> _testList;
         private string _comment;
         private bool _isOutOfRange;
         private bool _isOut2SD;
+
+
+        private string _resultString;
+        private double _result;
+
+        public string ResultString
+        {
+            get => _resultString;
+            set
+            {
+                if (_resultString != value)
+                {
+                    _resultString = value;
+                    OnPropertyChanged(nameof(ResultString));
+                    // Try to convert the string to double
+                    if (double.TryParse(_resultString, out double result))
+                    {
+                        Result = result;
+                    }
+                }
+            }
+        }
+
+        public double Result
+        {
+            get => _result;
+            set
+            {
+                if (_result != value)
+                {
+                    _result = value;
+                    OnPropertyChanged(nameof(Result));
+                }
+            }
+        }
+
+
 
         private ObservableCollection<Test> _TestList;
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
@@ -65,15 +101,6 @@ public class AddResultViewModel : BaseViewModel
             set
             {
                 _comment = value;
-                OnPropertyChanged();
-            }
-        }
-        public double? Result
-        {
-            get => _result;
-            set
-            {
-                _result = value;
                 OnPropertyChanged();
             }
         }
@@ -212,7 +239,7 @@ public class AddResultViewModel : BaseViewModel
                     Comment = Comment,
                 };
                 NewResults.Add(newResult);
-                Result = null; // Clear the result input
+                Result = 0; // Clear the result input
             }
         }
 

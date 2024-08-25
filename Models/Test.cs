@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class Test : BaseViewModel
+public partial class Test:BaseViewModel
 {
     public int Id { get; set; }
 
@@ -14,6 +14,8 @@ public partial class Test : BaseViewModel
     public int IdUnitTable { get; set; }
 
     public int? Index { get; set; }
+
+    public int? OnlineNumber { get; set; }
 
     public virtual ICollection<ControlInfoDetail> ControlInfoDetails { get; set; } = new List<ControlInfoDetail>();
 

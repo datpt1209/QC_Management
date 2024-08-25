@@ -146,6 +146,10 @@
                              AcceptsReturn="True"
                              Style="{StaticResource MaterialDesignFilledTextBox}"
                              TextWrapping="Wrap" Width="auto" Height="42"/>
+                    <CheckBox
+                            Content="Kích hoạt"
+                            IsChecked="{Binding isChecked}"
+                            />
 
                 </WrapPanel>
             </materialDesign:Card>

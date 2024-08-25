@@ -22,11 +22,16 @@
     <viewmodel:QC_DetailViewModel x:Key="QC_DetailVM"></viewmodel:QC_DetailViewModel>
     <viewmodel:LoginViewModel x:Key="LoginVM"></viewmodel:LoginViewModel>
     <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
+    <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
     <DataTemplate DataType="{x:Type viewmodel:CategoryViewModel}">
         <views:CategoryWindow></views:CategoryWindow>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:AddResultViewModel}">
+        <views:AddResultWindow></views:AddResultWindow>
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodel:ChangePasswordViewModel}">

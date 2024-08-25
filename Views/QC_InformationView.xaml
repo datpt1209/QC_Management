@@ -55,6 +55,25 @@
                         </i:Interaction.Triggers>
                     </ComboBox>
 
+                    <ComboBox
+                        Margin="5"
+                        ItemsSource="{Binding ListType}"
+                        DisplayMemberPath="Name"
+                        SelectedItem="{Binding SelectedType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ComboBoxAssist.MaxLength="2"
+                        materialDesign:HintAssist.Hint="Loại QC"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        materialDesign:HintAssist.HintOpacity=".26"
+                        IsEditable="True" Height="50">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding QCTypeSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
                     <TextBox 
                         Margin="5"
                         VerticalAlignment="Center"

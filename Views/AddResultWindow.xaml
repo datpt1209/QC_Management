@@ -6,7 +6,9 @@
  xmlns:local="clr-namespace:QC_Management.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
  mc:Ignorable="d"
  WindowStartupLocation="CenterScreen"
- Title="Danh sách kết quả QC" Height="450" Width="800">
+ Title="Danh sách kết quả QC" Height="450" Width="800"
+       >
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -40,9 +42,9 @@
                 </ComboBox>
                 <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
              materialDesign:HintAssist.Hint="Kết quả"
-             Width="150" Height="50"
-             Text="{Binding Result, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay,Converter= {StaticResource TextCoverter}}"
+             Text="{Binding ResultString, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
              Margin="5"
+             Width="200" Height="50"
              AcceptsReturn="True"
              Style="{StaticResource MaterialDesignFilledTextBox}"
              TextWrapping="Wrap" />
@@ -100,7 +102,7 @@
 
             </DataGrid>
         </materialDesign:Card>
-        
+
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="10">
             <Button Content="Save" Command="{Binding SaveCommand}" Margin="5"/>

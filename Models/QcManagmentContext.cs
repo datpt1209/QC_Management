@@ -21,6 +21,8 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<ControlInfoDetail> ControlInfoDetails { get; set; }
 
+    public virtual DbSet<ControlType> ControlTypes { get; set; }
+
     public virtual DbSet<Device> Devices { get; set; }
 
     public virtual DbSet<DeviceTest> DeviceTests { get; set; }
@@ -68,10 +70,9 @@ public partial class QcManagmentContext : DbContext
                 .HasColumnName("LOT");
             entity.Property(e => e.ProductionDate).HasColumnType("datetime");
 
-            entity.HasOne(d => d.IdCategoryNavigation).WithMany(p => p.ControlInfos)
-                .HasForeignKey(d => d.IdCategory)
-                .OnDelete(DeleteBehavior.SetNull)
-                .HasConstraintName("FK_ControlInfo_Category");
+            entity.HasOne(d => d.IdControlTypeNavigation).WithMany(p => p.ControlInfos)
+                .HasForeignKey(d => d.IdControlType)
+                .HasConstraintName("FK_ControlInfo_ControlType");
         });
 
         modelBuilder.Entity<ControlInfoDetail>(entity =>
@@ -107,6 +108,18 @@ public partial class QcManagmentContext : DbContext
                 .HasForeignKey(d => d.IdTest)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ControlInfoDetail_Test");
+        });
+
+        modelBuilder.Entity<ControlType>(entity =>
+        {
+            entity.ToTable("ControlType");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+
+            entity.HasOne(d => d.IdCategoryNavigation).WithMany(p => p.ControlTypes)
+                .HasForeignKey(d => d.IdCategory)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ControlType_Category");
         });
 
         modelBuilder.Entity<Device>(entity =>

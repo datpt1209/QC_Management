@@ -47,6 +47,8 @@ namespace QC_Management.ViewModels
         private double _MeanPXN;
         public double MeanPXN { get => _MeanPXN; set { _MeanPXN = value; OnPropertyChanged(); } }
 
+        private bool _isChecked;
+        public bool isChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged(); } }
 
         private double _SdPXN;
         public double SdPXN { get => _SdPXN; set { _SdPXN = value; OnPropertyChanged(); } }
@@ -73,6 +75,7 @@ namespace QC_Management.ViewModels
                     SdPXN = (double)SelectedItem.SdApp;
                     SelectedDevice = SelectedItem.IdDeviceNavigation;
                     LOT = SelectedItem.Lot;
+                    isChecked = (bool)SelectedItem.Status;
 
                 }
             }
@@ -209,7 +212,8 @@ namespace QC_Management.ViewModels
                 && SelectedItem.SdNsx == SDNSX
                 && SelectedItem.MeanApp == MeanPXN
                 && SelectedItem.SdApp == SdPXN
-                && SelectedItem.Lot == LOT)
+                && SelectedItem.Lot == LOT
+                && SelectedItem.Status== isChecked)
                     return false;
 
                 return true;
@@ -227,6 +231,7 @@ namespace QC_Management.ViewModels
                 SelectedItem.SdApp = SdPXN;
                 SelectedItem.Status = SelectedControlInfo.Status;
                 SelectedItem.Lot = LOT;
+                SelectedItem.Status = isChecked;
                 try
                 {
                     DataProvider.Ins.DB.SaveChanges();

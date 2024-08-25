@@ -252,8 +252,8 @@
                         <Color>Gainsboro</Color>
                         <Style>None</Style>
                       </Border>
-                      <FontSize>6pt</FontSize>
-                      <Format>dd/MM/yyyy - #</Format>
+                      <FontSize>7pt</FontSize>
+                      <Format>dd/MM - #</Format>
                     </Style>
                     <ChartAxisTitle>
                       <Caption>Ngày thực hiện</Caption>
@@ -536,9 +536,9 @@
               </Style>
             </ChartNoDataMessage>
             <DataSetName>DataSet1</DataSetName>
-            <Top>2.29277cm</Top>
+            <Top>2.90131cm</Top>
             <Left>1.32504cm</Left>
-            <Height>11.85306cm</Height>
+            <Height>9.47181cm</Height>
             <Width>26.34891cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
@@ -1735,6 +1735,77 @@
               </Border>
             </Style>
           </Tablix>
+          <Textbox Name="Textbox3">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>="Ngày " &amp; Day(Now()) &amp; " tháng " &amp; Month(Now()) &amp; " năm " &amp; Year(Now())</Value>
+                    <Style>
+                      <FontSize>11pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox2</rd:DefaultName>
+            <Top>12.54951cm</Top>
+            <Left>20.12828cm</Left>
+            <Height>0.6cm</Height>
+            <Width>5.96095cm</Width>
+            <ZIndex>4</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Bottom</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
+          <Textbox Name="Textbox4">
+            <CanGrow>true</CanGrow>
+            <KeepTogether>true</KeepTogether>
+            <Paragraphs>
+              <Paragraph>
+                <TextRuns>
+                  <TextRun>
+                    <Value>Người xem xét</Value>
+                    <Style>
+                      <FontFamily />
+                      <FontSize>11pt</FontSize>
+                    </Style>
+                  </TextRun>
+                </TextRuns>
+                <Style>
+                  <TextAlign>Center</TextAlign>
+                </Style>
+              </Paragraph>
+            </Paragraphs>
+            <rd:DefaultName>Textbox1</rd:DefaultName>
+            <Top>13.29062cm</Top>
+            <Left>21.76826cm</Left>
+            <Height>0.6cm</Height>
+            <Width>2.99213cm</Width>
+            <ZIndex>5</ZIndex>
+            <Style>
+              <Border>
+                <Style>None</Style>
+              </Border>
+              <VerticalAlign>Top</VerticalAlign>
+              <PaddingLeft>2pt</PaddingLeft>
+              <PaddingRight>2pt</PaddingRight>
+              <PaddingTop>2pt</PaddingTop>
+              <PaddingBottom>2pt</PaddingBottom>
+            </Style>
+          </Textbox>
         </ReportItems>
         <Height>14.74613cm</Height>
         <Style />
@@ -1857,7 +1928,7 @@
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.2065cm</Height>
+          <Height>1.70921cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -1884,7 +1955,7 @@
               <rd:DefaultName>Textbox11</rd:DefaultName>
               <Top>0.14111cm</Top>
               <Left>1.32504cm</Left>
-              <Height>0.6cm</Height>
+              <Height>0.89104cm</Height>
               <Width>6.2465cm</Width>
               <Style>
                 <Border>
@@ -1925,7 +1996,7 @@
               <rd:DefaultName>PageNumber</rd:DefaultName>
               <Top>0.14111cm</Top>
               <Left>25.39622cm</Left>
-              <Height>0.6cm</Height>
+              <Height>0.89104cm</Height>
               <Width>2.43649cm</Width>
               <ZIndex>1</ZIndex>
               <Style>

@@ -3,9 +3,8 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class ControlInfo : BaseViewModel
+public partial class ControlInfo
 {
-
     public int Id { get; set; }
 
     public string Name { get; set; } = null!;
@@ -18,14 +17,13 @@ public partial class ControlInfo : BaseViewModel
 
     public bool Status { get; set; }
 
-    public int? IdCategory { get; set; }
+    public int? IdControlType { get; set; }
 
     public virtual ICollection<ControlInfoDetail> ControlInfoDetails { get; set; } = new List<ControlInfoDetail>();
 
-    public virtual Category? IdCategoryNavigation { get; set; }
-
+    public virtual ControlType? IdControlTypeNavigation { get; set; }
     public override string ToString()
     {
-        return $"{this.Name} - {this.Lot}";
+        return $"{Name} - {Lot}";
     }
 }
