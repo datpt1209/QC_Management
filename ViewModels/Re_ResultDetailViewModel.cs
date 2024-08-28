@@ -133,21 +133,12 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 DeviceName = reResultGroup.DeviceName;
+
                 LevelName = reResultGroup.LevelName;
                 IdLevel = reResultGroup.IdLevel;
                 Date = reResultGroup.DateTime.Date;
                 Time = DateTime.Now.ToString("HH:mm:ss");
-                var indexList = DataProvider.Ins.DB.Results.Where(s => s.IdDevice == 20 && s.DateRun.Date == reResultGroup.DateTime.Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
-
-                if (indexList == null || indexList.Count() == 0)
-                {
-                    Index = 1;
-                }
-                else
-                {
-                    Index = (int)(indexList.Max() + 1);
-                }
-
+   
                 ResutlViewList = new ObservableCollection<ResultReView>();
 
                 foreach (var item in Results)
@@ -192,6 +183,17 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
+                var indexList = DataProvider.Ins.DB.Results.Where(s => s.IdDevice == reResultGroup.IdDevice && s.DateRun.Date == Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
+
+                if (indexList == null || indexList.Count() == 0)
+                {
+                    Index = 1;
+                }
+                else
+                {
+                    Index = (int)(indexList.Max() + 1);
+                }
+
                 var results = new ObservableCollection<Result>();
                 foreach (var item in ResutlViewList)
                 {
@@ -200,7 +202,7 @@ namespace QC_Management.ViewModels
                         Result result = new Result()
                         {
                             IdTest = item.idTest,
-                            IdDevice = 20,
+                            IdDevice = reResultGroup.IdDevice,
                             IdLevel = reResultGroup.IdLevel,
                             DateRun = Date.Date,
                             Time = DateTime.Now.TimeOfDay,

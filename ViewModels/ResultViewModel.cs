@@ -316,6 +316,7 @@ namespace QC_Management.ViewModels
                 .Select(g => new ReResultGroup
                 {
                     DeviceName = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Name ?? "Unknown Device",
+                    IdDevice = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Id ?? 0,
                     LevelName = DB.LevelQcs.FirstOrDefault(l => l.Id == g.Key.IdLevel)?.Name ?? "Unknown Level",
                     IdLevel = DB.LevelQcs.FirstOrDefault(l => l.Id == g.Key.IdLevel)?.Id ?? 0,
                     Index = (int)g.Key.Index,

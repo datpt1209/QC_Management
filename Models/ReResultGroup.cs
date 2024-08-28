@@ -10,6 +10,7 @@ namespace QC_Management.Models
     public class ReResultGroup
     {
         public string DeviceName { get; set; } = string.Empty;
+        public int IdDevice { get; set; }
         public string LevelName { get; set; } = string.Empty;
         public int IdLevel { get; set; }
         public int Index { get; set; }
