@@ -118,7 +118,7 @@
                   <Width>1.92456cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>2.95575cm</Width>
+                  <Width>2.71763cm</Width>
                 </TablixColumn>
               </TablixColumns>
               <TablixRows>
@@ -720,7 +720,7 @@
             <Top>3.06808cm</Top>
             <Left>1.1498cm</Left>
             <Height>1.79267cm</Height>
-            <Width>15.18322cm</Width>
+            <Width>14.9451cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -789,7 +789,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
             <Top>5.67241cm</Top>
-            <Left>14.85881cm</Left>
+            <Left>14.22674cm</Left>
             <Height>0.6cm</Height>
             <Width>2.99213cm</Width>
             <ZIndex>2</ZIndex>
@@ -811,7 +811,7 @@
               <Paragraph>
                 <TextRuns>
                   <TextRun>
-                    <Value>="Ngày " &amp; Day(Now()) &amp; " tháng " &amp; Month(Now()) &amp; " năm " &amp; Year(Now())</Value>
+                    <Value>Ngày ...... tháng ...... năm 20...</Value>
                     <Style>
                       <FontSize>11pt</FontSize>
                     </Style>
@@ -824,7 +824,7 @@
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
             <Top>4.96658cm</Top>
-            <Left>13.29037cm</Left>
+            <Left>12.6583cm</Left>
             <Height>0.6cm</Height>
             <Width>5.96095cm</Width>
             <ZIndex>3</ZIndex>
@@ -955,10 +955,9 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
-                      <ColSpan>3</ColSpan>
+                      <ColSpan>2</ColSpan>
                     </CellContents>
                   </TablixCornerCell>
-                  <TablixCornerCell />
                   <TablixCornerCell />
                   <TablixCornerCell>
                     <CellContents>
@@ -1035,7 +1034,7 @@
                   <TablixCornerCell />
                   <TablixCornerCell>
                     <CellContents>
-                      <Textbox Name="Textbox34">
+                      <Textbox Name="Textbox9">
                         <CanGrow>true</CanGrow>
                         <KeepTogether>true</KeepTogether>
                         <Paragraphs>
@@ -1053,7 +1052,7 @@
                             </Style>
                           </Paragraph>
                         </Paragraphs>
-                        <rd:DefaultName>Textbox32</rd:DefaultName>
+                        <rd:DefaultName>Textbox9</rd:DefaultName>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1065,9 +1064,10 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
-                      <ColSpan>3</ColSpan>
+                      <ColSpan>4</ColSpan>
                     </CellContents>
                   </TablixCornerCell>
+                  <TablixCornerCell />
                   <TablixCornerCell />
                   <TablixCornerCell />
                 </TablixCornerRow>
@@ -1161,40 +1161,6 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox54</rd:DefaultName>
-                        <Style>
-                          <Border>
-                            <Style>Solid</Style>
-                          </Border>
-                          <VerticalAlign>Middle</VerticalAlign>
-                          <PaddingLeft>2pt</PaddingLeft>
-                          <PaddingRight>2pt</PaddingRight>
-                          <PaddingTop>2pt</PaddingTop>
-                          <PaddingBottom>2pt</PaddingBottom>
-                        </Style>
-                      </Textbox>
-                    </CellContents>
-                  </TablixCornerCell>
-                  <TablixCornerCell>
-                    <CellContents>
-                      <Textbox Name="Textbox5">
-                        <CanGrow>true</CanGrow>
-                        <KeepTogether>true</KeepTogether>
-                        <Paragraphs>
-                          <Paragraph>
-                            <TextRuns>
-                              <TextRun>
-                                <Value>N</Value>
-                                <Style>
-                                  <FontWeight>Bold</FontWeight>
-                                </Style>
-                              </TextRun>
-                            </TextRuns>
-                            <Style>
-                              <TextAlign>Center</TextAlign>
-                            </Style>
-                          </Paragraph>
-                        </Paragraphs>
-                        <rd:DefaultName>Textbox5</rd:DefaultName>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1365,6 +1331,40 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox16</rd:DefaultName>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixCornerCell>
+                  <TablixCornerCell>
+                    <CellContents>
+                      <Textbox Name="Textbox5">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value>N</Value>
+                                <Style>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox5</rd:DefaultName>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1730,73 +1730,73 @@
                           </TablixHeader>
                           <TablixMembers>
                             <TablixMember>
-                              <TablixHeader>
-                                <Size>1.10624cm</Size>
-                                <CellContents>
-                                  <Textbox Name="Textbox8">
-                                    <CanGrow>true</CanGrow>
-                                    <KeepTogether>true</KeepTogether>
-                                    <Paragraphs>
-                                      <Paragraph>
-                                        <TextRuns>
-                                          <TextRun>
-                                            <Value>=Count(Fields!SDs.Value)</Value>
-                                            <Style />
-                                          </TextRun>
-                                        </TextRuns>
-                                        <Style>
-                                          <TextAlign>Center</TextAlign>
-                                        </Style>
-                                      </Paragraph>
-                                    </Paragraphs>
-                                    <rd:DefaultName>Textbox8</rd:DefaultName>
-                                    <Style>
-                                      <Border>
-                                        <Style>Solid</Style>
-                                      </Border>
-                                      <PaddingLeft>2pt</PaddingLeft>
-                                      <PaddingRight>2pt</PaddingRight>
-                                      <PaddingTop>2pt</PaddingTop>
-                                      <PaddingBottom>2pt</PaddingBottom>
-                                    </Style>
-                                  </Textbox>
-                                </CellContents>
-                              </TablixHeader>
+                              <Group Name="SD3">
+                                <GroupExpressions>
+                                  <GroupExpression>=Fields!SD.Value</GroupExpression>
+                                </GroupExpressions>
+                              </Group>
+                              <SortExpressions>
+                                <SortExpression>
+                                  <Value>=Fields!SD.Value</Value>
+                                </SortExpression>
+                              </SortExpressions>
                               <TablixMembers>
                                 <TablixMember>
-                                  <Group Name="SD3">
+                                  <Group Name="Mean3">
                                     <GroupExpressions>
-                                      <GroupExpression>=Fields!SD.Value</GroupExpression>
+                                      <GroupExpression>=Fields!Mean.Value</GroupExpression>
                                     </GroupExpressions>
                                   </Group>
                                   <SortExpressions>
                                     <SortExpression>
-                                      <Value>=Fields!SD.Value</Value>
+                                      <Value>=Fields!Mean.Value</Value>
                                     </SortExpression>
                                   </SortExpressions>
+                                  <TablixHeader>
+                                    <Size>1.58063cm</Size>
+                                    <CellContents>
+                                      <Textbox Name="Mean13">
+                                        <CanGrow>true</CanGrow>
+                                        <KeepTogether>true</KeepTogether>
+                                        <Paragraphs>
+                                          <Paragraph>
+                                            <TextRuns>
+                                              <TextRun>
+                                                <Value>=Fields!Mean.Value</Value>
+                                                <Style />
+                                              </TextRun>
+                                            </TextRuns>
+                                            <Style>
+                                              <TextAlign>Center</TextAlign>
+                                            </Style>
+                                          </Paragraph>
+                                        </Paragraphs>
+                                        <rd:DefaultName>Mean11</rd:DefaultName>
+                                        <Style>
+                                          <Border>
+                                            <Style>Solid</Style>
+                                          </Border>
+                                          <PaddingLeft>2pt</PaddingLeft>
+                                          <PaddingRight>2pt</PaddingRight>
+                                          <PaddingTop>2pt</PaddingTop>
+                                          <PaddingBottom>2pt</PaddingBottom>
+                                        </Style>
+                                      </Textbox>
+                                    </CellContents>
+                                  </TablixHeader>
                                   <TablixMembers>
                                     <TablixMember>
-                                      <Group Name="Mean3">
-                                        <GroupExpressions>
-                                          <GroupExpression>=Fields!Mean.Value</GroupExpression>
-                                        </GroupExpressions>
-                                      </Group>
-                                      <SortExpressions>
-                                        <SortExpression>
-                                          <Value>=Fields!Mean.Value</Value>
-                                        </SortExpression>
-                                      </SortExpressions>
                                       <TablixHeader>
-                                        <Size>1.58063cm</Size>
+                                        <Size>1.46576cm</Size>
                                         <CellContents>
-                                          <Textbox Name="Mean13">
+                                          <Textbox Name="SD13">
                                             <CanGrow>true</CanGrow>
                                             <KeepTogether>true</KeepTogether>
                                             <Paragraphs>
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!Mean.Value</Value>
+                                                    <Value>=Fields!SD.Value</Value>
                                                     <Style />
                                                   </TextRun>
                                                 </TextRuns>
@@ -1805,7 +1805,7 @@
                                                 </Style>
                                               </Paragraph>
                                             </Paragraphs>
-                                            <rd:DefaultName>Mean11</rd:DefaultName>
+                                            <rd:DefaultName>SD11</rd:DefaultName>
                                             <Style>
                                               <Border>
                                                 <Style>Solid</Style>
@@ -1821,16 +1821,16 @@
                                       <TablixMembers>
                                         <TablixMember>
                                           <TablixHeader>
-                                            <Size>1.46576cm</Size>
+                                            <Size>1.78797cm</Size>
                                             <CellContents>
-                                              <Textbox Name="SD13">
+                                              <Textbox Name="MeanPXN3">
                                                 <CanGrow>true</CanGrow>
                                                 <KeepTogether>true</KeepTogether>
                                                 <Paragraphs>
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Fields!SD.Value</Value>
+                                                        <Value>=Fields!MeanPXN.Value</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -1839,7 +1839,7 @@
                                                     </Style>
                                                   </Paragraph>
                                                 </Paragraphs>
-                                                <rd:DefaultName>SD11</rd:DefaultName>
+                                                <rd:DefaultName>MeanPXN</rd:DefaultName>
                                                 <Style>
                                                   <Border>
                                                     <Style>Solid</Style>
@@ -1855,16 +1855,16 @@
                                           <TablixMembers>
                                             <TablixMember>
                                               <TablixHeader>
-                                                <Size>1.78797cm</Size>
+                                                <Size>1.63998cm</Size>
                                                 <CellContents>
-                                                  <Textbox Name="MeanPXN3">
+                                                  <Textbox Name="SDPXN3">
                                                     <CanGrow>true</CanGrow>
                                                     <KeepTogether>true</KeepTogether>
                                                     <Paragraphs>
                                                       <Paragraph>
                                                         <TextRuns>
                                                           <TextRun>
-                                                            <Value>=Fields!MeanPXN.Value</Value>
+                                                            <Value>=Fields!SDPXN.Value</Value>
                                                             <Style />
                                                           </TextRun>
                                                         </TextRuns>
@@ -1873,7 +1873,7 @@
                                                         </Style>
                                                       </Paragraph>
                                                     </Paragraphs>
-                                                    <rd:DefaultName>MeanPXN</rd:DefaultName>
+                                                    <rd:DefaultName>SDPXN</rd:DefaultName>
                                                     <Style>
                                                       <Border>
                                                         <Style>Solid</Style>
@@ -1889,16 +1889,16 @@
                                               <TablixMembers>
                                                 <TablixMember>
                                                   <TablixHeader>
-                                                    <Size>1.63998cm</Size>
+                                                    <Size>1.2306cm</Size>
                                                     <CellContents>
-                                                      <Textbox Name="SDPXN3">
+                                                      <Textbox Name="Textbox18">
                                                         <CanGrow>true</CanGrow>
                                                         <KeepTogether>true</KeepTogether>
                                                         <Paragraphs>
                                                           <Paragraph>
                                                             <TextRuns>
                                                               <TextRun>
-                                                                <Value>=Fields!SDPXN.Value</Value>
+                                                                <Value>=System.Math.Round(Fields!SDPXN.Value / Fields!MeanPXN.Value * 100, 2)</Value>
                                                                 <Style />
                                                               </TextRun>
                                                             </TextRuns>
@@ -1907,7 +1907,7 @@
                                                             </Style>
                                                           </Paragraph>
                                                         </Paragraphs>
-                                                        <rd:DefaultName>SDPXN</rd:DefaultName>
+                                                        <rd:DefaultName>Textbox17</rd:DefaultName>
                                                         <Style>
                                                           <Border>
                                                             <Style>Solid</Style>
@@ -1923,16 +1923,16 @@
                                                   <TablixMembers>
                                                     <TablixMember>
                                                       <TablixHeader>
-                                                        <Size>1.2306cm</Size>
+                                                        <Size>1.40197cm</Size>
                                                         <CellContents>
-                                                          <Textbox Name="Textbox18">
+                                                          <Textbox Name="Textbox8">
                                                             <CanGrow>true</CanGrow>
                                                             <KeepTogether>true</KeepTogether>
                                                             <Paragraphs>
                                                               <Paragraph>
                                                                 <TextRuns>
                                                                   <TextRun>
-                                                                    <Value>=System.Math.Round(Fields!SDPXN.Value / Fields!MeanPXN.Value * 100, 2)</Value>
+                                                                    <Value>=Count(Fields!SDs.Value)</Value>
                                                                     <Style />
                                                                   </TextRun>
                                                                 </TextRuns>
@@ -1941,7 +1941,7 @@
                                                                 </Style>
                                                               </Paragraph>
                                                             </Paragraphs>
-                                                            <rd:DefaultName>Textbox17</rd:DefaultName>
+                                                            <rd:DefaultName>Textbox8</rd:DefaultName>
                                                             <Style>
                                                               <Border>
                                                                 <Style>Solid</Style>
@@ -2090,7 +2090,7 @@
             <Top>0.96987cm</Top>
             <Left>0.60537cm</Left>
             <Height>1.835cm</Height>
-            <Width>18.72533cm</Width>
+            <Width>19.02106cm</Width>
             <ZIndex>5</ZIndex>
             <Style>
               <Border>
@@ -2102,7 +2102,7 @@
         <Height>7.21432cm</Height>
         <Style />
       </Body>
-      <Width>20.35137cm</Width>
+      <Width>19.97861cm</Width>
       <Page>
         <PageHeader>
           <Height>2.81375cm</Height>

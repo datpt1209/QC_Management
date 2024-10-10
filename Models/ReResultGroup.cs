@@ -15,6 +15,7 @@ namespace QC_Management.Models
         public int IdLevel { get; set; }
         public int Index { get; set; }
         public DateTime DateTime { get; set; }
+        public TimeSpan Time { get; set; }
         public ObservableCollection<ReResult> Results { get; set; } = new ObservableCollection<ReResult>();
     }
 }

@@ -243,8 +243,8 @@ namespace QC_Management.ViewModels
                             idTest = item.Id,
                             QCName = qcInfor.IdControlInfoNavigation.Name,
                             LOT = qcInfor.Lot,
-                            MeanApp = qcInfor.MeanApp,
-                            SdApp = qcInfor.SdApp,
+                            MeanApp = qcInfor.CurMean,
+                            SdApp = qcInfor.CurSd,
                             MeanNSX = qcInfor.MeanNsx,
                             SdNSX = qcInfor.SdNsx,
                             Max = qcInfor.MeanApp + 3 * qcInfor.SdApp,
@@ -321,6 +321,7 @@ namespace QC_Management.ViewModels
                     IdLevel = DB.LevelQcs.FirstOrDefault(l => l.Id == g.Key.IdLevel)?.Id ?? 0,
                     Index = (int)g.Key.Index,
                     DateTime = g.Key.Date,
+                    Time = g.FirstOrDefault()?.Time ?? TimeSpan.Zero, // Lấy thời gian đầu tiên trong nhóm
                     Results = new ObservableCollection<ReResult>(g.ToList())
                 })
                 .ToList();

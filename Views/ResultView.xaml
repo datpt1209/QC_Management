@@ -149,35 +149,50 @@
                     </DataGrid>
                 </materialDesign:Card>
                 <Grid Grid.Column="1">
-                    <ListView SelectedItem="{Binding SelectedReResultGroup}" ItemsSource="{Binding GroupedReResults}" Margin="10">
-
+                    <ListView ItemsSource="{Binding GroupedReResults}" SelectedItem="{Binding SelectedReResultGroup}" Margin="10"
+                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="MouseDoubleClick">
                                 <i:InvokeCommandAction Command="{Binding ShowDetailCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView}}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-                        <ListView.GroupStyle>
-                            <GroupStyle>
-                                <GroupStyle.HeaderTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal">
-                                            <TextBlock Text="Device: " FontWeight="Bold"/>
-                                            <TextBlock Text="{Binding Key.IdDevice}" Margin="5,0"/>
-                                            <TextBlock Text="Level: " FontWeight="Bold"/>
-                                            <TextBlock Text="{Binding Key.IdLevel}" Margin="5,0"/>
-                                            <TextBlock Text="Date: " FontWeight="Bold"/>
-                                            <TextBlock Text="{Binding Key.DateTime}" Margin="5,0"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </GroupStyle.HeaderTemplate>
-                            </GroupStyle>
-                        </ListView.GroupStyle>
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Device" DisplayMemberBinding="{Binding DeviceName}" Width="100"/>
-                                <GridViewColumn Header="Level" DisplayMemberBinding="{Binding LevelName}" Width="100"/>
-                                <GridViewColumn Header="Lần QC" DisplayMemberBinding="{Binding Index}" Width="100"/>
-                                <GridViewColumn Header="Date" DisplayMemberBinding="{Binding DateTime}" Width="100"/>
+                                <GridViewColumn Header="Device" Width="120">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DeviceName}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Level" Width="90">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding LevelName}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Lần QC" Width="90">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Index}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Ngày" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding DateTime, StringFormat={}{0:dd/MM/yyyy}}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
+                                <GridViewColumn Header="Giờ" Width="100">
+                                    <GridViewColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <TextBlock Text="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}" TextAlignment="Center" VerticalAlignment="Center"/>
+                                        </DataTemplate>
+                                    </GridViewColumn.CellTemplate>
+                                </GridViewColumn>
                                 <!-- Add more columns as needed -->
                             </GridView>
                         </ListView.View>

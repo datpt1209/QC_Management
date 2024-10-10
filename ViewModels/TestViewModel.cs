@@ -201,7 +201,7 @@ namespace QC_Management.ViewModels
                 {
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Cập nhật Test thành công!");
-                    List = new ObservableCollection<Test>(DB.Tests);
+                    List = new ObservableCollection<Test>(DB.Tests.Where(s=> s.IdCategory == SelectedCategory.Id));
 
                 }
                 catch (Exception ex)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class ControlInfoDetail : BaseViewModel
+public partial class ControlInfoDetail
 {
     public int Id { get; set; }
 
@@ -26,6 +26,10 @@ public partial class ControlInfoDetail : BaseViewModel
     public int? IdDevice { get; set; }
 
     public string? Lot { get; set; }
+
+    public double? CurMean { get; set; }
+
+    public double? CurSd { get; set; }
 
     public virtual ControlInfo IdControlInfoNavigation { get; set; } = null!;
 

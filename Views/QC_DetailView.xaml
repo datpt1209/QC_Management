@@ -37,8 +37,8 @@
             <materialDesign:Card Grid.Row="0" Margin="5">
                 <WrapPanel Margin="5">
                     <ComboBox
-                        Margin="5"
                         DisplayMemberPath="Name"
+                        Margin="5"
                         ItemsSource="{Binding DeviceList}"
                         SelectedItem="{Binding SelectedDevice}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
@@ -56,12 +56,30 @@
 
                     <ComboBox
                         Margin="5"
+                        DisplayMemberPath="Name"
+                        ItemsSource="{Binding ListType}"
+                        SelectedItem="{Binding SelectedType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ComboBoxAssist.MaxLength="2"
+                        materialDesign:HintAssist.Hint="Loại QC"
+                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        materialDesign:HintAssist.HintOpacity=".26"
+                        IsEditable="True" Height="42" Width="129">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding QCTypeSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
+                    <ComboBox
                         ItemsSource="{Binding ControlInfoList}"
                         SelectedItem="{Binding SelectedControlInfo}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="QC Infor"
                         Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" Width="237" Height="42">
+                        IsEditable="True" Width="201" Height="42">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -146,6 +164,22 @@
                              AcceptsReturn="True"
                              Style="{StaticResource MaterialDesignFilledTextBox}"
                              TextWrapping="Wrap" Width="auto" Height="42"/>
+                    <TextBox
+     Margin="5"
+          VerticalAlignment="Center" 
+          materialDesign:HintAssist.Hint="Mean Curent"
+          Text="{Binding CurMean}"
+          AcceptsReturn="True"
+          Style="{StaticResource MaterialDesignFilledTextBox}"
+          TextWrapping="Wrap" Width="auto" Height="42" />
+                    <TextBox
+     Margin="5"
+          VerticalAlignment="Center" 
+          materialDesign:HintAssist.Hint="SD Curent"
+          Text="{Binding CurSd}"
+          AcceptsReturn="True"
+          Style="{StaticResource MaterialDesignFilledTextBox}"
+          TextWrapping="Wrap" Width="auto" Height="42"/>
                     <CheckBox
                             Content="Kích hoạt"
                             IsChecked="{Binding isChecked}"

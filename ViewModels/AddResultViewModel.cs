@@ -175,29 +175,29 @@ namespace QC_Management.ViewModels
 
         private async Task SaveAsync()
         {
-           
-                if (NewResults.Count == 0)
+
+            if (NewResults.Count == 0)
+            {
+                MessageBox.Show("Chưa nhập kết quả QC", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                // Gọi hàm lưu dữ liệu
+                bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, NewResults);
+
+                // Hiển thị thông báo thành công hoặc thất bại
+                if (isSaved)
                 {
-                    MessageBox.Show("Chưa nhập kết quả QC", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _window.DialogResult = true;
+                    _window.Close();
                 }
                 else
                 {
-                    // Gọi hàm lưu dữ liệu
-                    bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, NewResults);
-
-                    // Hiển thị thông báo thành công hoặc thất bại
-                    if (isSaved)
-                    {
-                        MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        _window.DialogResult = true;
-                        _window.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                    MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
-              
+            }
+
         }
 
         private void Cancel()

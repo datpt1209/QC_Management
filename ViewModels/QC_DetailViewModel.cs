@@ -10,11 +10,15 @@ namespace QC_Management.ViewModels
 {
     public class QC_DetailViewModel : BaseViewModel
     {
-        private ObservableCollection<ControlInfoDetail> _List;
-        public ObservableCollection<ControlInfoDetail> List { get => _List; set { _List = value; OnPropertyChanged(); } }
+        private List<ControlInfoDetail> _List;
+        public List<ControlInfoDetail> List { get => _List; set { _List = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ControlInfoDetail> _ListDB;
         public ObservableCollection<ControlInfoDetail> ListDB { get => _ListDB; set { _ListDB = value; OnPropertyChanged(); } }
+
+        private ObservableCollection<ControlType> _ListType;
+        public ObservableCollection<ControlType> ListType { get => _ListType; set { _ListType = value; OnPropertyChanged(); } }
+
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
 
@@ -36,9 +40,14 @@ namespace QC_Management.ViewModels
         public ICommand LoadedCommand { get; set; }
         public ICommand QC_InfoSelectionChangedCommand { get; set; }
         public ICommand DeviceSelectionChangedCommand { get; set; }
+        public ICommand QCTypeSelectionChangedCommand { get; set; }
 
         private double _MeanNSX;
         public double MeanNSX { get => _MeanNSX; set { _MeanNSX = value; OnPropertyChanged(); } }
+
+
+        private ControlType? _SelectedType;
+        public ControlType? SelectedType { get => _SelectedType; set { _SelectedType = value; OnPropertyChanged(); } }
 
 
         private double _SDNSX;
@@ -46,6 +55,12 @@ namespace QC_Management.ViewModels
 
         private double _MeanPXN;
         public double MeanPXN { get => _MeanPXN; set { _MeanPXN = value; OnPropertyChanged(); } }
+
+        private double _CurMean;
+        public double CurMean { get => _CurMean; set { _CurMean = value; OnPropertyChanged(); } }
+
+        private double _CurSd;
+        public double CurSd { get => _CurSd; set { _CurSd = value; OnPropertyChanged(); } }
 
         private bool _isChecked;
         public bool isChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged(); } }
@@ -76,6 +91,8 @@ namespace QC_Management.ViewModels
                     SelectedDevice = SelectedItem.IdDeviceNavigation;
                     LOT = SelectedItem.Lot;
                     isChecked = (bool)SelectedItem.Status;
+                    CurMean = (double)SelectedItem.CurMean;
+                    CurSd = (double)SelectedItem.CurSd;
 
                 }
             }
@@ -154,6 +171,8 @@ namespace QC_Management.ViewModels
                      MeanApp = MeanPXN,
                      SdApp = SdPXN,
                      Status = SelectedControlInfo.Status,
+                     CurSd = CurSd,
+                     CurMean = CurMean,
                      Lot = LOT
                  };
 
@@ -162,7 +181,10 @@ namespace QC_Management.ViewModels
                      DataProvider.Ins.DB.ControlInfoDetails.Add(QC_Infor);
                      DataProvider.Ins.DB.SaveChanges();
                      MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                     List.Add(QC_Infor);
+                     // Refresh ListDB and List
+                     ListDB = new ObservableCollection<ControlInfoDetail>(DataProvider.Ins.DB.ControlInfoDetails);
+                     List = ListDB.Where(s => s.IdControlInfo == SelectedControlInfo.Id && s.IdDevice == SelectedDevice.Id).ToList();
+
 
                  }
                  catch (Exception ex)
@@ -184,36 +206,51 @@ namespace QC_Management.ViewModels
                 return true;
             }, (p) =>
             {
-                ControlInfoList = new ObservableCollection<ControlInfo>(ControlInfoListDB);
                 TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-                List = new ObservableCollection<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id).ToList());
+                //List = new ObservableCollection<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id).ToList());
+                ListType = new ObservableCollection<ControlType>(DataProvider.Ins.DB.ControlTypes.Where(x => x.IdCategory == SelectedDevice.IdCategory));
             });
 
             QC_InfoSelectionChangedCommand = new RelayCommand<Test>((p) =>
             {
-                if (SelectedDevice == null || SelectedControlInfo == null) return false;
+                if (SelectedDevice == null || SelectedControlInfo == null || SelectedType==null) return false;
                 else
                     return true;
             }, (p) =>
             {
-                List = new ObservableCollection<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id && s.IdControlInfo == SelectedControlInfo.Id).ToList());
+                List = new List<ControlInfoDetail>(ListDB.Where(s => s.IdDevice == SelectedDevice.Id && s.IdControlInfo == SelectedControlInfo.Id).ToList());
             });
+
+
+            QCTypeSelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
+            {
+                if (SelectedType == null) return false;
+                else
+               return true;
+
+            }, (p) =>
+            {
+                ControlInfoList = new ObservableCollection<ControlInfo>(DataProvider.Ins.DB.ControlInfos.Where(s => s.IdControlType == SelectedType.Id).ToList());
+            });
+
 
             EditCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                if (SelectedItem == null)
-                    return false;
+            if (SelectedItem == null)
+                return false;
 
-                else if (
-                SelectedItem.IdControlInfoNavigation == SelectedControlInfo 
-                && SelectedItem.IdLevelNavigation == SelectedLevel 
-                && SelectedItem.IdTestNavigation == SelectedTest 
-                && SelectedItem.MeanNsx == MeanNSX 
-                && SelectedItem.SdNsx == SDNSX
-                && SelectedItem.MeanApp == MeanPXN
-                && SelectedItem.SdApp == SdPXN
-                && SelectedItem.Lot == LOT
-                && SelectedItem.Status== isChecked)
+            else if (
+            SelectedItem.IdControlInfoNavigation == SelectedControlInfo
+            && SelectedItem.IdLevelNavigation == SelectedLevel
+            && SelectedItem.IdTestNavigation == SelectedTest
+            && SelectedItem.MeanNsx == MeanNSX
+            && SelectedItem.SdNsx == SDNSX
+            && SelectedItem.MeanApp == MeanPXN
+            && SelectedItem.SdApp == SdPXN
+            && SelectedItem.Lot == LOT
+            && SelectedItem.Status == isChecked
+            && SelectedItem.CurMean == CurMean 
+            && SelectedItem.CurSd == CurSd)
                     return false;
 
                 return true;
@@ -232,20 +269,22 @@ namespace QC_Management.ViewModels
                 SelectedItem.Status = SelectedControlInfo.Status;
                 SelectedItem.Lot = LOT;
                 SelectedItem.Status = isChecked;
+                SelectedItem.CurMean = CurMean;
+                SelectedItem.CurSd = CurSd;
                 try
                 {
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    List =new ObservableCollection<ControlInfoDetail>(ListDB.Where(s =>
-                    s.IdDevice == SelectedDevice.Id 
-                    && s.IdControlInfo == SelectedControlInfo.Id).ToList());
+                    // Refresh ListDB and List
+                    ListDB = new ObservableCollection<ControlInfoDetail>(DataProvider.Ins.DB.ControlInfoDetails);
+                    List = ListDB.Where(s => s.IdControlInfo == SelectedControlInfo.Id && s.IdDevice == SelectedDevice.Id).ToList();
+
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
                 }
             });
-
 
             DeleteCommand = new RelayCommand<ControlInfo>((p) =>
             {
@@ -267,7 +306,9 @@ namespace QC_Management.ViewModels
                         DataProvider.Ins.DB.Remove(deleteItem);
                         DataProvider.Ins.DB.SaveChanges();
                         MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        List.Remove(deleteItem);
+                        // Refresh ListDB and List
+                        ListDB = new ObservableCollection<ControlInfoDetail>(DataProvider.Ins.DB.ControlInfoDetails);
+                        List = ListDB.Where(s => s.IdControlInfo == SelectedControlInfo.Id && s.IdDevice == SelectedDevice.Id).ToList();
                     }
                     catch (Exception ex)
                     {
@@ -282,7 +323,7 @@ namespace QC_Management.ViewModels
         }
         private void LoadNew()
         {
-            List = new ObservableCollection<ControlInfoDetail> ();
+            List = new List<ControlInfoDetail>();
             ListDB = new ObservableCollection<ControlInfoDetail>(DataProvider.Ins.DB.ControlInfoDetails);
             TestList = new ObservableCollection<Test>(DataProvider.Ins.DB.Tests);
             LevelList = new ObservableCollection<LevelQc>(DataProvider.Ins.DB.LevelQcs);
