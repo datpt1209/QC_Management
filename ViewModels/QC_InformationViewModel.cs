@@ -115,8 +115,8 @@ namespace QC_Management.ViewModels
                     DataProvider.Ins.DB.ControlInfos.Add(QC_Infor);
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    
-                    ReLoad();
+                    ListDB.Add(QC_Infor);
+                    List = ListDB.Where(s => s.IdControlType == SelectedType.Id).ToList();
                 }
                 catch (Exception ex)
                 {
@@ -172,15 +172,28 @@ namespace QC_Management.ViewModels
 
             DeleteCommand = new RelayCommand<ControlInfo>((p) =>
             {
-                //if (SelectedItem == null)
-                //    return false;
-                //else
-                //{
-                //    return true;
-                //}
-                return false;
+                return SelectedItem != null;
 
-            }, (p) => { });
+            }, (p) => {
+
+                if (SelectedItem == null)
+                    return;
+                try
+                {
+                    DataProvider.Ins.DB.ControlInfos.Remove(SelectedItem);
+                    DataProvider.Ins.DB.SaveChanges();
+                    MessageBox.Show("Xóa thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Update the ListDB and List properties to refresh the ListView
+                    ListDB.Remove(SelectedItem);
+                    List = ListDB.Where(s => s.IdControlType == SelectedType.Id).ToList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                }
+
+            });
 
             QCTypeSelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
             {

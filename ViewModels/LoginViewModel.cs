@@ -31,7 +31,8 @@ namespace QC_Management.ViewModels
 
         public ICommand ForgotPasswordCommand { get; set; }
 
-        
+        public ICommand ConfigCommand { get; set; }
+
         // mọi thứ xử lý sẽ nằm trong này
         public LoginViewModel()
         {
@@ -50,11 +51,12 @@ namespace QC_Management.ViewModels
             ForgotPasswordCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { ForgotPassword(p); });
             CloseCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { p.Close(); });
             PasswordChangedCommand = new RelayCommand<PasswordBox>((p) => { return true; }, (p) => { Password = p.Password; });
+            ConfigCommand = new RelayCommand<Window>((p) => { return true; }, (p) => { Config(p); });
         }
 
         private async void Login(Window p)
         {
-           var connectionString = AppConfig.BuildConnectionString();
+           var connectionString = AppConfig.GetConnectionString("QC_ManagmentDB");
            IsIndeterminate = true;
             var (success, message) = await Task.Run(() =>
             {
@@ -144,6 +146,11 @@ namespace QC_Management.ViewModels
             view.ShowDialog();
         }
 
+        void Config(Window p)
+        {
+            ServerConfig view = new ServerConfig();
+            view.ShowDialog();
+        }
         public static string Base64Encode(string plainText)
         {
             var plainTextBytes = System.Text.Encoding.UTF8.GetBytes(plainText);

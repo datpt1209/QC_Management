@@ -79,6 +79,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="App.config">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
     <None Update="dsResult.xsd">
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsResult.Designer.cs</LastGenOutput>

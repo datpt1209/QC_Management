@@ -133,12 +133,11 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 DeviceName = reResultGroup.DeviceName;
-
                 LevelName = reResultGroup.LevelName;
                 IdLevel = reResultGroup.IdLevel;
                 Date = reResultGroup.DateTime.Date;
-                Time = DateTime.Now.ToString("HH:mm:ss");
-   
+                Time = string.Format("{0:D2}:{1:D2}:{2:D2}", reResultGroup.Time.Hours, reResultGroup.Time.Minutes, reResultGroup.Time.Seconds);
+
                 ResutlViewList = new ObservableCollection<ResultReView>();
 
                 foreach (var item in Results)
@@ -183,7 +182,10 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var indexList = DataProvider.Ins.DB.Results.Where(s => s.IdDevice == reResultGroup.IdDevice && s.DateRun.Date == Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
+                var indexList = DataProvider.Ins.DB.Results
+                .Where(s => s.IdDevice == reResultGroup.IdDevice && s.DateRun.Date == Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel)
+                .GroupBy(s => s.IndexQc)
+                .Select(s => s.Key).ToList();
 
                 if (indexList == null || indexList.Count() == 0)
                 {

@@ -167,7 +167,7 @@
                     <TextBox
      Margin="5"
           VerticalAlignment="Center" 
-          materialDesign:HintAssist.Hint="Mean Curent"
+          materialDesign:HintAssist.Hint="Current Mean"
           Text="{Binding CurMean}"
           AcceptsReturn="True"
           Style="{StaticResource MaterialDesignFilledTextBox}"
@@ -175,14 +175,14 @@
                     <TextBox
      Margin="5"
           VerticalAlignment="Center" 
-          materialDesign:HintAssist.Hint="SD Curent"
+          materialDesign:HintAssist.Hint="Current Sd"
           Text="{Binding CurSd}"
           AcceptsReturn="True"
           Style="{StaticResource MaterialDesignFilledTextBox}"
           TextWrapping="Wrap" Width="auto" Height="42"/>
                     <CheckBox
                             Content="Kích hoạt"
-                            IsChecked="{Binding isChecked}"
+                            IsChecked="{Binding IsChecked}"
                             />
 
                 </WrapPanel>
@@ -209,6 +209,8 @@
                             <GridViewColumn Header="SDNSX" Width="80" DisplayMemberBinding="{Binding SdNsx}"/>
                             <GridViewColumn Header="MeanPXN" Width="80" DisplayMemberBinding="{Binding MeanApp}"/>
                             <GridViewColumn Header="SDPXN" Width="50" DisplayMemberBinding="{Binding SdApp}"/>
+                            <GridViewColumn Header="Current Mena" Width="80" DisplayMemberBinding="{Binding CurMean}"/>
+                            <GridViewColumn Header="Current Sd" Width="50" DisplayMemberBinding="{Binding CurSd}"/>
                             <GridViewColumn Header="Active" Width="50" DisplayMemberBinding="{Binding Status}"/>
                         </GridView>
                     </ListView.View>

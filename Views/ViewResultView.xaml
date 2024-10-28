@@ -114,7 +114,7 @@
                 </Grid>
             </Grid>
 
-            <materialDesign:Card  Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+            <materialDesign:Card Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
                 <DataGrid Name="input" ItemsSource="{Binding ResultViewList}"
                           AutoGenerateColumns="False"
                           IsReadOnly="False"
@@ -123,18 +123,18 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
                         <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.Lot }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.MeanApp }" IsReadOnly="True" />
-                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.SdApp }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Mean" Binding="{Binding IdControlDetailNavigation.CurMean }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="SD" Binding="{Binding IdControlDetailNavigation.CurSd }" IsReadOnly="True" />
                         <DataGridTextColumn Header="Kết quả" IsReadOnly="False" Binding="{Binding Result1}">
                             <DataGridTextColumn.ElementStyle>
                                 <Style TargetType="{x:Type TextBlock}">
                                     <Setter Property="Foreground" Value="Green" />
-                                    <!-- Màu mặc định -->
+                                    <!-- Default color -->
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding IsOutRange}" Value="true">
                                             <Setter Property="Foreground" Value="Red" />
                                             <Setter Property="Background" Value="Yellow" />
-                                            <!-- Thay đổi màu nền nếu ngoài 2 SD -->
+                                            <!-- Change background color if out of range -->
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
@@ -155,7 +155,7 @@
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <TextBlock TextDecorations="Underline">
-             <ContentPresenter />
+                                                    <ContentPresenter />
                                                 </TextBlock>
                                             </ControlTemplate>
                                         </Button.Template>

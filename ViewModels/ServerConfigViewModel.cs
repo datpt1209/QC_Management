@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Markup;
 using XAct.Library.Settings;
 
 namespace QC_Management.ViewModels
@@ -66,11 +67,35 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var config = System.Configuration.ConfigurationManager.AppSettings;
-                UserName = config["Username"];
-                PassWord = config["Password"];
-                Server = config["Server"];
-                Database = config["Database"];
+                try
+                {
+
+                    string connectionString = AppConfig.GetConnectionString("QC_ManagmentDB");
+                    var parameters = connectionString.Split(';')
+                                                     .Select(part => part.Split('='))
+                                                     .ToDictionary(split => split[0].Trim(), split => split[1].Trim());
+
+                    if (parameters.ContainsKey("Trust Server Certificate"))
+                    {
+                        // Handle the 'trust server certificate' parameter as needed
+                        parameters.Remove("Trust Server Certificate");
+                    }
+
+                    var builder = new System.Data.SqlClient.SqlConnectionStringBuilder();
+                    foreach (var param in parameters)
+                    {
+                        builder[param.Key] = param.Value;
+                    }
+
+                    Server = builder.DataSource;
+                    Database = builder.InitialCatalog;
+                    UserName = builder.UserID;
+                    PassWord = builder.Password;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
             });
 
             okButton_Click = new RelayCommand<Window>((p) =>
@@ -79,27 +104,19 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                Configuration config = System.Configuration.
-                        ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-                config.AppSettings.Settings["Server"].Value = Server;
-                config.AppSettings.Settings["Database"].Value = Database;
-                config.AppSettings.Settings["Password"].Value = PassWord;
-                config.AppSettings.Settings["Username"].Value = UserName;
+                string serverName = Server;
+                string databaseName = Database;
+                string userId = UserName;
+                string password = PassWord;
 
-                try
-                {
-                    config.Save(ConfigurationSaveMode.Full);
-                    MessageBox.Show("Luu thanh cong");
-                    p.Close();
-                    
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                config.Save(ConfigurationSaveMode.Full);
-                System.Configuration.ConfigurationManager.RefreshSection("appSettings");
-              
+               
+                string connectionString = $"Data Source = {serverName}; Initial Catalog = {databaseName}; User ID = {userId}; Password = {password}; Trust Server Certificate = True";
+                
+                AppConfig.SaveConnectionString("QC_ManagmentDB", connectionString);
+                AppConfig.EncryptConfigSection("connectionStrings");
+                MessageBox.Show("Configuration saved and encrypted successfully!");
+                p.Close();
+
             });
 
             TestConnect_click = new RelayCommand<ControlInfoDetail>((p) =>
@@ -108,13 +125,6 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                AppConfig.Password = PassWord;
-                AppConfig.Username = UserName;
-                AppConfig.Database = Database;
-                AppConfig.Server = Server;
-
-                var con = AppConfig.BuildConnectionString();
-
                 var db = new QcManagmentContext();
                 try
                 {
@@ -125,7 +135,6 @@ namespace QC_Management.ViewModels
                         MessageBox.Show("Ket noi thanh cong");
                         DataProvider.Ins.DB = new QcManagmentContext();
                     
-
                 }
                 catch (Exception ex)
                 {

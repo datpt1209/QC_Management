@@ -43,7 +43,12 @@ public partial class QcManagmentContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-        var connectionString = AppConfig.BuildConnectionString();
+        //var connectionString = AppConfig.BuildConnectionString();
+
+        //optionsBuilder.UseSqlServer(connectionString);
+
+        var connectionString = AppConfig.GetConnectionString("QC_ManagmentDB");
+
         optionsBuilder.UseSqlServer(connectionString);
 
         //"Data Source=DATPT\\DATPT;Initial Catalog=QC_Managment;User ID=sa;Password=datpt12091996;Trust Server Certificate=True"

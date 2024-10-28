@@ -5,20 +5,21 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:QC_Management"
         mc:Ignorable="d"
-         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
-         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+        xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-     TextElement.FontWeight="Regular"
-     TextElement.FontSize="13"
-     TextOptions.TextFormattingMode="Ideal"
-     TextOptions.TextRenderingMode="Auto"
-     Background="{DynamicResource MaterialDesignPaper}"
-     FontFamily="{DynamicResource MaterialDesignFont}"
+        TextElement.FontWeight="Regular"
+        TextElement.FontSize="13"
+        TextOptions.TextFormattingMode="Ideal"
+        TextOptions.TextRenderingMode="Auto"
+        Background="{DynamicResource MaterialDesignPaper}"
+        FontFamily="{DynamicResource MaterialDesignFont}"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         DataContext="{StaticResource LoginVM}"
         Name="login_Window"
-        Title="Đăng nhập" Height="300" Width="400">
+        Title="Đăng nhập" Height="300" Width="400"
+        FocusManager.FocusedElement="{Binding ElementName=UserNameTextBox}">
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -53,7 +54,8 @@
                     <RowDefinition></RowDefinition>
                 </Grid.RowDefinitions>
                 <Grid Grid.Row="0">
-                    <TextBox materialDesign:HintAssist.Hint="Tên đăng nhập"
+                    <TextBox x:Name="UserNameTextBox"
+                             materialDesign:HintAssist.Hint="Tên đăng nhập"
                              Text="{Binding UserName}"
                              Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
                 </Grid>
@@ -96,7 +98,8 @@
                 </Grid>
                 <Grid Grid.Row="3">
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="148.5"></ColumnDefinition>
+                        <ColumnDefinition ></ColumnDefinition>
+                        <ColumnDefinition></ColumnDefinition>
                         <ColumnDefinition></ColumnDefinition>
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0" Content="Đăng ký tài khoản" Cursor="Hand" Canvas.Left="102"
@@ -120,8 +123,29 @@
                         </Button.Style>
                     </Button>
 
-                    <Button Grid.Column="1" Content="Quên mật khẩu" Cursor="Hand" Canvas.Left="102"
-                                       Command="{Binding ForgotPasswordCommand}" Margin="0,10,0,18">
+                    <Button Grid.Column="1" Content="Quên mật khẩu" Cursor="Hand" 
+                                       Command="{Binding ForgotPasswordCommand}" Margin="10">
+                        <Button.Template>
+                            <ControlTemplate TargetType="Button">
+                                <TextBlock TextDecorations="Underline">
+                                    <ContentPresenter />
+                                </TextBlock>
+                            </ControlTemplate>
+                        </Button.Template>
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Foreground" Value="Blue" />
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="true">
+                                        <Setter Property="Foreground" Value="Red" />
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+
+                    <Button Grid.Column="2" Content="Config" Cursor="Hand" Canvas.Left="102"
+                                       Command="{Binding ConfigCommand}" Margin="10">
                         <Button.Template>
                             <ControlTemplate TargetType="Button">
                                 <TextBlock TextDecorations="Underline">

@@ -142,8 +142,8 @@ namespace QC_Management.ViewModels
             get => _isOutRange;
             set
             {
-                if (SelectedItem.Result1 > (SelectedItem.IdControlDetailNavigation.MeanApp + SelectedItem.IdControlDetailNavigation.SdApp * 2)
-                    || SelectedItem.Result1 < (SelectedItem.IdControlDetailNavigation.MeanApp - SelectedItem.IdControlDetailNavigation.SdApp * 2))
+                if (SelectedItem.Result1 > (SelectedItem.IdControlDetailNavigation.CurMean + SelectedItem.IdControlDetailNavigation.CurSd * 2)
+                    || SelectedItem.Result1 < (SelectedItem.IdControlDetailNavigation.CurMean - SelectedItem.IdControlDetailNavigation.CurSd * 2))
                     _isOutRange = true;
                 OnPropertyChanged();
             }
