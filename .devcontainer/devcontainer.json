@@ -1,0 +1,11 @@
+{
+    "name": "C# Dev Container",
+    "image": "mcr.microsoft.com/vscode/devcontainers/dotnet:6.0",
+    "features": {
+      "ghcr.io/devcontainers/features/dotnet:1": {
+        "version": "6.0"
+      }
+    },
+    "postCreateCommand": "dotnet --list-sdks"
+  }
+  
