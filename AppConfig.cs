@@ -2,6 +2,7 @@
 using System.Configuration;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
 using Microsoft.Data.SqlClient;
 
 namespace QC_Management
@@ -26,10 +27,14 @@ namespace QC_Management
 
             if (PasswordIn64.Length != 0)
             {
-                var passwordInBytes = Convert.FromBase64String(PasswordIn64);
-                var entropyInBytes = Convert.FromBase64String(entropyIn64);
-                var unencryptedPassword = ProtectedData.Unprotect(passwordInBytes, entropyInBytes, DataProtectionScope.CurrentUser);
-                Password = Encoding.UTF8.GetString(unencryptedPassword);
+                try
+                {
+                    Password = AesEncryption.Decrypt(PasswordIn64);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error decrypting password: {ex.Message}");
+                }
             }
         }
         public static void Save()
@@ -44,12 +49,7 @@ namespace QC_Management
         }
         public static string BuildConnectionString()
         {
-            var config = System.Configuration.ConfigurationManager.AppSettings;
-            Username = config["Username"];
-            Password = config["Password"];
-            Server = config["Server"];
-            Database = config["Database"];
-            //ReloadSetting();
+            ReloadSetting();
             var builder = new Microsoft.Data.SqlClient.SqlConnectionStringBuilder();
             builder.DataSource = Server;
             builder.InitialCatalog = Database;
@@ -61,66 +61,5 @@ namespace QC_Management
             return connectionString;
 
         }
-
-        public static string GetConnectionString(string name)
-        {
-            DecryptConfigSection(name);
-            var connectionStringSettings = ConfigurationManager.ConnectionStrings[name];
-            if (connectionStringSettings == null)
-            {
-                throw new Exception($"Connection string '{name}' not found.");
-            }
-            string connectionString = connectionStringSettings.ConnectionString;
-            EncryptConfigSection("connectionStrings");
-            return connectionString;
-        }
-
-        public static void SaveConnectionString(string name, string connectionString)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            ConnectionStringsSection section = config.ConnectionStrings;
-
-            if (section.ConnectionStrings[name] != null)
-            {
-                section.ConnectionStrings[name].ConnectionString = connectionString;
-            }
-            else
-            {
-                section.ConnectionStrings.Add(new ConnectionStringSettings(name, connectionString));
-            }
-
-            config.Save(ConfigurationSaveMode.Modified);
-            ConfigurationManager.RefreshSection("connectionStrings");
-        }
-
-        public static void DecryptConfigSection(string sectionKey)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            ConfigurationSection section = config.GetSection(sectionKey);
-
-            if (section != null && section.SectionInformation.IsProtected)
-            {
-                section.SectionInformation.UnprotectSection();
-                config.Save(ConfigurationSaveMode.Full);
-                ConfigurationManager.RefreshSection(sectionKey);
-
-                // Log the decrypted section for debugging
-                Console.WriteLine(section.SectionInformation.GetRawXml());
-            }
-        }
-
-        public static void EncryptConfigSection(string sectionKey)
-        {
-            Configuration config = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            ConfigurationSection section = config.GetSection(sectionKey);
-
-            if (section != null && !section.SectionInformation.IsProtected)
-            {
-                section.SectionInformation.ProtectSection("DataProtectionConfigurationProvider");
-                config.Save(ConfigurationSaveMode.Full);
-                ConfigurationManager.RefreshSection(sectionKey);
-            }
-        }
-
     }
 }

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -69,28 +70,12 @@ namespace QC_Management.ViewModels
             {
                 try
                 {
+                    AppConfig.ReloadSetting();
+                    UserName = AppConfig.Username;
+                    PassWord = AppConfig.Password;
+                    Database = AppConfig.Database;
+                    Server = AppConfig.Server;
 
-                    string connectionString = AppConfig.GetConnectionString("QC_ManagmentDB");
-                    var parameters = connectionString.Split(';')
-                                                     .Select(part => part.Split('='))
-                                                     .ToDictionary(split => split[0].Trim(), split => split[1].Trim());
-
-                    if (parameters.ContainsKey("Trust Server Certificate"))
-                    {
-                        // Handle the 'trust server certificate' parameter as needed
-                        parameters.Remove("Trust Server Certificate");
-                    }
-
-                    var builder = new System.Data.SqlClient.SqlConnectionStringBuilder();
-                    foreach (var param in parameters)
-                    {
-                        builder[param.Key] = param.Value;
-                    }
-
-                    Server = builder.DataSource;
-                    Database = builder.InitialCatalog;
-                    UserName = builder.UserID;
-                    PassWord = builder.Password;
                 }
                 catch (Exception ex)
                 {
@@ -104,19 +89,25 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                string serverName = Server;
-                string databaseName = Database;
-                string userId = UserName;
-                string password = PassWord;
+                try
+                {
+                    Configuration config = System.Configuration.
+                        ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
+                    config.AppSettings.Settings["Server"].Value = Server;
+                    config.AppSettings.Settings["Database"].Value = Database;
+                    config.AppSettings.Settings["Username"].Value = UserName;
+                    var encryptedPassword = AesEncryption.Encrypt(PassWord);
+                    config.AppSettings.Settings["Password"].Value = encryptedPassword;
+                    config.Save(ConfigurationSaveMode.Full);
+                    System.Configuration.ConfigurationManager.RefreshSection("appSettings");
 
-               
-                string connectionString = $"Data Source = {serverName}; Initial Catalog = {databaseName}; User ID = {userId}; Password = {password}; Trust Server Certificate = True";
-                
-                AppConfig.SaveConnectionString("QC_ManagmentDB", connectionString);
-                AppConfig.EncryptConfigSection("connectionStrings");
-                MessageBox.Show("Configuration saved and encrypted successfully!");
-                p.Close();
-
+                    MessageBox.Show("Configuration saved successfully.");
+                    p.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error saving configuration: {ex.Message}");
+                }
             });
 
             TestConnect_click = new RelayCommand<ControlInfoDetail>((p) =>

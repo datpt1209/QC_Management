@@ -56,7 +56,6 @@ namespace QC_Management.ViewModels
 
         private async void Login(Window p)
         {
-           var connectionString = AppConfig.GetConnectionString("QC_ManagmentDB");
            IsIndeterminate = true;
             var (success, message) = await Task.Run(() =>
             {
@@ -64,15 +63,24 @@ namespace QC_Management.ViewModels
                 string message = "";
                 try
                 {
-                    
-                    string passEncode = MD5Hash(Base64Encode(Password));
-                    var accCount = DataProvider.Ins.DB.Users.Where(x => x.UserName == UserName && x.Password == passEncode).Count();
-                    if (accCount == 0)
+                    DataProvider.Ins.DB = new QcManagmentContext();
+                    if (DataProvider.Ins.DB.Database.CanConnect())
                     {
-                        success = false;
-                        IsIndeterminate = false;
-                        message = "Tài khoản hoặc mật khẩu không đúng!"; 
+                        string passEncode = MD5Hash(Base64Encode(Password));
+                        var accCount = DataProvider.Ins.DB.Users.Where(x => x.UserName == UserName && x.Password == passEncode).Count();
+                        if (accCount == 0)
+                        {
+                            success = false;
+                            IsIndeterminate = false;
+                            message = "Tài khoản hoặc mật khẩu không đúng!";
+                        }
                     }
+                    else 
+                    {        
+                        success = false;
+                       
+                    }
+                   
                 }
                 catch (Exception ex)
                 {
@@ -103,36 +111,37 @@ namespace QC_Management.ViewModels
         private async void Load(Window p)
         {
        
-            var (success, message) = await Task.Run(() =>
-            {
-                bool success = true;
-                string message = "";
-                try
-                {
-                    DataProvider.Ins.DB = new QcManagmentContext();
-                    if (!DataProvider.Ins.DB.Database.CanConnect())
-                    {
-                        success = false;
-                    }
+            //var (success, message) = await Task.Run(() =>
+            //{
+            //    bool success = true;
+            //    string message = "";
+            //    try
+            //    {
+            //        DataProvider.Ins.DB = new QcManagmentContext();
+            //        if (!DataProvider.Ins.DB.Database.CanConnect())
+            //        {
+            //            success = false;
+            //        }
 
-                }
-                catch (Exception ex)
-                {
-                    success = false;
-                    message = ex.Message;
-                }
-                return new Tuple<bool, string>(success, message);
-            });
-            if (success)
-            {
-                p.Show();
-            }
-            else
-            {
-                MessageBox.Show($"Connect Database fails: {message}");
-                var config = new ServerConfig();
-                config.Show();
-            }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        success = false;
+            //        message = ex.Message;
+            //    }
+            //    return new Tuple<bool, string>(success, message);
+            //});
+            //if (success)
+            //{
+            //    p.Show();
+            //}
+            //else
+            //{
+            //    MessageBox.Show($"Connect Database fails: {message}");
+            //    var config = new ServerConfig();
+            //    config.Show();
+            //}
+            p.Show();
         }
         void Regis(Window p)
         {
