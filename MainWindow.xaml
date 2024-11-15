@@ -26,6 +26,14 @@
                     Value="Black"/>
             <Setter Property="FontSize"
                     Value="15"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding ElementName=nav_pnl, Path=Width}" Value="55">
+                    <Setter Property="Visibility" Value="Collapsed"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding ElementName=nav_pnl, Path=Width}" Value="170">
+                    <Setter Property="Visibility" Value="Visible"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
         <!--// Tooltip Style Template //-->
         <Style TargetType="ToolTip" x:Key="tt_style">
@@ -54,14 +62,14 @@
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="auto"></ColumnDefinition>
-            <ColumnDefinition></ColumnDefinition>
+            <ColumnDefinition Name="SidebarColumn" Width="70"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
         </Grid.ColumnDefinitions>
 
         <ContentControl Grid.Column="1" Content="{Binding CurrentView}" Margin="0,0,2,0"></ContentControl>
 
         <materialDesign:Card Grid.Column="0"       
-              x:Name="nav_pnl" HorizontalAlignment="Left" Width="auto" Background="LightGray">
+              x:Name="nav_pnl" HorizontalAlignment="Left" Width="55" Background="LightGray">
             <StackPanel x:Name="st_pnl">
                 <!--// Grid for the Menu Toggle Button //-->
                 <Grid Height="90">
@@ -70,7 +78,20 @@
                                FontSize="22"
                                Background="Transparent"
                                HorizontalAlignment="Center"
-                               VerticalAlignment="Bottom" Name="menu"/>
+                               VerticalAlignment="Bottom" Name="menu">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=nav_pnl, Path=Width}" Value="55">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ElementName=nav_pnl, Path=Width}" Value="170">
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
                     <!--// Toggle Button //-->
                     <ToggleButton x:Name="Tg_Btn" Grid.Column="0"
                                   VerticalAlignment="Center"
@@ -132,7 +153,9 @@
                         </i:Interaction.Triggers>
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="HomeOutline" Margin="5,0,0,0" Height="30" Width="40" />
-                            <TextBlock Text="Home" Margin="5,0,0,0"  Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Home" Margin="5,0,0,0"  Style="{StaticResource font_style}">
+                  
+                            </TextBlock>
                         </StackPanel>
                         <!--// Tooltip //-->
                         <ListViewItem.ToolTip>

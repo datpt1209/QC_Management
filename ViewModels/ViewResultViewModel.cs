@@ -137,7 +137,7 @@ namespace QC_Management.ViewModels
         }
 
         private bool _isOutRange = false;
-        public bool isOutRange
+        public bool IsOutRange
         {
             get => _isOutRange;
             set

@@ -17,7 +17,7 @@ public partial class Result : BaseViewModel
         set
         {
             _Result1 = value;
-            if (value > (IdControlDetailNavigation.MeanApp + 2 * IdControlDetailNavigation.SdApp) || value < (IdControlDetailNavigation.MeanApp - 2 * IdControlDetailNavigation.SdApp))
+            if (value > (IdControlDetailNavigation.CurMean + 2 * IdControlDetailNavigation.CurSd) || value < (IdControlDetailNavigation.CurMean - 2 * IdControlDetailNavigation.CurSd))
             {
                 IsOutRange = true;
             }

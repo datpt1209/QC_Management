@@ -15,16 +15,19 @@ namespace QC_Management
         {
             
             InitializeComponent();
+            SidebarColumn.Width = new GridLength(55);
 
         }
 
         private void Tg_Btn_Checked(object sender, RoutedEventArgs e)
         {
-            menu.Visibility = Visibility.Visible;
+            
+            SidebarColumn.Width = new GridLength(170);
         }
         private void Tg_Btn_Unchecked(object sender, RoutedEventArgs e)
         {
-            menu.Visibility = Visibility.Hidden;
+           
+            SidebarColumn.Width = new GridLength(55);
         }
         private void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
         {

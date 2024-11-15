@@ -110,37 +110,7 @@ namespace QC_Management.ViewModels
 
         private async void Load(Window p)
         {
-       
-            //var (success, message) = await Task.Run(() =>
-            //{
-            //    bool success = true;
-            //    string message = "";
-            //    try
-            //    {
-            //        DataProvider.Ins.DB = new QcManagmentContext();
-            //        if (!DataProvider.Ins.DB.Database.CanConnect())
-            //        {
-            //            success = false;
-            //        }
-
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        success = false;
-            //        message = ex.Message;
-            //    }
-            //    return new Tuple<bool, string>(success, message);
-            //});
-            //if (success)
-            //{
-            //    p.Show();
-            //}
-            //else
-            //{
-            //    MessageBox.Show($"Connect Database fails: {message}");
-            //    var config = new ServerConfig();
-            //    config.Show();
-            //}
+      
             p.Show();
         }
         void Regis(Window p)

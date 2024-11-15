@@ -120,8 +120,7 @@ namespace QC_Management.ViewModels
                 try
                 {
                     var kq = db.Database.CanConnect();
-                    //System.Threading.Thread.Sleep(3000);
-                    //__connection.Open();
+            
                     if(kq)
                         MessageBox.Show("Ket noi thanh cong");
                         DataProvider.Ins.DB = new QcManagmentContext();
