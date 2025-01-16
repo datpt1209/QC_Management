@@ -97,6 +97,14 @@
           <DataField>DateRunString</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="SeriesColor">
+          <DataField>SeriesColor</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsEmptyPoint">
+          <DataField>IsEmptyPoint</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -189,7 +197,7 @@
                   <ChartDataPoints>
                     <ChartDataPoint>
                       <ChartDataPointValues>
-                        <Y>=IIf(IsNothing(Fields!SDs.Value), Nothing, Fields!SDs.Value)</Y>
+                        <Y>=IIf(IsNothing(Fields!SDs.Value) Or Fields!IsEmptyPoint.Value, Nothing, Fields!SDs.Value)</Y>
                       </ChartDataPointValues>
                       <ChartDataLabel>
                         <Style />
@@ -197,14 +205,15 @@
                       </ChartDataLabel>
                       <Style>
                         <Border>
-                          <Width>2.5pt</Width>
+                          <Width>3pt</Width>
                         </Border>
+                        <Color>=Fields!SeriesColor.Value</Color>
                         <BackgroundGradientType>None</BackgroundGradientType>
                         <BackgroundGradientEndColor>#00ffffff</BackgroundGradientEndColor>
                       </Style>
                       <ChartMarker>
                         <Type>Auto</Type>
-                        <Size>9pt</Size>
+                        <Size>9.5pt</Size>
                         <Style />
                       </ChartMarker>
                       <DataElementOutput>Output</DataElementOutput>
@@ -215,16 +224,16 @@
                   <ChartEmptyPoints>
                     <Style>
                       <Border>
-                        <Width>2.5pt</Width>
+                        <Width>3pt</Width>
                       </Border>
-                      <Color>Red</Color>
+                      <Color>=Fields!SeriesColor.Value</Color>
                     </Style>
                     <ChartMarker>
                       <Style>
                         <Border>
                           <Width>3pt</Width>
                         </Border>
-                        <Color>Gold</Color>
+                        <Color>=Fields!SeriesColor.Value</Color>
                       </Style>
                     </ChartMarker>
                     <ChartDataLabel>
@@ -1946,7 +1955,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>XN.BM02.QL21-23</Value>
+                      <Value>XN.BM02.QL21-24</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
                         <FontFamily>times New Roman</FontFamily>
@@ -1962,7 +1971,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>15/10/2023</Value>
+                      <Value>31/12/2024</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
                         <FontFamily>times New Roman</FontFamily>

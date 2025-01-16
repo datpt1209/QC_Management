@@ -319,6 +319,10 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnDateRunString;
             
+            private global::System.Data.DataColumn columnSeriesColor;
+            
+            private global::System.Data.DataColumn columnIsEmptyPoint;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtResultDataTable() {
@@ -514,6 +518,22 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn SeriesColorColumn {
+                get {
+                    return this.columnSeriesColor;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsEmptyPointColumn {
+                get {
+                    return this.columnIsEmptyPoint;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -569,7 +589,9 @@ namespace QC_Management {
                         string SDPXN, 
                         string Index, 
                         string Comment, 
-                        string DateRunString) {
+                        string DateRunString, 
+                        string SeriesColor, 
+                        string IsEmptyPoint) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -591,7 +613,9 @@ namespace QC_Management {
                         SDPXN,
                         Index,
                         Comment,
-                        DateRunString};
+                        DateRunString,
+                        SeriesColor,
+                        IsEmptyPoint};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -634,6 +658,8 @@ namespace QC_Management {
                 this.columnIndex = base.Columns["Index"];
                 this.columnComment = base.Columns["Comment"];
                 this.columnDateRunString = base.Columns["DateRunString"];
+                this.columnSeriesColor = base.Columns["SeriesColor"];
+                this.columnIsEmptyPoint = base.Columns["IsEmptyPoint"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -679,6 +705,10 @@ namespace QC_Management {
                 base.Columns.Add(this.columnComment);
                 this.columnDateRunString = new global::System.Data.DataColumn("DateRunString", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnDateRunString);
+                this.columnSeriesColor = new global::System.Data.DataColumn("SeriesColor", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnSeriesColor);
+                this.columnIsEmptyPoint = new global::System.Data.DataColumn("IsEmptyPoint", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsEmptyPoint);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1141,6 +1171,38 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string SeriesColor {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.SeriesColorColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'SeriesColor\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.SeriesColorColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsEmptyPoint {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsEmptyPointColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsEmptyPoint\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsEmptyPointColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -1377,6 +1439,30 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetDateRunStringNull() {
                 this[this.tabledtResult.DateRunStringColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsSeriesColorNull() {
+                return this.IsNull(this.tabledtResult.SeriesColorColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetSeriesColorNull() {
+                this[this.tabledtResult.SeriesColorColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsEmptyPointNull() {
+                return this.IsNull(this.tabledtResult.IsEmptyPointColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsEmptyPointNull() {
+                this[this.tabledtResult.IsEmptyPointColumn] = global::System.Convert.DBNull;
             }
         }
         
