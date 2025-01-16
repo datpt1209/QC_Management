@@ -3,7 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:QC_Management.Views" xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+        xmlns:local="clr-namespace:QC_Management.Views"
+        xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
         WindowState="Maximized"
@@ -29,14 +30,45 @@
             <Grid Grid.Column="0">
                 <materialDesign:Card Margin="5">
                     <StackPanel Orientation="Horizontal">
-                        <Label Content="Thiết bị:" Margin="5"/>
-                        <Label Content="{Binding DeviceName}" Margin="5"/>
-                        <Label Content="Level:" Margin="5"/>
-                        <Label Content="{Binding LevelName}" Margin="5"/>
-                        <Label Content="Ngày" Margin="5"/>
-                        <DatePicker SelectedDate="{Binding Date}" Margin="5"/>
-                        <Label Content="Thời gian" Margin="5"/>
-                        <TextBox Text="{Binding Time}" Margin="5"/>
+                        <TextBox 
+                            Margin="5"
+                            Width="150"
+                            VerticalAlignment="Center" 
+                            materialDesign:HintAssist.Hint="Thiết bị:"
+                            Text="{Binding DeviceName, UpdateSourceTrigger=PropertyChanged}"
+                            AcceptsReturn="True"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            TextWrapping="Wrap" Height="50"/>
+
+                        <TextBox 
+                            Margin="5"
+                            VerticalAlignment="Center" 
+                            materialDesign:HintAssist.Hint="Level"
+                            Text="{Binding LevelName, UpdateSourceTrigger=PropertyChanged}"
+                            AcceptsReturn="True"
+                            Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                            TextWrapping="Wrap" Width="150" Height="50"/>
+                        <DatePicker 
+                            Margin="5"
+                            SelectedDate="{Binding Date, UpdateSourceTrigger=PropertyChanged}"
+    
+                            materialDesign:HintAssist.Hint="Ngày"
+   
+                            materialDesign:TextFieldAssist.HasClearButton="True" 
+    
+                            Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="128" Height="50" />
+
+                        <materialDesign:TimePicker  
+                            Width="140"
+                            Margin="5"
+                            SelectedTime="{Binding Time}"
+                            materialDesign:HintAssist.HelperText="Helper text"
+                            materialDesign:HintAssist.Hint="Pick Time"
+                            Is24Hours="True"
+                            Style="{StaticResource MaterialDesignOutlinedTimePicker}" >
+
+                        </materialDesign:TimePicker>
+
                     </StackPanel>
                 </materialDesign:Card>
             </Grid>
@@ -45,8 +77,8 @@
                 <materialDesign:Card  Margin="5">
                     <StackPanel Orientation="Horizontal">
                         <Button Command="{Binding SaveCommand}" Content="Lưu" Margin="5" Width="100"/>
-                        <Button Command="{Binding CancelCommand}" Content="Cancel" Margin="5" Width="100"/>
-
+                        <Button Command="{Binding CancelCommand}" Content="Hủy" Margin="5" Width="100"/>
+                        <Button Command="{Binding DeleteCommand}" Content="Xóa" Margin="5" Width="100"/>
                     </StackPanel>
                 </materialDesign:Card>
             </Grid>

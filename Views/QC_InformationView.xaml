@@ -43,9 +43,9 @@
                         SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Loại xét nghiệm"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="50">
+                        IsEditable="True" Width ="140"  Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -62,9 +62,9 @@
                         SelectedItem="{Binding SelectedType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Loại QC"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="50">
+                        IsEditable="True" Width="140" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -80,30 +80,31 @@
                         materialDesign:HintAssist.Hint="Tên QC"
                         Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
-                        Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="auto" Height="50" />
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap" Width="140" Height="50" />
                     <TextBox 
                         Margin="5"
                         VerticalAlignment="Center" 
                         materialDesign:HintAssist.Hint="LOT"
                         Text="{Binding LOT, UpdateSourceTrigger=PropertyChanged}"
                         AcceptsReturn="True"
-                        Style="{StaticResource MaterialDesignFilledTextBox}"
-                        TextWrapping="Wrap" Width="auto" Height="50"/>
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap" Width="140" Height="50"/>
                     <DatePicker          
                         Margin="5"
-                        
                         SelectedDate="{Binding ProductionDate, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:HintAssist.Hint="Ngày sản xuất"
                         materialDesign:TextFieldAssist.HasClearButton="True"    
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="50" />
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="140" />
+
                     <DatePicker               
                         Margin="5"
-                        
+                        HorizontalAlignment="Left"
                         SelectedDate="{Binding ExpirationDate, UpdateSourceTrigger=PropertyChanged}" 
                         materialDesign:HintAssist.Hint="Hạn sử dụng" 
-                        materialDesign:TextFieldAssist.HasClearButton="True"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="50" />
+                        materialDesign:TextFieldAssist.HasClearButton="True" 
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" 
+                        Width="140" />
                     <CheckBox
                         Content="Kích hoạt"
                      

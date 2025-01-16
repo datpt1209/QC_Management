@@ -160,8 +160,6 @@ namespace QC_Management.ViewModels
         private ChartValues<double> _PlusThreeSDValues3;
         public ChartValues<double> PlusThreeSDValues3 { get => _PlusThreeSDValues3; set { _PlusThreeSDValues3 = value; OnPropertyChanged(); } }
 
-
-
         private ChartValues<double> _MinusThreeSDValues3;
         public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
 
@@ -424,7 +422,8 @@ namespace QC_Management.ViewModels
                 Visibility3 = Visibility.Collapsed;
 
                 var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate)
-                    .OrderBy(s => s.DateRun.Month)
+                    .OrderBy(s => s.DateRun.Year)
+                    .ThenBy(s => s.DateRun.Month)
                     .ThenBy(s => s.DateRun.Day)
                     .ThenBy(s => s.IndexQc)
                     .ToList();
@@ -657,8 +656,8 @@ namespace QC_Management.ViewModels
         {
             var mapper1 = Mappers.Xy<Result>()
                   .X((value, index) => index) // lets use the position of the item as X
-                  .Y(value => Math.Round((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx, 2))
-                  .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx > 2 || (value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx < -2) ? Brushes.Red : null)
+                  .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd), 2))
+                  .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd > 2 || (value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd < -2) ? Brushes.Red : null)
                   .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
 
             var mapper2 = Mappers.Xy<Result>()

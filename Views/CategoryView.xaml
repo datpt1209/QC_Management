@@ -32,7 +32,7 @@
                              Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                              Margin="5 5 15 5"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                 </WrapPanel>
             </materialDesign:Card>

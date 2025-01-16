@@ -57,7 +57,7 @@
                             materialDesign:ComboBoxAssist.MaxLength="2"
                             materialDesign:HintAssist.Hint="Chức vụ"
                             materialDesign:HintAssist.HintOpacity=".26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
                             IsEditable="True" Height="42"/>
                 </Grid>
                 <Grid Grid.Row="2">

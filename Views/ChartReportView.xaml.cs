@@ -57,6 +57,10 @@ namespace QC_Management
                      ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
+                     SDs_Level1 = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "LOW" ? (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp : (double?)null,
+                     SDs_Level2 = s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp : (double?)null,
+                     SDs_Level3 = s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp : (double?)null,
+
                  }).OrderBy(s => s.DateRun.Month)
                     .ThenBy(s => s.DateRun.Day)
                     .ThenBy(s=>s.Index)
@@ -86,6 +90,9 @@ namespace QC_Management
                      ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
+                     SDs_Level1 = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "LOW" ? (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx : (double?)null,
+                     SDs_Level2 = s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx : (double?)null,
+                     SDs_Level3 = s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx : (double?)null,
                  }).OrderBy(s => s.DateRun.Month)
                     .ThenBy(s => s.DateRun.Day)
                     .ThenBy(s=>s.Index)

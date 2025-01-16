@@ -45,8 +45,9 @@
                              materialDesign:HintAssist.Hint="Nhóm xét nghiệm"
                              Text="{Binding CategoryDisplayName, UpdateSourceTrigger=PropertyChanged}"
                              Margin="5 5 15 5"
+                                 Height="50"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                     </WrapPanel>
                 </materialDesign:Card>
@@ -100,22 +101,22 @@
                             materialDesign:ComboBoxAssist.MaxLength="2"
                             materialDesign:HintAssist.Hint="Nhóm xét nghiệm"
                             materialDesign:HintAssist.HintOpacity=".26"
-                            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                            IsEditable="True" Height="42"/>
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                            IsEditable="True" Height="50"/>
 
                         <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
                              materialDesign:HintAssist.Hint="Index"
                              Text="{Binding Index, UpdateSourceTrigger=PropertyChanged}"
                              Margin="5"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                         <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
                              materialDesign:HintAssist.Hint="Tên xét nghiệm"
                              Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                              Margin="5 5 5 5"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                         <ComboBox
                         ItemsSource="{Binding UnitList}"
@@ -123,9 +124,9 @@
                         SelectedItem="{Binding SelectedUnitTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Đơn vị tính"
-                            Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="42"/>
+                        IsEditable="True" Height="50"/>
 
                     </WrapPanel>
                 </materialDesign:Card>

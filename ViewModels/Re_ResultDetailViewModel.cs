@@ -17,7 +17,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace QC_Management.ViewModels
 {
-    public class Re_ResultDetailViewModel:BaseViewModel
+    public class Re_ResultDetailViewModel : BaseViewModel
     {
         private ObservableCollection<ReResult> _Results;
         public ObservableCollection<ReResult> Results
@@ -119,6 +119,8 @@ namespace QC_Management.ViewModels
 
         public ICommand CancelCommand { get; set; }
 
+        public ICommand DeleteCommand { get; set; }
+
         public ICommand LoadCommand { get; set; }
 
         public Re_ResultDetailViewModel(ReResultGroup reResultGroup, System.Windows.Window window)
@@ -155,6 +157,7 @@ namespace QC_Management.ViewModels
                     {
                         ResutlViewList.Add(new ResultReView()
                         {
+                            id = item.Id,
                             TestName = item.IdTestNavigation.Name,
                             idTest = item.IdTest,
                             QCName = qcInfor.IdControlInfoNavigation.Name,
@@ -173,7 +176,7 @@ namespace QC_Management.ViewModels
             });
 
             CancelCommand = new RelayCommand<Result>((p) => true, (p) => Cancel());
-
+            DeleteCommand = new RelayCommand<Result>((p) => true, (p) => Delete());
 
             SaveCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -233,29 +236,26 @@ namespace QC_Management.ViewModels
 
         private async Task SaveAsync(ObservableCollection<Result> results)
         {
-        
-
             // Gọi hàm lưu dữ liệu
             bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, results);
 
-                // Hiển thị thông báo thành công hoặc thất bại
-                if (isSaved)
-                {
-                  
-                    DataProvider.Ins.DB.ReResults.RemoveRange(Results);
-                    await DataProvider.Ins.DB.SaveChangesAsync();
-                     Results.Clear();
+            // Hiển thị thông báo thành công hoặc thất bại
+            if (isSaved)
+            {
+                DataProvider.Ins.DB.ReResults.RemoveRange(Results);
+                await DataProvider.Ins.DB.SaveChangesAsync();
+                Results.Clear();
 
-                    MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    _window.DialogResult = true;
-                    _window.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                }
-
+                MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                _window.DialogResult = true;
+                _window.Close();
+            }
+            else
+            {
+                MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
+
         public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
         {
             try
@@ -279,5 +279,28 @@ namespace QC_Management.ViewModels
             _window.Close();
         }
 
+        private async void Delete()
+        {
+            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa tất cả dữ liệu ReResult không?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (result == MessageBoxResult.Yes)
+            {
+                try
+                {
+                    DataProvider.Ins.DB.ReResults.RemoveRange(Results);
+                    await DataProvider.Ins.DB.SaveChangesAsync();
+                    Results.Clear();
+
+                    MessageBox.Show("Xóa tất cả dữ liệu ReResult thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Close the window
+                    _window.DialogResult = true;
+                    _window.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Có lỗi khi xóa dữ liệu: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
     }
 }

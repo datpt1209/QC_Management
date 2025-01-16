@@ -40,8 +40,9 @@
                          Margin="5" 
                             SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"                             
                             materialDesign:HintAssist.Hint="Ngày thực hiện"                              
-                            materialDesign:TextFieldAssist.HasClearButton="True"                               
-                            Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="45">
+                            materialDesign:TextFieldAssist.HasClearButton="True" 
+                      
+                            Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="140" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectedDateChanged">
@@ -60,8 +61,9 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Thiết bị"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="45"/>
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True" VerticalAlignment="Top" 
+                        Width="189" Height="50"/>
                     <ComboBox  
                         Margin="5"
                         ItemsSource="{Binding LevelList}"
@@ -70,8 +72,8 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="45">
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -89,8 +91,8 @@
                         materialDesign:HintAssist.Hint="Lần QC"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="45"/>
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="50"/>
 
                 </WrapPanel>
             </materialDesign:Card>

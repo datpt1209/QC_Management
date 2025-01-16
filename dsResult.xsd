@@ -34,7 +34,10 @@
               <xs:element name="SDPXN" msprop:Generator_ColumnPropNameInTable="SDPXNColumn" msprop:Generator_ColumnPropNameInRow="SDPXN" msprop:Generator_UserColumnName="SDPXN" msprop:Generator_ColumnVarNameInTable="columnSDPXN" type="xs:string" minOccurs="0" />
               <xs:element name="Index" msprop:Generator_ColumnPropNameInTable="IndexColumn" msprop:Generator_ColumnPropNameInRow="Index" msprop:Generator_UserColumnName="Index" msprop:Generator_ColumnVarNameInTable="columnIndex" type="xs:string" minOccurs="0" />
               <xs:element name="Comment" msprop:Generator_ColumnPropNameInTable="CommentColumn" msprop:Generator_ColumnPropNameInRow="Comment" msprop:Generator_UserColumnName="Comment" msprop:Generator_ColumnVarNameInTable="columnComment" type="xs:string" minOccurs="0" />
-              <xs:element name="DateRunString" msprop:Generator_UserColumnName="DateRunString" msprop:Generator_ColumnPropNameInTable="DateRunStringColumn" msprop:Generator_ColumnPropNameInRow="DateRunString" msprop:Generator_ColumnVarNameInTable="columnDateRunString" type="xs:string" minOccurs="0" />
+              <xs:element name="DateRunString" msprop:Generator_ColumnPropNameInTable="DateRunStringColumn" msprop:Generator_ColumnPropNameInRow="DateRunString" msprop:Generator_UserColumnName="DateRunString" msprop:Generator_ColumnVarNameInTable="columnDateRunString" type="xs:string" minOccurs="0" />
+              <xs:element name="SDs_Level1" msprop:Generator_ColumnPropNameInRow="SDs_Level1" msprop:Generator_ColumnPropNameInTable="SDs_Level1Column" msprop:Generator_ColumnVarNameInTable="columnSDs_Level1" msprop:Generator_UserColumnName="SDs_Level1" type="xs:string" minOccurs="0" />
+              <xs:element name="SDs_Level2" msprop:Generator_ColumnPropNameInRow="SDs_Level2" msprop:Generator_ColumnPropNameInTable="SDs_Level2Column" msprop:Generator_ColumnVarNameInTable="columnSDs_Level2" msprop:Generator_UserColumnName="SDs_Level2" type="xs:string" minOccurs="0" />
+              <xs:element name="SDs_Level3" msprop:Generator_ColumnPropNameInRow="SDs_Level3" msprop:Generator_ColumnPropNameInTable="SDs_Level3Column" msprop:Generator_ColumnVarNameInTable="columnSDs_Level3" msprop:Generator_UserColumnName="SDs_Level3" type="xs:string" minOccurs="0" />
             </xs:sequence>
           </xs:complexType>
         </xs:element>

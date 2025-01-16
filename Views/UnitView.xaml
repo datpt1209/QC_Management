@@ -32,7 +32,7 @@
                              Margin="5"
                              AcceptsReturn="True"
                             
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                 </Grid>
             </materialDesign:Card>

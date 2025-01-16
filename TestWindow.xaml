@@ -44,8 +44,8 @@
                              Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                              Margin="5 5 15 5"
                              AcceptsReturn="True"
-                             IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             IsEnabled="{Binding Path=IsChecked, ElementName=MaterialDesignOutlinedTextBoxEnabledComboBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                     <ComboBox 
                         Margin="5 5 15 -14"
@@ -70,16 +70,16 @@
                              Margin="5 5 15 5"
                              Text="{Binding InputPrice, UpdateSourceTrigger=PropertyChanged}"
                              AcceptsReturn="True"
-                             IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             IsEnabled="{Binding IsChecked, ElementName=MaterialDesignOutlinedTextBoxEnabledComboBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap"  />
                     <TextBox VerticalAlignment="Top"
                              materialDesign:HintAssist.Hint="Giá xuất"
                              Margin="5 5 15 5"
                              Text="{Binding OutputPrice, UpdateSourceTrigger=PropertyChanged}"
                              AcceptsReturn="True"
-                             IsEnabled="{Binding IsChecked, ElementName=MaterialDesignFilledTextBoxEnabledComboBox}"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             IsEnabled="{Binding IsChecked, ElementName=MaterialDesignOutlinedTextBoxEnabledComboBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap"  />
 
                     <Image Height="50" Width="60"

@@ -37,14 +37,16 @@
             <WrapPanel Margin="0 0 0 10">
                 <ComboBox 
                         Name="cbTest"
-                        Margin="5 5 15 -14"
+                        Margin="5"
                         ItemsSource="{Binding CategorytList}"
                         DisplayMemberPath="Name"
                         SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Category"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="137" Height="37">
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True" 
+                    VerticalAlignment="Center" Width="137" 
+                    Height="50">
 
                     <i:Interaction.Triggers>
                         <i:EventTrigger EventName="SelectionChanged">
@@ -58,8 +60,8 @@
                              materialDesign:HintAssist.Hint="Tên thiết bị"
                              Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
-                             TextWrapping="Wrap" Height="43" Width="120" />
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                             TextWrapping="Wrap" Height="50" Width="120" />
 
             </WrapPanel>
         </materialDesign:Card>

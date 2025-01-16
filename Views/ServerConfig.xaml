@@ -47,7 +47,7 @@
                              Text="{Binding Server}"
                              Margin="5,0,6,0"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" >
               
                     </TextBox>
@@ -61,7 +61,7 @@
                              Text="{Binding UserName}"
                              Margin="5,0,6,0"
                              AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" RenderTransformOrigin="0.5,0.5" >
                   
                     </TextBox>
@@ -85,7 +85,7 @@
                              Text="{Binding Database, UpdateSourceTrigger=PropertyChanged}"
                              AcceptsReturn="True"
                                 Margin="5 5 5 5"
-                             Style="{StaticResource MaterialDesignFilledTextBox}"
+                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
                 </materialDesign:Card>
             </Grid>

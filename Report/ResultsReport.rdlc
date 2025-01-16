@@ -366,7 +366,7 @@
               <TablixMembers>
                 <TablixMember>
                   <TablixHeader>
-                    <Size>1.22706cm</Size>
+                    <Size>1.30923cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox69">
                         <CanGrow>true</CanGrow>
@@ -543,7 +543,7 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixHeader>
-                    <Size>1.22706cm</Size>
+                    <Size>1.30923cm</Size>
                     <CellContents>
                       <Textbox Name="Textbox71">
                         <CanGrow>true</CanGrow>
@@ -718,9 +718,9 @@
             <FixedRowHeaders>true</FixedRowHeaders>
             <DataSetName>DataSet1</DataSetName>
             <Top>3.06808cm</Top>
-            <Left>1.1498cm</Left>
+            <Left>0.60537cm</Left>
             <Height>1.79267cm</Height>
-            <Width>14.9451cm</Width>
+            <Width>15.02727cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>
@@ -2130,7 +2130,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>XN.BM06.QL21-23</Value>
+                      <Value>XN.BM04.QL21-24</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
                         <FontFamily>times New Roman</FontFamily>
@@ -2146,7 +2146,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>15/10/2023</Value>
+                      <Value>Ngày ban hành</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
                         <FontFamily>times New Roman</FontFamily>
@@ -2183,7 +2183,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>BÁO CÁO KẾT QUẢ NỘI KIỂM TRA</Value>
+                      <Value>NHẬT KÝ NỘI KIỂM XÉT NGHIỆM</Value>
                       <Style>
                         <FontFamily>times New Roman</FontFamily>
                         <FontSize>18pt</FontSize>

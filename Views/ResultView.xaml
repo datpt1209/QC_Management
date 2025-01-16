@@ -43,9 +43,9 @@
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Thiết bị"
                         materialDesign:HintAssist.HintOpacity="0.26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
                          materialDesign:HintAssist.IsFloating="True"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="46"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="150" Height="50"/>
                     <ComboBox 
                         Margin="5"
                         ItemsSource="{Binding LevelList}"
@@ -55,8 +55,8 @@
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="46">
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True" VerticalAlignment="Top" Width="150" Height="50">
                         
                     </ComboBox>
                     <DatePicker          
@@ -64,7 +64,7 @@
                         SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:HintAssist.Hint="Ngày thực hiện"
                         materialDesign:TextFieldAssist.HasClearButton="True"
-                        Style="{StaticResource MaterialDesignFloatingHintDatePicker}" Width="128" Height="46">
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="150" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectedDateChanged">
@@ -75,14 +75,15 @@
 
                     </DatePicker>
                     <ComboBox 
-                        Margin="5 5 15 5"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        Margin="5"
                         ItemsSource="{Binding IndexList}"
                         SelectedItem="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
-                        materialDesign:HintAssist.Hint="Index"
+                        materialDesign:HintAssist.Hint="Lần QC"
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="46"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="150" Height="50"/>
                 </WrapPanel>
             </materialDesign:Card>
             <Grid Grid.Row="1">
@@ -101,9 +102,13 @@
                 </Grid>
                 <Grid Grid.Column="1">
                     <materialDesign:Card  Margin="5">
-                        <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="Danh sách chuyển mạng" HorizontalAlignment="Center" FontSize="22"></TextBlock> 
-                        </StackPanel>
+                        <TextBlock Text="Kết quả QC chưa lưu" 
+                                       HorizontalAlignment="Center" 
+                                       FontSize="22"
+                                       VerticalAlignment="Center"
+                                        Foreground="Black"
+                                        FontWeight="Bold"
+                            ></TextBlock> 
                     </materialDesign:Card>
                 </Grid>
             </Grid>
@@ -158,7 +163,7 @@
                         </i:Interaction.Triggers>
                         <ListView.View>
                             <GridView>
-                                <GridViewColumn Header="Device" Width="120">
+                                <GridViewColumn Header="Thiết bị" Width="120">
                                     <GridViewColumn.CellTemplate>
                                         <DataTemplate>
                                             <TextBlock Text="{Binding DeviceName}" TextAlignment="Center" VerticalAlignment="Center"/>

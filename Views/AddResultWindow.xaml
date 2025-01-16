@@ -37,7 +37,7 @@
         SelectedItem="{Binding SelectedTest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
         materialDesign:ComboBoxAssist.MaxLength="2"
         materialDesign:HintAssist.Hint="Tên xét nghiệm"
-        Style="{StaticResource MaterialDesignFloatingHintComboBox}"
+        Style="{StaticResource MaterialDesignOutlinedComboBox}"
         IsEditable="True" VerticalAlignment="Top" Width="150" Height="50">
                 </ComboBox>
                 <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
@@ -46,7 +46,7 @@
              Margin="5"
              Width="200" Height="50"
              AcceptsReturn="True"
-             Style="{StaticResource MaterialDesignFilledTextBox}"
+             Style="{StaticResource MaterialDesignOutlinedTextBox}"
              TextWrapping="Wrap" />
 
                 <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
@@ -55,7 +55,7 @@
              Margin="5"
              Width="200" Height="50"
              AcceptsReturn="True"
-             Style="{StaticResource MaterialDesignFilledTextBox}"
+             Style="{StaticResource MaterialDesignOutlinedTextBox}"
              TextWrapping="Wrap" />
 
                 <Button Content="Add" Command="{Binding AddResultCommand}" Margin="5"/>
