@@ -290,7 +290,7 @@ namespace QC_Management.ViewModels
 
             if (deleteItem == null) return;
 
-            var result = MessageBox.Show($"Bạn có muốn xóa thông tin QC: {SelectedItem.IdControlInfoNavigation.Name} LOT: {SelectedItem.IdControlInfoNavigation.Lot} Level: {SelectedItem.IdLevelNavigation.Name}?", "Confirmation", MessageBoxButton.YesNo);
+            var result = MessageBox.Show($"Bạn có muốn xóa thông tin QC: {SelectedItem.IdControlInfoNavigation.IdControlTypeNavigation.Name} LOT: {SelectedItem.IdControlInfoNavigation.Lot} Level: {SelectedItem.IdLevelNavigation.Name}?", "Confirmation", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 try

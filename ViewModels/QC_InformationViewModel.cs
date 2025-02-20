@@ -12,7 +12,9 @@ namespace QC_Management.ViewModels
     {
         private List<ControlInfo> _List;
         public List<ControlInfo> List { get => _List; set { _List = value; OnPropertyChanged(); } }
-        public ObservableCollection<ControlInfo> ListDB { get; set; }
+
+        private ObservableCollection<ControlInfo> _ListDB;
+        public ObservableCollection<ControlInfo> ListDB { get => _ListDB; set { _ListDB = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ControlType> _ListType;
         public ObservableCollection<ControlType> ListType { get => _ListType; set { _ListType = value; OnPropertyChanged(); } }
@@ -24,11 +26,8 @@ namespace QC_Management.ViewModels
         public ICommand DeleteCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
         public ICommand CategorySelectionChangedCommand { get; set; }
-
         public ICommand QCTypeSelectionChangedCommand { get; set;}
-
-        private string _DisplayName;
-        public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
+        public ICommand DeviceSelectionChangedCommand { get; set; }
 
         private bool _isChecked;
         public bool isChecked { get => _isChecked; set { _isChecked = value; OnPropertyChanged(); } }
@@ -40,12 +39,20 @@ namespace QC_Management.ViewModels
         private DateTime _ExpirationDate = DateTime.Now;
         public DateTime ExpirationDate { get => _ExpirationDate; set { _ExpirationDate = value; OnPropertyChanged(); } }
 
-
         private string _LOT;
         public string LOT { get => _LOT; set { _LOT = value; OnPropertyChanged(); } }
 
         private ControlType? _SelectedType;
         public ControlType? SelectedType { get => _SelectedType; set { _SelectedType = value; OnPropertyChanged(); } }
+
+       
+
+        private ObservableCollection<Test> _testList;
+        public ObservableCollection<Test> TestList
+        {
+            get => _testList;
+            set => SetProperty(ref _testList, value);
+        }
 
         private ControlInfo _SelectedItem;
         public ControlInfo SelectedItem
@@ -57,7 +64,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
                 if (SelectedItem != null)
                 {
-                    DisplayName = SelectedItem.Name;
                     ProductionDate = SelectedItem.ProductionDate;
                     ExpirationDate = SelectedItem.ExpirationDate;
                     LOT = SelectedItem.Lot;
@@ -66,6 +72,8 @@ namespace QC_Management.ViewModels
                 }
             }
         }
+
+       
 
         private Category _SelectedCategory;
         public Category SelectedCategory
@@ -90,7 +98,7 @@ namespace QC_Management.ViewModels
 
             AddCommand = new RelayCommand<Test>((p) =>
             {
-                if (DisplayName == null || LOT == null || SelectedCategory == null)
+                if (LOT == null || SelectedCategory == null)
                     return false;
                 else
                 {
@@ -101,7 +109,6 @@ namespace QC_Management.ViewModels
             {
                 var QC_Infor = new ControlInfo()
                 {
-                    Name = DisplayName,
                     Lot = LOT,
                     ProductionDate = ProductionDate,
                     ExpirationDate = ExpirationDate,
@@ -130,8 +137,7 @@ namespace QC_Management.ViewModels
                 if (SelectedItem == null)
                     return false;
                 else if (
-                SelectedItem.Name == DisplayName
-                && SelectedItem.ProductionDate == ProductionDate
+                SelectedItem.ProductionDate == ProductionDate
                 && SelectedItem.ExpirationDate == ExpirationDate
                 && SelectedItem.Lot == LOT
                 && SelectedItem.Status == isChecked
@@ -146,7 +152,6 @@ namespace QC_Management.ViewModels
                 SelectedItem.IdControlTypeNavigation = SelectedType;
                 SelectedItem.IdControlType  = SelectedType.Id;
                 SelectedItem.Status = isChecked;
-                SelectedItem.Name = DisplayName;
                 SelectedItem.Lot = LOT;
                 SelectedItem.ProductionDate = ProductionDate;
                 SelectedItem.ExpirationDate = ExpirationDate;
@@ -195,6 +200,34 @@ namespace QC_Management.ViewModels
 
             });
 
+          
+
+
+            DeleteCommand = new RelayCommand<ControlInfo>((p) =>
+            {
+                return SelectedItem != null;
+
+            }, (p) => {
+
+                if (SelectedItem == null)
+                    return;
+                try
+                {
+                    DataProvider.Ins.DB.ControlInfos.Remove(SelectedItem);
+                    DataProvider.Ins.DB.SaveChanges();
+                    MessageBox.Show("Xóa thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                    // Update the ListDB and List properties to refresh the ListView
+                    ListDB.Remove(SelectedItem);
+                    List = ListDB.Where(s => s.IdControlType == SelectedType.Id).ToList();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                }
+
+            });
+
             QCTypeSelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
             {
               if(SelectedCategory == null || SelectedType == null) return false;
@@ -213,7 +246,6 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 SelectedType = null;
-                DisplayName = string.Empty;
                 LOT = string.Empty;
 
                 ListType = new ObservableCollection<ControlType>(DataProvider.Ins.DB.ControlTypes.Where(x => x.IdCategory == SelectedCategory.Id));
@@ -228,7 +260,6 @@ namespace QC_Management.ViewModels
         }
         public void ReLoad()
         {
-            DisplayName = string.Empty;
             LOT = string.Empty;
             ListDB = new ObservableCollection<ControlInfo>(DataProvider.Ins.DB.ControlInfos);
             List = ListDB.ToList();

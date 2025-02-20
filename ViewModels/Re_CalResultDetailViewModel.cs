@@ -18,20 +18,20 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
 
 namespace QC_Management.ViewModels
 {
-    public class Re_ResultDetailViewModel : BaseViewModel
+    public class Re_CalResultDetailViewModel : BaseViewModel
     {
-        private ObservableCollection<ReResult> _Results;
-        public ObservableCollection<ReResult> Results
+        private ObservableCollection<ReCalResult> _ReCalResults;
+        public ObservableCollection<ReCalResult> ReCalResults
         {
-            get => _Results;
-            set { _Results = value; OnPropertyChanged(); }
+            get => _ReCalResults;
+            set { _ReCalResults = value; OnPropertyChanged(); }
         }
 
-        private ObservableCollection<ResultReView> _ResutlViewList;
-        public ObservableCollection<ResultReView> ResutlViewList { get => _ResutlViewList; set { _ResutlViewList = value; OnPropertyChanged(); } }
+        private ObservableCollection<ReCalResultReView> _CalResutlViewList;
+        public ObservableCollection<ReCalResultReView> CalResutlViewList { get => _CalResutlViewList; set { _CalResutlViewList = value; OnPropertyChanged(); } }
 
-        private ResultReView _SelectedItem;
-        public ResultReView SelectedItem
+        private ReCalResultReView _SelectedItem;
+        public ReCalResultReView SelectedItem
         {
             get => _SelectedItem;
             set
@@ -74,13 +74,13 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private int _idLevel;
-        public int IdLevel
+        private int _Level;
+        public int Level
         {
-            get => _idLevel;
+            get => _Level;
             set
             {
-                _idLevel = value;
+                _Level = value;
                 OnPropertyChanged();
             }
         }
@@ -106,8 +106,8 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-        private String _Time;
-        public String Time
+        private String? _Time;
+        public String? Time
         {
             get => _Time;
             set
@@ -116,6 +116,7 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
         public ICommand SaveCommand { get; set; }
 
         public ICommand CancelCommand { get; set; }
@@ -124,9 +125,9 @@ namespace QC_Management.ViewModels
 
         public ICommand LoadCommand { get; set; }
 
-        public Re_ResultDetailViewModel(ReResultGroup reResultGroup, System.Windows.Window window)
+        public Re_CalResultDetailViewModel(CalGroup reCalResultGroup, System.Windows.Window window)
         {
-            Results = reResultGroup.Results;
+            ReCalResults = reCalResultGroup.ReCalResults;
             _window = window;
             Index = 0;
 
@@ -135,91 +136,78 @@ namespace QC_Management.ViewModels
                 return true;
             }, (p) =>
             {
-                DeviceName = reResultGroup.DeviceName;
-                LevelName = reResultGroup.LevelName;
-                IdLevel = reResultGroup.IdLevel;
-                Date = reResultGroup.DateTime.Date;
-                Time = string.Format("{0:D2}:{1:D2}:{2:D2}", reResultGroup.Time.Hours, reResultGroup.Time.Minutes, reResultGroup.Time.Seconds);
+                DeviceName = reCalResultGroup.DeviceName;
+                Date = reCalResultGroup.DateRun.Date;
+                Time = string.Format("{0:D2}:{1:D2}:{2:D2}", reCalResultGroup.Time.Hours, reCalResultGroup.Time.Minutes, reCalResultGroup.Time.Seconds);
+                CalResutlViewList = new ObservableCollection<ReCalResultReView>();
 
-                ResutlViewList = new ObservableCollection<ResultReView>();
-
-                foreach (var item in Results)
+                foreach (var reCalResult in ReCalResults) 
                 {
-                   
-                    var qcInfor = DataProvider.Ins.DB.ControlInfoDetails.Include(s=>s.IdControlInfoNavigation.IdControlTypeNavigation).Where(s =>
-                         s.IdLevel == item.IdLevel
-                         && s.IdTest == item.IdTest
-                         && s.IdDevice == item.IdDevice 
-                         && s.Status == true).FirstOrDefault();
+                    //CalResutlViewList.Add(reCalResult);
 
-                    if (qcInfor == null)
+                    var calInforDetail = DataProvider.Ins.DB.CalDetails.Include(cd => cd.IdCalInforNavigation).Where(s => s.Status == true
+                      && s.IdDevice == reCalResult.IdDevice
+                      && s.IdTest == reCalResult.IdTest).FirstOrDefault(); 
+
+                    if (calInforDetail == null)
                     {
-                        MessageBox.Show($"Không tìm thấy thông tin QC {item.IdTestNavigation.Name}", "Thông báo", MessageBoxButton.OK);
+                        MessageBox.Show($"Không tìm thấy thông tin CAL {reCalResult.IdTestNavigation.Name}", "Thông báo", MessageBoxButton.OK);
                     }
                     else
                     {
-                        ResutlViewList.Add(new ResultReView()
+                        CalResutlViewList.Add(new ReCalResultReView()
                         {
-                            id = item.Id,
-                            TestName = item.IdTestNavigation.Name,
-                            idTest = item.IdTest,
-                            LOT = qcInfor.Lot,
-                            MeanApp = qcInfor.CurMean,
-                            SdApp = qcInfor.CurSd,
-                            MeanNSX = qcInfor.MeanNsx,
-                            SdNSX = qcInfor.SdNsx,
-                            Max = qcInfor.MeanApp + 3 * qcInfor.CurMean,
-                            Min = qcInfor.MeanApp - 3 * qcInfor.CurSd,
-                            IdControlDetailNavigation = qcInfor,
-                            Result = item.Result,
+                            Id = reCalResult.Id,
+                            IdTestNavigation = reCalResult.IdTestNavigation,
+                            IdTest = reCalResult.IdTest,
+                            Level = reCalResult.Level,
+                            LOT = calInforDetail.IdCalInforNavigation.CalLot,
+                            Max = calInforDetail.MaxValue,
+                            Min = calInforDetail.MinValue,
+                            Result = reCalResult.Result,
+                            DateRun = reCalResult.DateRun,
+                            Time = reCalResult.Time,
+                            IndexCal = reCalResult.IndexCal,
+                            IdDevice = reCalResult.IdDevice,
+                            IdDeviceNavigation = reCalResult.IdDeviceNavigation,
+                            IdCalDetailNavigation = calInforDetail,
+                            isOutOfRange = reCalResult.Result < calInforDetail.MinValue || reCalResult.Result > calInforDetail.MaxValue,
                         });
                     }
                 }
+
             });
 
-            CancelCommand = new RelayCommand<Result>((p) => true, (p) => Cancel());
+            CancelCommand = new RelayCommand<CalResult>((p) => true, (p) => Cancel());
             DeleteCommand = new RelayCommand<Result>((p) => true, (p) => Delete());
-
             SaveCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                if (ResutlViewList == null) return false;
+                if (ReCalResults == null) return false;
                 else return true;
 
             }, (p) =>
             {
-                var indexList = DataProvider.Ins.DB.Results
-                .Where(s => s.IdDevice == reResultGroup.IdDevice && s.DateRun.Date == Date && s.IdLevelNavigation.Id == reResultGroup.IdLevel)
-                .GroupBy(s => s.IndexQc)
-                .Select(s => s.Key).ToList();
-
-                if (indexList == null || indexList.Count() == 0)
-                {
-                    Index = 1;
-                }
-                else
-                {
-                    Index = (int)(indexList.Max() + 1);
-                }
-
-                var results = new ObservableCollection<Result>();
-                foreach (var item in ResutlViewList)
+              
+                var results = new ObservableCollection<CalResult>();
+                foreach (var item in CalResutlViewList)
                 {
                     if (item.Result != null)
                     {
-                        Result result = new Result()
+                        CalResult result = new CalResult()
                         {
-                            IdTest = item.idTest,
-                            IdDevice = reResultGroup.IdDevice,
-                            IdLevel = reResultGroup.IdLevel,
+                            IdTest = (int)item.IdTest,
+                            IdTestNavigation = item.IdTestNavigation,
+                            IdDevice = (int)item.IdDevice,
+                            Level = (int)item.Level,
                             DateRun = Date.Date,
                             Time = DateTime.Now.TimeOfDay,
                             IdUser = UserManager.Instance.CurrentUser.Id,
-                            IndexQc = Index,
-                            IdControlDetail = item.IdControlDetailNavigation.Id,
-                            IdControlDetailNavigation = item.IdControlDetailNavigation,
+                            IndexCal = Index,
+                            IdCalDetail = item.IdCalDetailNavigation.Id,
+                            IdCalDetailNavigation = item.IdCalDetailNavigation,
                             Comment = item.Comment,
-                            IsOutRange = item.isOutOfRange,
-                            Result1 = (double)item.Result,
+                            Result = (double)item.Result
+                            
                         };
                         results.Add(result);
                     }
@@ -236,7 +224,7 @@ namespace QC_Management.ViewModels
             });
         }
 
-        private async Task SaveAsync(ObservableCollection<Result> results)
+        private async Task SaveAsync(ObservableCollection<CalResult> results)
         {
             // Gọi hàm lưu dữ liệu
             bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, results);
@@ -244,9 +232,9 @@ namespace QC_Management.ViewModels
             // Hiển thị thông báo thành công hoặc thất bại
             if (isSaved)
             {
-                DataProvider.Ins.DB.ReResults.RemoveRange(Results);
+                DataProvider.Ins.DB.ReCalResults.RemoveRange(ReCalResults);
                 await DataProvider.Ins.DB.SaveChangesAsync();
-                Results.Clear();
+                ReCalResults.Clear();
 
                 MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 _window.DialogResult = true;
@@ -258,11 +246,11 @@ namespace QC_Management.ViewModels
             }
         }
 
-        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
+        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<CalResult> results)
         {
             try
             {
-                DB.AddRange(results);
+                DB.CalResults.AddRange(results);
                 await DB.SaveChangesAsync();
 
                 return true; // Trả về true nếu lưu thành công
@@ -283,14 +271,14 @@ namespace QC_Management.ViewModels
 
         private async void Delete()
         {
-            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa tất cả dữ liệu ReResult không?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            var result = MessageBox.Show("Bạn có chắc chắn muốn xóa tất cả dữ liệu Calib này không?", "Xác nhận xóa", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (result == MessageBoxResult.Yes)
             {
                 try
                 {
-                    DataProvider.Ins.DB.ReResults.RemoveRange(Results);
+                    DataProvider.Ins.DB.ReCalResults.RemoveRange(ReCalResults);
                     await DataProvider.Ins.DB.SaveChangesAsync();
-                    Results.Clear();
+                    ReCalResults.Clear();
 
                     MessageBox.Show("Xóa tất cả dữ liệu ReResult thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
 

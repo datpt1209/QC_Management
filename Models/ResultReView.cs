@@ -9,8 +9,6 @@ namespace QC_Management.Models
     {
         public int? id { get; set; }
         public string TestName { get; set; }
-        public string? QCName { get; set; }
-
         private double? _Result;
         public double? Result
         {

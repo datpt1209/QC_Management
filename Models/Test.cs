@@ -24,8 +24,9 @@ public partial class Test:BaseViewModel
     public virtual Category? IdCategoryNavigation { get; set; }
 
     public virtual UnitTable IdUnitTableNavigation { get; set; } = null!;
-
     public virtual ICollection<ReResult> ReResults { get; set; } = new List<ReResult>();
-
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+    public virtual ICollection<CalResult> CalResults { get; set; } = new List<CalResult>();
+    public virtual ICollection<ReCalResult> ReCalResults { get; set; } = new List<ReCalResult>();
+    public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
 }

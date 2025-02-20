@@ -90,7 +90,6 @@ namespace QC_Management
             }
 
             // Register the RenderingComplete event
-            reportViewer.RenderingComplete += ReportViewer_RenderingComplete;
             reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ResultsReport.rdlc";
             ReportDataSource rds = new ReportDataSource
             {
@@ -100,92 +99,8 @@ namespace QC_Management
             reportViewer.LocalReport.DataSources.Clear();
             reportViewer.LocalReport.DataSources.Add(rds);
             reportViewer.RefreshReport();
+          
         }
-        //private void Window_Loaded(object sender, RoutedEventArgs e)
-        //{
-        //    var level1Data = resultList
-        //        .Where(s => s.IdLevelNavigation?.Id == 1 && s.Result1 != null)
-        //        .Select(s => new
-        //        {
-        //            NameDevice = s.IdDeviceNavigation?.Name,
-        //            LOTQC = s.IdControlDetailNavigation?.Lot,
-        //            NameTest = s.IdTestNavigation?.Name,
-        //            Level = s.IdLevelNavigation?.Name,
-        //            Result = s.Result1,
-        //            Index = s.IndexQc,
-        //            UserName = s.IdUserNavigation?.DisplayName,
-        //            DateRun = s.DateRun,
-        //            Time = s.DateRun.Add(s.Time ?? TimeSpan.Zero).ToString("hh:mm:ss"),
-        //            Mean = s.IdControlDetailNavigation?.MeanNsx,
-        //            SD = s.IdControlDetailNavigation?.SdNsx,
-        //            Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name,
-        //            WestgardRule = s.WestgardRule,
-        //            Comment = s.Comment,
-        //            SDPXN = s.IdControlDetailNavigation?.SdApp ?? 0,
-        //            MeanPXN = s.IdControlDetailNavigation?.MeanApp ?? 0,
-        //            ExpirationDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ExpirationDate,
-        //            ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
-        //            SDs = (s.Result1 - (s.IdControlDetailNavigation?.MeanApp ?? 0)) / (s.IdControlDetailNavigation?.SdApp ?? 1),
-        //        })
-        //        .OrderBy(s => s.DateRun)
-        //        .ThenBy(s => s.Index)
-        //        .ToList();
-
-        //    var level2Data = resultList
-        //        .Where(s => s.IdLevelNavigation?.Id == 2 && s.Result1 != null)
-        //        .Select(s => new
-        //        {
-        //            NameDevice = s.IdDeviceNavigation?.Name,
-        //            LOTQC = s.IdControlDetailNavigation?.Lot,
-        //            NameTest = s.IdTestNavigation?.Name,
-        //            Level = s.IdLevelNavigation?.Name,
-        //            Result = s.Result1,
-        //            Index = s.IndexQc,
-        //            UserName = s.IdUserNavigation?.DisplayName,
-        //            DateRun = s.DateRun,
-        //            Time = s.DateRun.Add(s.Time ?? TimeSpan.Zero).ToString("hh:mm:ss"),
-        //            Mean = s.IdControlDetailNavigation?.MeanNsx,
-        //            SD = s.IdControlDetailNavigation?.SdNsx,
-        //            Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name,
-        //            WestgardRule = s.WestgardRule,
-        //            Comment = s.Comment,
-        //            SDPXN = s.IdControlDetailNavigation?.SdApp ?? 0,
-        //            MeanPXN = s.IdControlDetailNavigation?.MeanApp ?? 0,
-        //            ExpirationDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ExpirationDate,
-        //            ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
-        //            SDs = (s.Result1 - (s.IdControlDetailNavigation?.MeanApp ?? 0)) / (s.IdControlDetailNavigation?.SdApp ?? 1),
-        //        })
-        //        .OrderBy(s => s.DateRun)
-        //        .ThenBy(s => s.Index)
-        //        .ToList();
-
-        //    // Register the RenderingComplete event
-        //    reportViewer.RenderingComplete += ReportViewer_RenderingComplete;
-        //    reportViewer.LocalReport.ReportEmbeddedResource = "QC_Management.Report.ResultsReport.rdlc";
-
-        //    ReportDataSource rdsLevel1 = new ReportDataSource
-        //    {
-        //        Name = "DataSet1",
-        //        Value = level1Data
-        //    };
-
-        //    ReportDataSource rdsLevel2 = new ReportDataSource
-        //    {
-        //        Name = "DataSet2",
-        //        Value = level2Data
-        //    };
-
-        //    reportViewer.LocalReport.DataSources.Clear();
-        //    reportViewer.LocalReport.DataSources.Add(rdsLevel1);
-        //    reportViewer.LocalReport.DataSources.Add(rdsLevel2);
-        //    reportViewer.RefreshReport();
-        //}
-
-
-
-        private void ReportViewer_RenderingComplete(object sender, RenderingCompleteEventArgs e)
-        {
-            // Custom logic for handling the RenderingComplete event
-        }
+       
     }
 }

@@ -4,6 +4,7 @@ using LiveCharts.Defaults;
 using LiveCharts.Definitions.Charts;
 using LiveCharts.Wpf;
 using MaterialDesignThemes.Wpf.Converters;
+using Microsoft.EntityFrameworkCore;
 using QC_Management.Models;
 using QC_Management.Views;
 using System;
@@ -23,11 +24,65 @@ namespace QC_Management.ViewModels
 {
     public class HomeViewModel_V2 : BaseViewModel
     {
+        private readonly QcManagmentContext _dbContext;
         private ObservableCollection<Result> _List;
+        private Func<double, string> _yAxisLabelFormatter;
+        private ObservableCollection<Device> _DeviceList;
+        private ObservableCollection<ControlInfo> _ControlInfoList;
+        private ObservableCollection<ControlInfoDetail> _ControlInfoDetailList;
+        private ObservableCollection<Test> _TestListDB;
+        private ObservableCollection<User> _UserList;
+        private ObservableCollection<UnitTable> _UnitList;
+        private ObservableCollection<Test> _TestList;
+        private ObservableCollection<DeviceTest> _DeviceTestList;
+        private ObservableCollection<LevelQc> _LevelList;
+        private ObservableCollection<string> _Dates3;
+        private ObservableCollection<string> _Dates1;
+        private ObservableCollection<string> _Dates;
+        private ObservableCollection<string> _Dates2;
+        private Visibility _Visibility1;
+        private Visibility _Visibility2;
+        private Visibility _Visibility3;
+        private bool _isLoading;
+        private ChartValues<Result> _ChartValues1;
+        private ChartValues<Result> _ChartValues2;
+        private ChartValues<Result> _ChartValues3;
+        private ChartValues<double> _MeanValues1;
+        private ChartValues<double> _MeanValues2;
+        private ChartValues<double> _MeanValues3;
+        private ChartValues<double> _PlusOneSDValues1;
+        private ChartValues<double> _PlusOneSDValues2;
+        private ChartValues<double> _PlusOneSDValues3;
+        private ChartValues<double> _MinusOneSDValues1;
+        private ChartValues<double> _MinusOneSDValues2;
+        private ChartValues<double> _MinusOneSDValues3;
+        private ChartValues<double> _PlusTwoSDValues2;
+        private ChartValues<double> _PlusTwoSDValues1;
+        private ChartValues<double> _PlusTwoSDValues3;
+        private ChartValues<double> _MinusTwoSDValues1;
+        private ChartValues<double> _MinusTwoSDValues2;
+        private ChartValues<double> _MinusTwoSDValues3;
+        private ChartValues<double> _PlusThreeSDValues1;
+        private ChartValues<double> _PlusThreeSDValues2;
+        private ChartValues<double> _PlusThreeSDValues3;
+        private ChartValues<double> _MinusThreeSDValues3;
+        private ChartValues<double> _MinusThreeSDValues2;
+        private ChartValues<double> _MinusThreeSDValues1;
+        private float _totalWidth1;
+        private float _totalWidth2;
+        private float _totalWidth3;
+        private string _DisplayName;
+        private DateTime _StartDate = DateTime.Now.AddDays(-14);
+        private DateTime _EndDate = DateTime.Now;
+        private string _LOT;
+        private bool _isCheck;
+        private Test _SelectedTest;
+        private Device _SelectedDevice;
+        private ControlInfo _SelectedControlInfo;
+        private ControlInfoDetail _SelectedControlInfoDetail;
+
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
         public ChartValues<ObservablePoint> LineAtOneValues { get; set; }
-
-        private Func<double, string> _yAxisLabelFormatter;
         public Func<double, string> YAxisLabelFormatter
         {
             get { return _yAxisLabelFormatter; }
@@ -37,55 +92,23 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged(nameof(YAxisLabelFormatter));
             }
         }
-
-        private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<ControlInfo> _ControlInfoList;
         public ObservableCollection<ControlInfo> ControlInfoList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<ControlInfoDetail> _ControlInfoDetailList;
         public ObservableCollection<ControlInfoDetail> ControlInfoDetailList { get => _ControlInfoDetailList; set { _ControlInfoDetailList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<Test> _TestListDB;
         public ObservableCollection<Test> TestListDB { get => _TestListDB; set { _TestListDB = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<User> _UserList;
         public ObservableCollection<User> UserList { get => _UserList; set { _UserList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<UnitTable> _UnitList;
         public ObservableCollection<UnitTable> UnitList { get => _UnitList; set { _UnitList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<Test> _TestList;
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<DeviceTest> _DeviceTestList;
         public ObservableCollection<DeviceTest> DeviceTestList { get => _DeviceTestList; set { _DeviceTestList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<LevelQc> _LevelList;
         public ObservableCollection<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<string> _Dates3;
         public ObservableCollection<string> Dates3 { get => _Dates3; set { _Dates3 = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<string> _Dates1;
         public ObservableCollection<string> Dates1 { get => _Dates1; set { _Dates1 = value; OnPropertyChanged(); } }
-
-        private ObservableCollection<string> _Dates;
         public ObservableCollection<string> Dates { get => _Dates; set { _Dates = value; OnPropertyChanged(); } }
-        private ObservableCollection<string> _Dates2;
         public ObservableCollection<string> Dates2 { get => _Dates2; set { _Dates2 = value; OnPropertyChanged(); } }
-
-        private Visibility _Visibility1;
         public Visibility Visibility1 { get => _Visibility1; set { _Visibility1 = value; OnPropertyChanged(); } }
-
-        private Visibility _Visibility2;
         public Visibility Visibility2 { get => _Visibility2; set { _Visibility2 = value; OnPropertyChanged(); } }
-
-        private Visibility _Visibility3;
         public Visibility Visibility3 { get => _Visibility3; set { _Visibility3 = value; OnPropertyChanged(); } }
-
-        private bool _isLoading;
         public bool IsLoading
         {
             get => _isLoading;
@@ -95,88 +118,36 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        private ChartValues<Result> _ChartValues1;
         public ChartValues<Result> ChartValues1 { get => _ChartValues1; set { _ChartValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<Result> _ChartValues2;
         public ChartValues<Result> ChartValues2 { get => _ChartValues2; set { _ChartValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<Result> _ChartValues3;
         public ChartValues<Result> ChartValues3 { get => _ChartValues3; set { _ChartValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MeanValues1;
-        public ChartValues<double> MeanValues1 { get => _MeanValues1; set { _MeanValues1 = value; OnPropertyChanged();} }
-
-        private ChartValues<double> _MeanValues2;
+        public ChartValues<double> MeanValues1 { get => _MeanValues1; set { _MeanValues1 = value; OnPropertyChanged(); } }
         public ChartValues<double> MeanValues2 { get => _MeanValues2; set { _MeanValues2 = value; OnPropertyChanged(); } }
-        private ChartValues<double> _MeanValues3;
         public ChartValues<double> MeanValues3 { get => _MeanValues3; set { _MeanValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusOneSDValues1;
         public ChartValues<double> PlusOneSDValues1 { get => _PlusOneSDValues1; set { _PlusOneSDValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusOneSDValues2;
         public ChartValues<double> PlusOneSDValues2 { get => _PlusOneSDValues2; set { _PlusOneSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusOneSDValues3;
         public ChartValues<double> PlusOneSDValues3 { get => _PlusOneSDValues3; set { _PlusOneSDValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusOneSDValues1;
         public ChartValues<double> MinusOneSDValues1 { get => _MinusOneSDValues1; set { _MinusOneSDValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusOneSDValues2;
         public ChartValues<double> MinusOneSDValues2 { get => _MinusOneSDValues2; set { _MinusOneSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusOneSDValues3;
         public ChartValues<double> MinusOneSDValues3 { get => _MinusOneSDValues3; set { _MinusOneSDValues3 = value; OnPropertyChanged(); } }
-
-
-        private ChartValues<double> _PlusTwoSDValues2;
         public ChartValues<double> PlusTwoSDValues2 { get => _PlusTwoSDValues2; set { _PlusTwoSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusTwoSDValues1;
         public ChartValues<double> PlusTwoSDValues1 { get => _PlusTwoSDValues1; set { _PlusTwoSDValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusTwoSDValues3;
         public ChartValues<double> PlusTwoSDValues3 { get => _PlusTwoSDValues3; set { _PlusTwoSDValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusTwoSDValues1;
         public ChartValues<double> MinusTwoSDValues1 { get => _MinusTwoSDValues1; set { _MinusTwoSDValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusTwoSDValues2;
         public ChartValues<double> MinusTwoSDValues2 { get => _MinusTwoSDValues2; set { _MinusTwoSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusTwoSDValues3;
         public ChartValues<double> MinusTwoSDValues3 { get => _MinusTwoSDValues3; set { _MinusTwoSDValues3 = value; OnPropertyChanged(); } }
-
-
-        private ChartValues<double> _PlusThreeSDValues1;
         public ChartValues<double> PlusThreeSDValues1 { get => _PlusThreeSDValues1; set { _PlusThreeSDValues1 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusThreeSDValues2;
         public ChartValues<double> PlusThreeSDValues2 { get => _PlusThreeSDValues2; set { _PlusThreeSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _PlusThreeSDValues3;
         public ChartValues<double> PlusThreeSDValues3 { get => _PlusThreeSDValues3; set { _PlusThreeSDValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusThreeSDValues3;
-        public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusThreeSDValues2;
+       public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
         public ChartValues<double> MinusThreeSDValues2 { get => _MinusThreeSDValues2; set { _MinusThreeSDValues2 = value; OnPropertyChanged(); } }
-
-        private ChartValues<double> _MinusThreeSDValues1;
-        public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
-
-        private float _totalWidth1;
+         public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
         public float totalWidth1 { get => _totalWidth1; set { _totalWidth1 = value; OnPropertyChanged(); } }
-        private float _totalWidth2;
         public float totalWidth2 { get => _totalWidth2; set { _totalWidth2 = value; OnPropertyChanged(); } }
-        private float _totalWidth3;
         public float totalWidth3 { get => _totalWidth3; set { _totalWidth3 = value; OnPropertyChanged(); } }
 
         public ICommand PrintCommand { get; set; }
+        public ICommand PrintCalibCommand { get; set; }
         public ICommand PrintChartCommand { get; set; }
         public ICommand ViewCommand { get; set; }
         public ICommand EditCommand { get; set; }
@@ -186,25 +157,11 @@ namespace QC_Management.ViewModels
         public ICommand TestSelectionChangedCommand { get; set; }
         public ICommand appRangeCommand { get; set; }
         public ICommand ScrollViewer_LoadedCommand { get; set; }
-
-        private string _DisplayName;
         public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
-
-        private DateTime _StartDate = DateTime.Now.AddDays(-14);
         public DateTime StartDate { get => _StartDate; set { _StartDate = value; OnPropertyChanged(); } }
-
-        private DateTime _EndDate = DateTime.Now;
         public DateTime EndDate { get => _EndDate; set { _EndDate = value; OnPropertyChanged(); } }
-
-
-        private string _LOT;
         public string LOT { get => _LOT; set { _LOT = value; OnPropertyChanged(); } }
-
-        private bool _isCheck;
         public bool isCheck { get => _isCheck; set { _isCheck = value; OnPropertyChanged(); } }
-
-
-        private Test _SelectedTest;
         public Test SelectedTest
         {
             get => _SelectedTest;
@@ -214,8 +171,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        private Device _SelectedDevice;
         public Device SelectedDevice
         {
             get => _SelectedDevice;
@@ -225,8 +180,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        private ControlInfo _SelectedControlInfo;
         public ControlInfo SelectedControlInfo
         {
             get => _SelectedControlInfo;
@@ -236,8 +189,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        private ControlInfoDetail _SelectedControlInfoDetail;
         public ControlInfoDetail SelectedControlInfoDetail
         {
             get => _SelectedControlInfoDetail;
@@ -247,49 +198,29 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
-        private LineSeries _oneSDLine;
-        public LineSeries oneSDLine
-        {
-            get => _oneSDLine;
-            set
-            {
-                _oneSDLine = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private LineSeries _twoSDLine;
-        public LineSeries twoSDLine
-        {
-            get => _twoSDLine;
-            set
-            {
-                _twoSDLine = value;
-                OnPropertyChanged();
-            }
-        }
-
+        public ICommand LoadDataCommand { get; set; }
         public HomeViewModel_V2()
         {
-           
-            InitializeYAxisLabelFormatter();
+            _dbContext  = new QcManagmentContext();
+
+            LoadDataCommand = new RelayCommand<object>((p) => true, async (p) => await LoadNew());
+
             LoadedCommand = new RelayCommand<Test>((p) =>
             {
                 return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
-                LoadNew();
+                await LoadNew();
             });
 
             appRangeCommand = new RelayCommand<Test>((p) =>
             {
                 return true;
 
-            }, (p) =>
+            },async (p) =>
             {
-                ViewChart();
+               await ViewChart();
             });
 
             //ScrollViewer_LoadedCommand = new RelayCommand<ScrollViewer>((p) =>
@@ -315,6 +246,29 @@ namespace QC_Management.ViewModels
 
             });
 
+            PrintCalibCommand = new RelayCommand<object>((p) =>
+            {
+                if (SelectedTest == null || SelectedDevice == null) return false;
+                else
+                    return true;
+
+            }, (p) =>
+            {
+                    var calresults = DataProvider.Ins.DB.CalResults
+                        .Include(s => s.IdCalDetailNavigation)
+                        .ThenInclude(cd => cd.IdCalInforNavigation)
+                        .ThenInclude(ct => ct.IdCalTypeNavigation)
+                        .Where(s => s.IdDevice == SelectedDevice.Id
+                                        && s.IdTest == SelectedTest.Id
+                                        && s.DateRun >= StartDate
+                                        && s.DateRun <= EndDate)
+                        .ToList();
+
+                CalibReportView rp = new CalibReportView(calresults);
+                rp.ShowDialog();
+
+            });
+
             PrintChartCommand = new RelayCommand<object>((p) =>
             {
                 if (SelectedTest == null || SelectedDevice == null)
@@ -324,8 +278,6 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-               
-
                 // Thiết lập dữ liệu cho báo cáo
                 var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
                 ChartReportView rp = new ChartReportView(results, isCheck);
@@ -371,13 +323,53 @@ namespace QC_Management.ViewModels
             {
                 return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
-                ViewChart();
+                await ViewChart();
             });
 
         }
 
+        private async Task LoadNew()
+        {
+            IsLoading = true;
+            try
+            {
+                var DB = await Task.Run(() =>  DataProvider.Ins.DB);
+                List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
+                UserList = new ObservableCollection<User>(DB.Users);
+                LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
+                DeviceList = new ObservableCollection<Device>(DB.Devices);
+                DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
+                UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
+                TestListDB = new ObservableCollection<Test>(DB.Tests);
+                if (SelectedDevice == null)
+                {
+                    TestList = new ObservableCollection<Test>();
+                }
+                else
+                {
+                    TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+                }
+                ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
+                ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
+                //SelectedTest = null;
+                Visibility1 = Visibility.Collapsed;
+                Visibility2 = Visibility.Collapsed;
+                Visibility3 = Visibility.Collapsed;
+                isCheck = false;
+            }
+            catch (Exception ex)
+            {
+                // Handle exceptions
+            }
+            finally
+            {
+                IsLoading = false;
+            }
+
+            
+        }
         private void InitializeYAxisLabelFormatter()
         {
             YAxisLabelFormatter = value =>
@@ -409,6 +401,7 @@ namespace QC_Management.ViewModels
 
         private async Task ViewChart()
         {
+            InitializeYAxisLabelFormatter();
             try
             {
                 if (SelectedDevice == null || SelectedTest == null)
@@ -416,10 +409,14 @@ namespace QC_Management.ViewModels
                     return;
                 }
 
-                IsLoading = true;
                 Visibility1 = Visibility.Collapsed;
                 Visibility2 = Visibility.Collapsed;
                 Visibility3 = Visibility.Collapsed;
+
+                IsLoading = true;
+                OnPropertyChanged(nameof(IsLoading));
+
+               
 
                 var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate)
                     .OrderBy(s => s.DateRun.Year)
@@ -429,6 +426,7 @@ namespace QC_Management.ViewModels
                     .ToList();
                 if (!results.Any())
                 {
+                   
                     MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
@@ -508,7 +506,7 @@ namespace QC_Management.ViewModels
                     }
                 });
 
-                LoadChart(isCheck);
+                await LoadChartAsync(isCheck);
             }
             catch (Exception ex)
             {
@@ -605,32 +603,32 @@ namespace QC_Management.ViewModels
         }
         */
 
-        private void LoadNew()
-        {
-            var DB = DataProvider.Ins.DB;
-            List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
-            UserList = new ObservableCollection<User>(DB.Users);
-            LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
-            DeviceList = new ObservableCollection<Device>(DB.Devices);
-            DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-            UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
-            TestListDB = new ObservableCollection<Test>(DB.Tests);
-            if(SelectedDevice == null)
-            {
-                TestList = new ObservableCollection<Test>();
-            }
-            else
-            {
-                TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-            }
-            ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
-            ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-            //SelectedTest = null;
-            Visibility1 = Visibility.Collapsed;
-            Visibility2 = Visibility.Collapsed;
-            Visibility3 = Visibility.Collapsed;
-            isCheck = false;
-        }
+        //private void LoadNew()
+        //{
+        //    var DB = DataProvider.Ins.DB;
+        //    List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
+        //    UserList = new ObservableCollection<User>(DB.Users);
+        //    LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
+        //    DeviceList = new ObservableCollection<Device>(DB.Devices);
+        //    DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
+        //    UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
+        //    TestListDB = new ObservableCollection<Test>(DB.Tests);
+        //    if(SelectedDevice == null)
+        //    {
+        //        TestList = new ObservableCollection<Test>();
+        //    }
+        //    else
+        //    {
+        //        TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+        //    }
+        //    ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
+        //    ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
+        //    //SelectedTest = null;
+        //    Visibility1 = Visibility.Collapsed;
+        //    Visibility2 = Visibility.Collapsed;
+        //    Visibility3 = Visibility.Collapsed;
+        //    isCheck = false;
+        //}
         private double CalculateMean(ObservableCollection<double> values)
         {
             double sum = 0;
@@ -652,7 +650,7 @@ namespace QC_Management.ViewModels
             return Math.Sqrt(variance);
         }
 
-        private void LoadChart(bool isCheck)
+        private async Task LoadChartAsync(bool isCheck)
         {
             var mapper1 = Mappers.Xy<Result>()
                   .X((value, index) => index) // lets use the position of the item as X
@@ -666,14 +664,17 @@ namespace QC_Management.ViewModels
                .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp > 2 || (value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp < -2) ? Brushes.Red : null)
                .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
 
-            if (isCheck == false)
+            await Task.Run(() =>
             {
-               Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
-            }
-            else
-            {
-                Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
-            }
+                if (isCheck == false)
+                {
+                    Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
+                }
+                else
+                {
+                    Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
+                }
+            });
         }
         public static float CmToPixels(float cm)
         {

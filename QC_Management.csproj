@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Report\CALResultsReport.rdlc" />
     <None Remove="Report\ChartReport.rdlc" />
     <None Remove="Report\ResultsReport.rdlc" />
     <None Remove="Report\ReviewResultReport.rdlc" />
@@ -21,6 +22,9 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Report\CALResultsReport.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
     <EmbeddedResource Include="Report\ReviewResultReport.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -69,7 +73,13 @@
     <Compile Update="Views\ChartReportView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Update="Views\CalibReportView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Update="Views\ReviewReportView.xaml.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Update="Views\Re_CalResultDetailView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -86,6 +96,12 @@
       <Generator>MSDataSetGenerator</Generator>
       <LastGenOutput>dsResult.Designer.cs</LastGenOutput>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Page Update="Views\CalibReportView.xaml">
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
 
 </Project>

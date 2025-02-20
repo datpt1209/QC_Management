@@ -1,4 +1,4 @@
-﻿<Window x:Class="QC_Management.ReportView"
+﻿<Window x:Class="QC_Management.CalibReportView"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
@@ -9,11 +9,11 @@
         WindowStartupLocation="CenterScreen"
         Title="ReportView" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
-        <WindowsFormsHost Visibility="Collapsed"
-                          Name="windowsFormsHost1"
-                          Grid.Row="1">
-            <winforms:ReportViewer x:Name="reportViewer">
+        <WindowsFormsHost Name="windowsFormsHost2"   >
+            <winforms:ReportViewer x:Name="reportViewer2">
+
             </winforms:ReportViewer>
+
         </WindowsFormsHost>
     </Grid>
 </Window>

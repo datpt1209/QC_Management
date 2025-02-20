@@ -15,6 +15,7 @@ public partial class User : BaseViewModel
     public string Password { get; set; } = null!;
 
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+    public virtual ICollection<CalResult> CalResults { get; set; } = new List<CalResult>();
 
     public virtual UserRole RoleNavigation { get; set; } = null!;
     public User(string userName)

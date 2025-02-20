@@ -204,7 +204,7 @@
                     <!--// QC Infor //-->
 
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding Visibility1}"
                         HorizontalAlignment="Left" 
                                   Margin="0,0,0,0 " MouseEnter="ListViewItem_MouseEnter">
 
@@ -216,7 +216,7 @@
                         </i:Interaction.Triggers>
                         
                         <StackPanel Orientation="Horizontal" Width="170">
-                            <materialDesign:PackIcon Kind="InformationVariantBoxOutline" Height="30" Width="40" Margin="5,0,0,0"/>
+                            <materialDesign:PackIcon Kind="AlphaQBox" Height="30" Width="40" Margin="5,0,0,0"/>
                             <TextBlock Text="Thông tin QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
@@ -227,7 +227,7 @@
                     <!--// RangeQC //-->
 
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding Visibility1}"
                         HorizontalAlignment="Left" 
                                   Margin="0,0,0,0 " MouseEnter="ListViewItem_MouseEnter">
 
@@ -239,17 +239,64 @@
                         </i:Interaction.Triggers>
 
                         <StackPanel Orientation="Horizontal" Width="170">
-                            <materialDesign:PackIcon Kind="Update" Height="30" Width="40" Margin="5,0,0,0"/>
+                            <materialDesign:PackIcon Kind="AlphaQBoxOutline" Height="30" Width="40" Margin="5,0,0,0"/>
                             <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
                             <ToolTip x:Name="tt_range" Content="Range" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
+                    
+                    
+                    <!--// CAL //-->
+
+                    <ListViewItem 
+                         Visibility="{Binding Visibility1}"
+                        HorizontalAlignment="Left" 
+                                  Margin="0,0,0,0 " MouseEnter="ListViewItem_MouseEnter">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Selected">
+                                <i:InvokeCommandAction Command="{Binding LoadCALViewCommand}" CommandParameter="{Binding ElementName=HomeItem}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <StackPanel Orientation="Horizontal" Width="170">
+                            <materialDesign:PackIcon Kind="AlphaCBox" Height="30" Width="40" Margin="5,0,0,0"/>
+                            <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="Cal_range" Content="Range" Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
+            
+                    <!--CAL Detail--> 
+                    
+                    <ListViewItem 
+                         Visibility="{Binding Visibility1}"
+                        HorizontalAlignment="Left" 
+                                  Margin="0,0,0,0 " MouseEnter="ListViewItem_MouseEnter">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="Selected">
+                                <i:InvokeCommandAction Command="{Binding LoadCALDetailViewCommand}" CommandParameter="{Binding ElementName=HomeItem}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                        <StackPanel Orientation="Horizontal" Width="170">
+                            <materialDesign:PackIcon Kind="AlphaCBoxOutline" Height="30" Width="40" Margin="5,0,0,0"/>
+                            <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                        </StackPanel>
+                        <ListViewItem.ToolTip>
+                            <ToolTip x:Name="Cal_detail" Content="Range" Style="{StaticResource tt_style}"/>
+                        </ListViewItem.ToolTip>
+                    </ListViewItem>
 
                     <!--Test-->
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding Visibility1}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -270,7 +317,7 @@
 
                     <!--// Đơn vị tính //-->
                     <ListViewItem
-                        Visibility="{Binding visibility1}"
+                        Visibility="{Binding Visibility1}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" 
                         MouseEnter="ListViewItem_MouseEnter" >
                         <i:Interaction.Triggers>
@@ -291,7 +338,7 @@
 
                     <!--Device-->
                     <ListViewItem 
-                         Visibility="{Binding visibility1}"
+                         Visibility="{Binding Visibility1}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -312,7 +359,7 @@
 
                     <!--// User //-->
                     <ListViewItem 
-                         Visibility="{Binding visibility2}"
+                         Visibility="{Binding Visibility2}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -333,7 +380,7 @@
 
                     <!--// User_role //-->
                     <ListViewItem 
-                         Visibility="{Binding visibility2}"
+                         Visibility="{Binding Visibility2}"
                         HorizontalAlignment="Left" Margin="0,0,0,0" MouseEnter="ListViewItem_MouseEnter" >
 
                         <i:Interaction.Triggers>
@@ -358,7 +405,7 @@
 
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="AccountTie" Height="30" Width="40" Margin="5,0,0,0"/>
-                            <TextBlock Text="{Binding currentUser.DisplayName}" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="{Binding CurrentUser.DisplayName}" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                     </ListViewItem>
                     <!--// Listview items style template //-->

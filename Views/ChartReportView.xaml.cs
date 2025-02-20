@@ -58,8 +58,8 @@ namespace QC_Management
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
                      SeriesColor = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "Low" ? "LightSeaGreen" :
-                                    s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name =="Normal" ? "RoyalBlue" :
-                                     s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name =="High" ? "DarkOrange" : "Gray",
+                                    s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name =="Normal" ? "Salmon" :
+                                     s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name =="High" ? "DimGray" : "Black",
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
 
                  }).OrderBy(s => s.DateRun.Month)
@@ -92,8 +92,8 @@ namespace QC_Management
                      ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
                      SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
                      SeriesColor = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "Low" ? "LightSeaGreen" :
-                                    s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? "RoyalBlue" :
-                                     s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? "DarkOrange" : "Gray",
+                                    s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? "Salmon" :
+                                     s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? "DimGray" : "Black",
 
 
                      IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag

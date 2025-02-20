@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using QC_Management.Models;
 
-namespace QC_Management.Models;
+namespace QC_Management;
 
 public partial class QcManagmentContext : DbContext
 {
@@ -14,6 +15,14 @@ public partial class QcManagmentContext : DbContext
         : base(options)
     {
     }
+
+    public virtual DbSet<CalDetail> CalDetails { get; set; }
+
+    public virtual DbSet<CalInfor> CalInfors { get; set; }
+
+    public virtual DbSet<CalResult> CalResults { get; set; }
+
+    public virtual DbSet<CalType> CalTypes { get; set; }
 
     public virtual DbSet<Category> Categories { get; set; }
 
@@ -31,6 +40,8 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<ReResult> ReResults { get; set; }
 
+    public virtual DbSet<ReCalResult> ReCalResults { get; set; }
+
     public virtual DbSet<Result> Results { get; set; }
 
     public virtual DbSet<Test> Tests { get; set; }
@@ -43,14 +54,91 @@ public partial class QcManagmentContext : DbContext
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
-       
-
         var connectionString = AppConfig.BuildConnectionString();
 
         optionsBuilder.UseSqlServer(connectionString);
     }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+
+        modelBuilder.Entity<CalDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__CalDetai__3214EC072D3A7912");
+
+            entity.ToTable("CalDetail");
+
+            entity.HasOne(d => d.IdCalInforNavigation).WithMany(p => p.CalDetails)
+                .HasForeignKey(d => d.IdCalInfor)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CalDetail__IdCal__5D95E53A");
+
+            entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.CalDetails)
+                .HasForeignKey(d => d.IdDevice)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalDetail_Device");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.CalDetails)
+                .HasForeignKey(d => d.IdTest)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CalDetail__IdTes__5CA1C101");
+        });
+
+        modelBuilder.Entity<CalInfor>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__CalInfor__3214EC07A9D3AA96");
+
+            entity.ToTable("CalInfor");
+
+            entity.Property(e => e.CalLot)
+                .HasMaxLength(20)
+                .IsUnicode(false)
+                .HasColumnName("CalLOT");
+            entity.Property(e => e.ExpirationDate).HasColumnType("date");
+
+            entity.HasOne(d => d.IdCalTypeNavigation).WithMany(p => p.CalInfors)
+                .HasForeignKey(d => d.IdCalType)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_CalInfor_CalType");
+        });
+
+
+        modelBuilder.Entity<CalResult>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__CalResul__3214EC0774A3814A");
+
+            entity.ToTable("CalResult");
+
+            entity.Property(e => e.DateRun).HasColumnType("date");
+
+            entity.HasOne(d => d.IdCalDetailNavigation).WithMany(p => p.CalResults)
+                .HasForeignKey(d => d.IdCalDetail)
+                .HasConstraintName("FK__CalResult__IdCal__5E8A0973");
+
+            entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.CalResults)
+                .HasForeignKey(d => d.IdDevice)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CalResult__Resul__4F47C5E3");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.CalResults)
+                .HasForeignKey(d => d.IdTest)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK__CalResult__IdTes__503BEA1C");
+
+            entity.HasOne(d => d.IdUserNavigation).WithMany(p => p.CalResults)
+                .HasForeignKey(d => d.IdUser)
+                .HasConstraintName("FK_CalResult_User");
+        });
+
+        modelBuilder.Entity<CalType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__CalType__3214EC0729EADF4B");
+
+            entity.ToTable("CalType");
+
+            entity.Property(e => e.CalTypeName).HasMaxLength(100);
+        });
+
+
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Category__3214EC073108088C");
@@ -73,9 +161,9 @@ public partial class QcManagmentContext : DbContext
 
             entity.HasOne(d => d.IdControlTypeNavigation).WithMany(p => p.ControlInfos)
                 .HasForeignKey(d => d.IdControlType)
+                .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ControlInfo_ControlType");
         });
-
         modelBuilder.Entity<ControlInfoDetail>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__ControlI__3214EC074F524D96");
@@ -183,6 +271,23 @@ public partial class QcManagmentContext : DbContext
                 .HasConstraintName("FK_Re_Result_Test");
         });
 
+        modelBuilder.Entity<ReCalResult>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__ReCalRes__3214EC074CF81388");
+
+            entity.ToTable("ReCalResult");
+
+            entity.Property(e => e.DateRun).HasColumnType("date");
+
+            entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.ReCalResults)
+                .HasForeignKey(d => d.IdDevice)
+                .HasConstraintName("FK__ReCalResu__Resul__56E8E7AB");
+
+            entity.HasOne(d => d.IdTestNavigation).WithMany(p => p.ReCalResults)
+                .HasForeignKey(d => d.IdTest)
+                .HasConstraintName("FK__ReCalResu__IdTes__57DD0BE4");
+        });
+
         modelBuilder.Entity<Result>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Result__3214EC076E2759B0");
@@ -193,6 +298,7 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.IdUser).HasColumnName("idUser");
             entity.Property(e => e.IndexQc).HasColumnName("index_QC");
             entity.Property(e => e.IsOutRange).HasColumnName("isOutRange");
+            //entity.Property(e => e.QuantitativeResultTemp).HasMaxLength(50);
             entity.Property(e => e.Result1).HasColumnName("Result");
 
             entity.HasOne(d => d.IdControlDetailNavigation).WithMany(p => p.Results)

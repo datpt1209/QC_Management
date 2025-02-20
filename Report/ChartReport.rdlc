@@ -496,7 +496,7 @@
                 <ChartElementPosition>
                   <Top>10</Top>
                   <Left>2</Left>
-                  <Height>85</Height>
+                  <Height>75</Height>
                   <Width>100</Width>
                 </ChartElementPosition>
                 <ChartInnerPlotPosition>
@@ -546,9 +546,9 @@
               </Style>
             </ChartNoDataMessage>
             <DataSetName>DataSet1</DataSetName>
-            <Top>2.90131cm</Top>
-            <Left>1.32504cm</Left>
-            <Height>8.28119cm</Height>
+            <Top>2.66318cm</Top>
+            <Left>1.24566cm</Left>
+            <Height>8.38702cm</Height>
             <Width>26.34891cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
@@ -1891,7 +1891,7 @@
         <Height>14.74613cm</Height>
         <Style />
       </Body>
-      <Width>28.90397cm</Width>
+      <Width>28.40126cm</Width>
       <Page>
         <PageHeader>
           <Height>2.92663cm</Height>
@@ -1955,7 +1955,7 @@
                 <Paragraph>
                   <TextRuns>
                     <TextRun>
-                      <Value>XN.BM02.QL21-24</Value>
+                      <Value>XN.BM03.QL21-24</Value>
                       <Style>
                         <FontStyle>Italic</FontStyle>
                         <FontFamily>times New Roman</FontFamily>

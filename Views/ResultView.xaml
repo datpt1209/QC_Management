@@ -101,14 +101,14 @@
                     </materialDesign:Card>
                 </Grid>
                 <Grid Grid.Column="1">
-                    <materialDesign:Card  Margin="5">
-                        <TextBlock Text="Kết quả QC chưa lưu" 
-                                       HorizontalAlignment="Center" 
-                                       FontSize="22"
-                                       VerticalAlignment="Center"
-                                        Foreground="Black"
-                                        FontWeight="Bold"
-                            ></TextBlock> 
+                    <materialDesign:Card Margin="5">
+                        <TextBlock 
+                            Text="Kết quả QC Chưa lưu" 
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"
+                            FontWeight="Bold"
+                            FontSize="20"
+                        />
                     </materialDesign:Card>
                 </Grid>
             </Grid>
@@ -117,10 +117,15 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="0.7*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <materialDesign:Card  Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
-                    <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
-               SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
-               CanUserAddRows="False">
+                <materialDesign:Card   Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+                    <DataGrid 
+                        Background="White"
+                        Name="input" 
+                        ItemsSource="{Binding ResutlViewList}" 
+                        AutoGenerateColumns="False"
+                        SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
+               
+                        CanUserAddRows="False">
                         <DataGrid.Columns >
                             <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
                             <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
@@ -146,66 +151,124 @@
 
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
-
                             </DataGridTextColumn>
-
                             <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </materialDesign:Card>
                 <Grid Grid.Column="1">
-                    <ListView ItemsSource="{Binding GroupedReResults}" SelectedItem="{Binding SelectedReResultGroup}" Margin="10"
-                        HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="MouseDoubleClick">
-                                <i:InvokeCommandAction Command="{Binding ShowDetailCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ListView}}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                        <ListView.View>
-                            <GridView>
-                                <GridViewColumn Header="Thiết bị" Width="120">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding DeviceName}" TextAlignment="Center" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Level" Width="90">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding LevelName}" TextAlignment="Center" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Lần QC" Width="90">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Index}" TextAlignment="Center" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Ngày" Width="100">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding DateTime, StringFormat={}{0:dd/MM/yyyy}}" TextAlignment="Center" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <GridViewColumn Header="Giờ" Width="100">
-                                    <GridViewColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <TextBlock Text="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}" TextAlignment="Center" VerticalAlignment="Center"/>
-                                        </DataTemplate>
-                                    </GridViewColumn.CellTemplate>
-                                </GridViewColumn>
-                                <!-- Add more columns as needed -->
-                            </GridView>
-                        </ListView.View>
-                    </ListView>
-
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="*"></RowDefinition>
+                        <RowDefinition Height="50"></RowDefinition>
+                        <RowDefinition Height="*"></RowDefinition>
+                    </Grid.RowDefinitions>
+                    <Grid Grid.Row="0">
+                        <materialDesign:Card Margin="5">
+                            <DataGrid Background="White" 
+                                      ItemsSource="{Binding GroupedReResults}" 
+                                      SelectedItem="{Binding SelectedReResultGroup}" 
+                                      Margin="10"
+                                      HorizontalContentAlignment="Center" 
+                                      VerticalContentAlignment="Center" IsReadOnly="True" AutoGenerateColumns="False">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction Command="{Binding ShowDetailCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Thiết bị" Width="120" Binding="{Binding DeviceName}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Level" Width="90" Binding="{Binding LevelName}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Lần QC" Width="90" Binding="{Binding Index}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Ngày" Width="110" Binding="{Binding DateTime, StringFormat={}{0:dd/MM/yyyy}}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn Header="Giờ" Width="100" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <!-- Add more columns as needed -->
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </materialDesign:Card>
+                      
+                    </Grid>
+                    <Grid Grid.Row="1">
+                        <materialDesign:Card Margin="5">
+                            <TextBlock 
+                                FontSize="20"
+                                FontWeight="Bold"
+                                Text="Kết quả CAL Chưa lưu"
+                                HorizontalAlignment="Center" 
+                                VerticalAlignment="Center"/>
+                        </materialDesign:Card>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        <materialDesign:Card Margin="5">
+                            <DataGrid 
+                                Background="White"
+                                Name="calNoSave" ItemsSource="{Binding CalGroupResult}" AutoGenerateColumns="False"
+                                      SelectedItem="{Binding SelectedCalGroup, Mode=OneWayToSource}"
+                                      CanUserAddRows="False">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="MouseDoubleClick">
+                                        <i:InvokeCommandAction Command="{Binding ShowCalDetailCommand}" CommandParameter="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=DataGrid}}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <DataGrid.Columns >
+                                    <DataGridTextColumn Header="Thiết bị" CanUserSort="False" Binding="{Binding DeviceName}" IsReadOnly="True" />
+                                    <DataGridTextColumn Header="Lần CAL" Binding="{Binding Index }" CanUserSort="False" IsReadOnly="True" />
+                                    <DataGridTextColumn IsReadOnly="True" Header="Ngày" Width="110" Binding="{Binding DateRun, StringFormat={}{0:dd/MM/yyyy}}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                    <DataGridTextColumn IsReadOnly="True" Header="Giờ" Width="100" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
+                                        <DataGridTextColumn.ElementStyle>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="TextAlignment" Value="Center"/>
+                                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                            </Style>
+                                        </DataGridTextColumn.ElementStyle>
+                                    </DataGridTextColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </materialDesign:Card>
+                    </Grid>
                 </Grid>
             </Grid>
-           
         </Grid>
     </Grid>
 </UserControl>

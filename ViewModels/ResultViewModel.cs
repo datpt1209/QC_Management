@@ -41,7 +41,6 @@ namespace QC_Management.ViewModels
             get => _GroupedReResults;
             set { _GroupedReResults = value; OnPropertyChanged(); }
         }
-
         private ReResultGroup _SelectedReResultGroup;
         public ReResultGroup SelectedReResultGroup
         {
@@ -52,7 +51,25 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
+        private ObservableCollection<CalGroup> _CalGroupResult;
+        public ObservableCollection<CalGroup> CalGroupResult
+        {
+            get => _CalGroupResult;
+            set { _CalGroupResult = value; OnPropertyChanged(); }
+        }
+        private CalGroup _SelectedCalGroup;
+        public CalGroup SelectedCalGroup
+        {
+            get => _SelectedCalGroup;
+            set
+            {
+                _SelectedCalGroup = value;
+                OnPropertyChanged();
+            }
+        }
         public ICommand ShowDetailCommand { get; set; }
+        public ICommand ShowCalDetailCommand { get; set; }
         public ICommand AddCommand { get; set; }
         public ICommand AutoCommand { get; set; }
         public ICommand InputCommand { get; set; }
@@ -146,7 +163,6 @@ namespace QC_Management.ViewModels
             {
                 _SelectedDate = value;
                 OnPropertyChanged();
-               
             }
         }
 
@@ -156,11 +172,26 @@ namespace QC_Management.ViewModels
 
             GroupedReResults = new ObservableCollection<ReResultGroup>();
 
-            ShowDetailCommand = new RelayCommand<object>((p) => true, (p) =>
+            ShowDetailCommand = new RelayCommand<object>((p) =>
+            {
+                if (SelectedReResultGroup == null) return false;
+                else return true;
+            }, (p) =>
             {
                 OpenResultDetailWindow();
             });
-           
+
+            ShowCalDetailCommand = new RelayCommand<object>((p) =>
+            {
+                if(SelectedCalGroup == null) return false;
+                else return true;
+            }, (p) =>
+            {
+                OpenCalResultDetailWindow();
+            });
+
+            CalGroupResult = new ObservableCollection<CalGroup>();
+
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 return true;
@@ -169,6 +200,7 @@ namespace QC_Management.ViewModels
             {
                 LoadNew(DB);
                 LoadReResults();
+                LoadCalGroup();
             });
 
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -241,7 +273,6 @@ namespace QC_Management.ViewModels
                             Result = null,
                             TestName = item.Name,
                             idTest = item.Id,
-                            QCName = qcInfor.IdControlInfoNavigation.Name,
                             LOT = qcInfor.Lot,
                             MeanApp = qcInfor.CurMean,
                             SdApp = qcInfor.CurSd,
@@ -312,7 +343,7 @@ namespace QC_Management.ViewModels
             QcManagmentContext DB = DataProvider.Ins.DB;
             var reResults = DB.ReResults.ToList();
             var groupedResults = reResults
-                .GroupBy(r => new { r.IdDevice, r.IdLevel, r.Date,r.Index })
+                .GroupBy(r => new { r.IdDevice, r.IdLevel, r.Date, r.Index })
                 .Select(g => new ReResultGroup
                 {
                     DeviceName = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Name ?? "Unknown Device",
@@ -327,6 +358,25 @@ namespace QC_Management.ViewModels
                 .ToList();
 
             GroupedReResults = new ObservableCollection<ReResultGroup>(groupedResults);
+        }
+
+        private void LoadCalGroup()
+        {
+            QcManagmentContext DB = DataProvider.Ins.DB;
+            var reCalResults = DB.ReCalResults.ToList();
+            var groupedCalResults = reCalResults
+                .GroupBy(r => new { r.IdDevice, r.DateRun, r.IndexCal })
+                .Select(g => new CalGroup
+                {
+                    DeviceName = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Name ?? "Unknown Device",
+                    Index = (int)g.Key.IndexCal,
+                    DateRun = g.Key.DateRun.Value,
+                    Time = g.FirstOrDefault()?.Time ?? TimeSpan.Zero, // Lấy thời gian đầu tiên trong nhóm
+                    ReCalResults = new ObservableCollection<ReCalResult>(g.ToList())
+                })
+                .ToList();
+
+           CalGroupResult = new ObservableCollection<CalGroup>(groupedCalResults);
         }
 
         public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
@@ -366,12 +416,24 @@ namespace QC_Management.ViewModels
             if (resultDetailWindow.ShowDialog() == true)
             {
                 ReLoad();
-                
+            }
+        }
+
+        private void OpenCalResultDetailWindow()
+        {
+            var calresultDetailWindow = new Re_CalResultDetailView();
+            var viewModel = new Re_CalResultDetailViewModel(SelectedCalGroup, calresultDetailWindow);
+            calresultDetailWindow.DataContext = viewModel;
+            if (calresultDetailWindow.ShowDialog() == true)
+            {
+                ReLoad();
             }
         }
         private void ReLoad()
         {
-         LoadReResults();
+            LoadReResults();
+            LoadCalGroup();
+          
         }
 
     }

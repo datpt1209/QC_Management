@@ -75,8 +75,9 @@
                         Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}">
 
                     </CheckBox>
-                    <Button Command="{Binding PrintCommand}" Content="Print"  Margin="5" Width="100"/>
-                    <Button Command="{Binding PrintChartCommand}" Content="Print Chart"  Margin="5" Width="100"/>
+                    <Button Command="{Binding PrintCommand}" Content="In QC"  Margin="5" Width="100"/>
+                    <Button Command="{Binding PrintChartCommand}" Content="In Biểu đồ"  Margin="5" Width="100"/>
+                    <Button Command="{Binding PrintCalibCommand}" Content="In Calib"  Margin="5" Width="100"/>
 
                 </WrapPanel>
             </materialDesign:Card>
@@ -99,7 +100,7 @@
             <ProgressBar
                 IsIndeterminate="True"
                 Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}"
-                Width="200" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"  Panel.ZIndex="1"/>
+                Width="200" Height="20" HorizontalAlignment="Center" VerticalAlignment="Center"  Panel.ZIndex="2"/>
             <materialDesign:Card Margin="5" Panel.ZIndex="0">
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <lvc:CartesianChart 
@@ -108,81 +109,81 @@
                         Visibility="{Binding Visibility1}">
                         <lvc:CartesianChart.Series>
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}"
-        Title="3SD" 
-        StrokeThickness="3"
-        Values="{Binding PlusThreeSDValues1}"
-        Stroke="Red"
-        Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding PlusThreeSDValues1}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}"
-        StrokeThickness="3"
-        Title="+2SD" 
-        Values="{Binding PlusTwoSDValues1}" 
-        Stroke="Orange" 
-        Fill="Transparent"
-        IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="+2SD" 
+                                Values="{Binding PlusTwoSDValues1}" 
+                                Stroke="Orange" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}" 
-        StrokeThickness="3"
-        Title="1SD" 
-        Values="{Binding PlusOneSDValues1}"
-        Stroke="Green" 
-        Fill="#FFC4EEB4"
-        IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}" 
+                                StrokeThickness="3"
+                                Title="1SD" 
+                                Values="{Binding PlusOneSDValues1}"
+                                Stroke="Green" 
+                                Fill="#FFC4EEB4"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-        Title="Mean" 
-        StrokeThickness="3"
-        Values="{Binding MeanValues1}"
-        Stroke="Green"
-        PointGeometry="{x:Null}"
-        DataLabels="False" 
-        Fill="Transparent"
-        IsHitTestVisible="False"/>
+                                Title="Mean" 
+                                StrokeThickness="3"
+                                Values="{Binding MeanValues1}"
+                                Stroke="Green"
+                                PointGeometry="{x:Null}"
+                                DataLabels="False" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}"
-        StrokeThickness="3"
-        Title="-1SD" 
-        Values="{Binding MinusOneSDValues1}"
-        Stroke="Green" 
-        Fill="White"
-        IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="-1SD" 
+                                Values="{Binding MinusOneSDValues1}"
+                                Stroke="Green" 
+                                Fill="White"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}"
-        Title="-2SD" 
-        StrokeThickness="3"
-        Values="{Binding MinusTwoSDValues1}"
-        Stroke="Orange"
-        Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-2SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusTwoSDValues1}"
+                                Stroke="Orange"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-        DataLabels="False"
-        PointGeometry="{x:Null}"
-        Title="-3SD" 
-        StrokeThickness="3"
-        Values="{Binding MinusThreeSDValues1}"
-        Stroke="Red"
-        Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusThreeSDValues1}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries
-        Title="result"
-        StrokeThickness="4" 
-        Stroke="#1C8FC5" 
-        Fill="Transparent"
-        LineSmoothness="0" 
-        PointGeometrySize="15" 
-        PointForeground="#222E31"
-        Values="{Binding ChartValues1}">
+                                Title="result"
+                                StrokeThickness="4" 
+                                Stroke="#1C8FC5" 
+                                Fill="Transparent"
+                                LineSmoothness="0" 
+                                PointGeometrySize="15" 
+                                PointForeground="#222E31"
+                                Values="{Binding ChartValues1}">
                             </lvc:LineSeries>
                         </lvc:CartesianChart.Series>
 

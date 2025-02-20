@@ -7,8 +7,6 @@ public partial class ControlInfo
 {
     public int Id { get; set; }
 
-    public string Name { get; set; } = null!;
-
     public string Lot { get; set; } = null!;
 
     public DateTime ProductionDate { get; set; }
@@ -24,6 +22,6 @@ public partial class ControlInfo
     public virtual ControlType? IdControlTypeNavigation { get; set; }
     public override string ToString()
     {
-        return $"{Name} - {Lot}";
+        return $"{Lot}";
     }
 }

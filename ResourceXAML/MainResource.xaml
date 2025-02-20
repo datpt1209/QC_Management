@@ -23,6 +23,9 @@
     <viewmodel:LoginViewModel x:Key="LoginVM"></viewmodel:LoginViewModel>
     <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
+    <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
+    <viewmodel:CAL_DetailViewModel x:Key="CalDetailVM"></viewmodel:CAL_DetailViewModel>
+    
     <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
@@ -84,6 +87,14 @@
 
     <DataTemplate DataType="{x:Type viewmodel:ViewResultViewModel}">
         <views:ViewResultView></views:ViewResultView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:CAL_InforViewModel}">
+        <views:CAL_InforView></views:CAL_InforView>
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:CAL_DetailViewModel}">
+        <views:CAL_DetailView></views:CAL_DetailView>
     </DataTemplate>
 
     <Style TargetType="{x:Type GridViewColumnHeader}">

@@ -76,10 +76,11 @@
 
                     <ComboBox
                         Margin="5"
+                        DisplayMemberPath="Lot"
                         ItemsSource="{Binding ControlInfoList}"
                         SelectedItem="{Binding SelectedControlInfo}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
-                        materialDesign:HintAssist.Hint="QC Infor"
+                        materialDesign:HintAssist.Hint="LOT QC"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         IsEditable="True" Width="135" 
                         Height="50">
@@ -90,16 +91,6 @@
                                 </i:InvokeCommandAction>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-
-                        <ComboBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Text="{Binding Name}"></TextBlock>
-                                    <TextBlock Text=" - "></TextBlock>
-                                    <TextBlock Text="{Binding Lot}"></TextBlock>
-                                </StackPanel>
-                            </DataTemplate>
-                        </ComboBox.ItemTemplate>
 
                     </ComboBox>
 
