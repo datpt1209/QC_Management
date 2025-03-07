@@ -341,7 +341,20 @@ public partial class QcManagmentContext : DbContext
                 .HasForeignKey(d => d.IdUnitTable)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Test_UnitTable");
+            entity.HasOne(d => d.TestTypeNavigation).WithMany(p => p.Tests)
+               .HasForeignKey(d => d.TestType)
+               .HasConstraintName("FK_Test_TestType");
         });
+
+        modelBuilder.Entity<TestType>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK__TestType__3214EC07701E803A");
+
+            entity.ToTable("TestType");
+
+            entity.Property(e => e.Name).HasMaxLength(50);
+        });
+
 
         modelBuilder.Entity<UnitTable>(entity =>
         {

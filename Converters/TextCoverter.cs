@@ -36,7 +36,7 @@ namespace QC_Management.Converters
                 }
                 else
                     return MessageBox.Show("Nhập sai định dạnh số, vui lòng nhập lại");
-                    
+
             }
             else
             {

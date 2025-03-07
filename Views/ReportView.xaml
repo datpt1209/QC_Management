@@ -7,9 +7,10 @@
         xmlns:winforms="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.ReportViewer.WinForms"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
+          WindowState="Maximized"
         Title="ReportView" Height="450" Width="800" Loaded="Window_Loaded">
     <Grid>
-        <WindowsFormsHost Visibility="Collapsed"
+        <WindowsFormsHost
                           Name="windowsFormsHost1"
                           Grid.Row="1">
             <winforms:ReportViewer x:Name="reportViewer">

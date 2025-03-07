@@ -429,7 +429,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>2.72419cm</Size>
+                        <Size>3.02052cm</Size>
                         <CellContents>
                           <Textbox Name="Textbox66">
                             <CanGrow>true</CanGrow>
@@ -603,7 +603,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>2.72419cm</Size>
+                        <Size>3.02052cm</Size>
                         <CellContents>
                           <Textbox Name="DateRun">
                             <CanGrow>true</CanGrow>
@@ -735,7 +735,7 @@
             <Top>3.06808cm</Top>
             <Left>0.60537cm</Left>
             <Height>1.42225cm</Height>
-            <Width>18.64595cm</Width>
+            <Width>18.94228cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace QC_Management.Models;
 
-public partial class Test:BaseViewModel
+public partial class Test
 {
     public int Id { get; set; }
 
@@ -17,6 +17,12 @@ public partial class Test:BaseViewModel
 
     public int? OnlineNumber { get; set; }
 
+    public int? TestType { get; set; }
+
+    public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
+
+    public virtual ICollection<CalResult> CalResults { get; set; } = new List<CalResult>();
+
     public virtual ICollection<ControlInfoDetail> ControlInfoDetails { get; set; } = new List<ControlInfoDetail>();
 
     public virtual ICollection<DeviceTest> DeviceTests { get; set; } = new List<DeviceTest>();
@@ -24,9 +30,12 @@ public partial class Test:BaseViewModel
     public virtual Category? IdCategoryNavigation { get; set; }
 
     public virtual UnitTable IdUnitTableNavigation { get; set; } = null!;
-    public virtual ICollection<ReResult> ReResults { get; set; } = new List<ReResult>();
-    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
-    public virtual ICollection<CalResult> CalResults { get; set; } = new List<CalResult>();
+
     public virtual ICollection<ReCalResult> ReCalResults { get; set; } = new List<ReCalResult>();
-    public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
+
+    public virtual ICollection<ReResult> ReResults { get; set; } = new List<ReResult>();
+
+    public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+
+    public virtual TestType? TestTypeNavigation { get; set; }
 }

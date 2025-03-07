@@ -282,7 +282,6 @@ namespace QC_Management.ViewModels
             Max = (double)SelectedItem.MaxValue;
             SelectedDevice = SelectedItem.IdDeviceNavigation;
             CALIsEnable = (bool)SelectedItem.Status;
-           
         }
 
         private void LoadNew()
