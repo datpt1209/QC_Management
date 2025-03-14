@@ -224,29 +224,56 @@ namespace QC_Management.ViewModels
         }
 
         private bool CanAdd(ControlInfoDetail p) =>
-            SelectedControlInfo != null && SelectedTest != null && SelectedLevel != null && MeanNSX != 0 && SDNSX != 0;
+            SelectedControlInfo != null && SelectedTest != null && SelectedLevel != null;
 
         private void Add(ControlInfoDetail p)
         {
-            var qcInfo = new ControlInfoDetail
+            ControlInfoDetail qcInfo;
+            if (SelectedTest.TestType == 1)
             {
-                IdDevice = SelectedDevice.Id,
-                IdDeviceNavigation = SelectedDevice,
-                IdControlInfoNavigation = SelectedControlInfo,
-                IdControlInfo = SelectedControlInfo.Id,
-                IdLevelNavigation = SelectedLevel,
-                IdLevel = SelectedLevel.Id,
-                IdTestNavigation = SelectedTest,
-                IdTest = SelectedTest.Id,
-                MeanNsx = MeanNSX,
-                SdNsx = SDNSX,
-                MeanApp = MeanPXN,
-                SdApp = SdPXN,
-                Status = SelectedControlInfo.Status,
-                CurSd = CurSd,
-                CurMean = CurMean,
-                Lot = LOT
-            };
+                if (string.IsNullOrEmpty(QualitativeMean))
+                {
+                    MessageBox.Show("Vui lòng nhập giá trị định tính!", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                    return;
+                }
+                qcInfo = new ControlInfoDetail
+                {
+                    IdDevice = SelectedDevice.Id,
+                    IdDeviceNavigation = SelectedDevice,
+                    IdControlInfoNavigation = SelectedControlInfo,
+                    IdControlInfo = SelectedControlInfo.Id,
+                    IdLevelNavigation = SelectedLevel,
+                    IdLevel = SelectedLevel.Id,
+                    IdTestNavigation = SelectedTest,
+                    IdTest = SelectedTest.Id,
+                    QualitativeMean = QualitativeMean,
+                    Status = SelectedControlInfo.Status,
+                    Lot = LOT
+                };
+
+            }
+            else
+            {
+                qcInfo = new ControlInfoDetail
+                {
+                    IdDevice = SelectedDevice.Id,
+                    IdDeviceNavigation = SelectedDevice,
+                    IdControlInfoNavigation = SelectedControlInfo,
+                    IdControlInfo = SelectedControlInfo.Id,
+                    IdLevelNavigation = SelectedLevel,
+                    IdLevel = SelectedLevel.Id,
+                    IdTestNavigation = SelectedTest,
+                    IdTest = SelectedTest.Id,
+                    MeanNsx = MeanNSX,
+                    SdNsx = SDNSX,
+                    MeanApp = MeanPXN,
+                    SdApp = SdPXN,
+                    Status = SelectedControlInfo.Status,
+                    CurSd = CurSd,
+                    CurMean = CurMean,
+                    Lot = LOT
+                };
+            }
 
             try
             {
@@ -278,22 +305,37 @@ namespace QC_Management.ViewModels
 
         private void Edit(ControlInfoDetail p)
         {
-            SelectedItem.IdControlInfo = SelectedControlInfo.Id;
-            SelectedItem.IdControlInfoNavigation = SelectedControlInfo;
-            SelectedItem.IdLevelNavigation = SelectedLevel;
-            SelectedItem.IdLevel = SelectedLevel.Id;
-            SelectedItem.IdTest = SelectedTest.Id;
-            SelectedItem.MeanNsx = MeanNSX;
-            SelectedItem.QualitativeMean = QualitativeMean;
-            SelectedItem.SdNsx = SDNSX;
-            SelectedItem.MeanApp = MeanPXN;
-            SelectedItem.SdApp = SdPXN;
-            SelectedItem.Status = SelectedControlInfo.Status;
-            SelectedItem.Lot = LOT;
-            SelectedItem.Status = IsChecked;
-            SelectedItem.CurMean = CurMean;
-            SelectedItem.CurSd = CurSd;
-
+            if(SelectedItem.IdTestNavigation.TestType == 1)
+            {
+                SelectedItem.IdControlInfo = SelectedControlInfo.Id;
+                SelectedItem.IdControlInfoNavigation = SelectedControlInfo;
+                SelectedItem.IdLevelNavigation = SelectedLevel;
+                SelectedItem.IdLevel = SelectedLevel.Id;
+                SelectedItem.IdTest = SelectedTest.Id;
+                SelectedItem.Status = SelectedControlInfo.Status;
+                SelectedItem.Lot = LOT;
+                SelectedItem.Status = IsChecked;
+                SelectedItem.QualitativeMean = QualitativeMean;
+ 
+            }
+            else
+            {
+                SelectedItem.IdControlInfo = SelectedControlInfo.Id;
+                SelectedItem.IdControlInfoNavigation = SelectedControlInfo;
+                SelectedItem.IdLevelNavigation = SelectedLevel;
+                SelectedItem.IdLevel = SelectedLevel.Id;
+                SelectedItem.IdTest = SelectedTest.Id;
+                SelectedItem.MeanNsx = MeanNSX;
+                SelectedItem.QualitativeMean = QualitativeMean;
+                SelectedItem.SdNsx = SDNSX;
+                SelectedItem.MeanApp = MeanPXN;
+                SelectedItem.SdApp = SdPXN;
+                SelectedItem.Status = SelectedControlInfo.Status;
+                SelectedItem.Lot = LOT;
+                SelectedItem.Status = IsChecked;
+                SelectedItem.CurMean = CurMean;
+                SelectedItem.CurSd = CurSd;
+            }
             try
             {
                 DataProvider.Ins.DB.SaveChanges();
@@ -347,7 +389,14 @@ namespace QC_Management.ViewModels
 
         private void UpdateView()
         {
-           if(SelectedTest.TestType == 1)
+            MeanNSX = 0;
+            SDNSX = 0;
+            MeanPXN = 0;
+            SdPXN = 0;
+            CurMean = 0;
+            CurSd = 0;
+            QualitativeMean = "";
+            if (SelectedTest.TestType == 1)
             {
                 QualitativeMeanVisibility = true;
                 QuantativeVisibility = false;
@@ -371,8 +420,8 @@ namespace QC_Management.ViewModels
             SelectedControlInfo = SelectedItem.IdControlInfoNavigation;
             SelectedLevel = SelectedItem.IdLevelNavigation;
             SelectedTest = SelectedItem.IdTestNavigation;
-            MeanNSX = SelectedItem.MeanNsx;
-            SDNSX = SelectedItem.SdNsx;
+            MeanNSX = (double)SelectedItem.MeanNsx;
+            SDNSX = (double)SelectedItem.SdNsx;
             MeanPXN = (double)SelectedItem.MeanApp;
             SdPXN = (double)SelectedItem.SdApp;
             SelectedDevice = SelectedItem.IdDeviceNavigation;

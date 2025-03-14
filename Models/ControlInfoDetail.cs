@@ -10,9 +10,9 @@ public partial class ControlInfoDetail
 
     public int IdLevel { get; set; }
 
-    public double MeanNsx { get; set; }
+    public double? MeanNsx { get; set; }
 
-    public double SdNsx { get; set; }
+    public double? SdNsx { get; set; }
 
     public double? MeanApp { get; set; }
 
