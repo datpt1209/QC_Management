@@ -19,6 +19,10 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Result> _ResultViewList;
         public ObservableCollection<Result> ResultViewList { get => _ResultViewList; set { _ResultViewList = value; OnPropertyChanged(); } }
 
+        private ObservableCollection<ResultReView> _ResultReViewList;
+        public ObservableCollection<ResultReView> ResultReViewList { get => _ResultReViewList; set { _ResultReViewList = value; OnPropertyChanged(); } }
+
+
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
 

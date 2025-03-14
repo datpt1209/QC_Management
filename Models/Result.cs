@@ -8,12 +8,13 @@ public partial class Result : BaseViewModel
     public int Id { get; set; }
 
     public int IdTest { get; set; }
+    public int? ResultType { get; set; }
 
     private double? _Result1;
     public double? Result1
     {
         get => _Result1;
-         set
+        set
         {
             _Result1 = value;
             if (value > (IdControlDetailNavigation.CurMean + 2 * IdControlDetailNavigation.CurSd) || value < (IdControlDetailNavigation.CurMean - 2 * IdControlDetailNavigation.CurSd))
@@ -24,6 +25,7 @@ public partial class Result : BaseViewModel
             {
                 IsOutRange = false;
             }
+            OnPropertyChanged();
         }
     }
 
@@ -60,10 +62,11 @@ public partial class Result : BaseViewModel
     public string? QualitativeResult
     {
         get => _QualitativeResult;
-         set
+        set
         {
             _QualitativeResult = value;
             OnPropertyChanged();
+            CheckIfOutOfRange();
         }
     }
 
@@ -77,51 +80,12 @@ public partial class Result : BaseViewModel
 
     public virtual User IdUserNavigation { get; set; } = null!;
 
-    // Method to set the result value based on the test type
-    public void SetResult(object result)
-    {
-        if (IdTestNavigation.TestTypeNavigation.Id == 2 )
-        {
-            if (result is double quantitativeResult)
-            {
-                Result1 = quantitativeResult;
-            }
-            else
-            {
-                throw new ArgumentException("Invalid result type for quantitative test.");
-            }
-        }
-        else if (IdTestNavigation.TestTypeNavigation.Id == 1)
-        {
-            if (result is string qualitativeResult)
-            {
-                QualitativeResult = qualitativeResult;
-            }
-            else
-            {
-                throw new ArgumentException("Invalid result type for qualitative test.");
-            }
-        }
-        else
-        {
-            throw new InvalidOperationException("Unknown test type.");
-        }
-    }
 
-    // Method to validate the result based on the test type
-    public bool ValidateResult()
+    private void CheckIfOutOfRange()
     {
-        if (IdTestNavigation.TestTypeNavigation.Id == 2)
+        if (IdTestNavigation.TestType == 1 && !string.IsNullOrEmpty(_QualitativeResult))
         {
-            return Result1 != default;
-        }
-        else if (IdTestNavigation.TestTypeNavigation.Id == 1)
-        {
-            return !string.IsNullOrEmpty(QualitativeResult);
-        }
-        else
-        {
-            throw new InvalidOperationException("Unknown test type.");
+            IsOutRange = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_QualitativeResult);
         }
     }
 }

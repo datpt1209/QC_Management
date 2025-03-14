@@ -95,16 +95,75 @@
                                         Binding="{Binding TestName}" IsReadOnly="True" />
                     <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }"
                                         CanUserSort="False" IsReadOnly="True" />
-                    <DataGridTextColumn Header="Mean" Binding="{Binding MeanApp }"
-                                        CanUserSort="False" IsReadOnly="True" />
-                    <DataGridTextColumn Header="SD" Binding="{Binding SdApp }" 
-                                        CanUserSort="False" IsReadOnly="True" />
-                    <DataGridTextColumn  Header="Kết quả" CanUserSort="False" 
-                                         IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
 
+                    <DataGridTemplateColumn Header="Qualitative" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding QualitativeMean}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="FontWeight" Value="Normal"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ResultType}" Value="1">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Mean" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding MeanApp}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="FontWeight" Value="Normal"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ResultType}" Value="2">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="SD" CanUserSort="False">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBox Text="{Binding SdApp}">
+                                    <TextBox.Style>
+                                        <Style TargetType="TextBox">
+                                            <Setter Property="IsEnabled" Value="False"/>
+                                            <Setter Property="FontWeight" Value="Normal"/>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding ResultType}" Value="2">
+                                                    <Setter Property="IsEnabled" Value="True"/>
+                                                    <Setter Property="FontWeight" Value="Bold"/>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </TextBox.Style>
+                                </TextBox>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding TempResult}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="Foreground" Value="Green" />
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <!--Màu mặc định-->
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
@@ -117,10 +176,15 @@
                                         <!--Thay đổi màu nền nếu ngoài 2 SD-->
                                     </DataTrigger>
                                 </Style.Triggers>
-
                             </Style>
                         </DataGridTextColumn.ElementStyle>
+                        <DataGridTextColumn.EditingElementStyle>
+                            <Style TargetType="TextBox">
+                                <EventSetter Event="PreviewTextInput" Handler="DataGridTextColumn_PreviewTextInput"/>
+                                <EventSetter Event="DataObject.Pasting" Handler="DataGridTextColumn_Pasting"/>
 
+                            </Style>
+                        </DataGridTextColumn.EditingElementStyle>
                     </DataGridTextColumn>
 
                     <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>

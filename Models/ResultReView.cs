@@ -2,6 +2,7 @@
 
 using Microsoft.Xaml.Behaviors.Core;
 using QC_Management.ViewModels;
+using System.Windows.Forms;
 
 namespace QC_Management.Models
 {
@@ -9,35 +10,52 @@ namespace QC_Management.Models
     {
         public int? id { get; set; }
         public string TestName { get; set; }
-        private double? _Result;
-        public double? Result
+
+        private string? _TempResult;
+        public string? TempResult
         {
-            get => _Result;
+            get =>_TempResult;
             set
             {
-                _Result = value;
+                _TempResult = value;
+                OnPropertyChanged();
+                CheckIfOutOfRange();
+            }
+        }
 
-                if(value > Max || value < Min)
+        private void CheckIfOutOfRange()
+        {
+            if (ResultType == 1 && !string.IsNullOrEmpty(_TempResult))
+            {
+               isOutOfRange = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_TempResult);
+            }
+            else if (ResultType == 2 && !string.IsNullOrEmpty(_TempResult))
+            {
+                // Parse TempResult to double and set Result
+                if (double.TryParse(_TempResult, out double resultValue))
                 {
-                    isOutOfRange = true;
-                }
-                else
-                {
-                    isOutOfRange = false;
-                    if(value > MeanApp + 2*SdApp || value < MeanApp - 2 * SdApp)
+                    if (double.TryParse(MeanApp, out double meanApp))
                     {
-                        isOut2SD = true;
+                        isOutOfRange = resultValue > meanApp + 2 * SdApp || resultValue < meanApp - 2 * SdApp;
                     }
                     else
                     {
-                        isOut2SD = false;
+                        MessageBox.Show("MeanApp is not a number");
                     }
+                }
+                else
+                {
+                    MessageBox.Show("Please enter a valid number");
                 }
             }
         }
+
+        public int? ResultType { get; set; }
+        public Test? Test { get; set; } 
         public string? LOT { get; set; }
         public int idTest { get; set; }
-        public double? MeanApp { get; set; }
+        public string? MeanApp { get; set; }
+        public string? QualitativeMean { get; set; }
         public double? SdApp { get; set; }
         public double? MeanNSX { get; set; }
         public double? SdNSX { get; set; }
@@ -49,26 +67,24 @@ namespace QC_Management.Models
         public bool isOutOfRange
         {
             get => _isOutOfRange;
-
             set
             {
                 _isOutOfRange = value;
                 OnPropertyChanged();
             }
         }
+
         private bool _isOut2SD;
         public bool isOut2SD
         {
             get => _isOut2SD;
-
             set
             {
                 _isOut2SD = value;
                 OnPropertyChanged();
             }
         }
+
         public virtual ControlInfoDetail IdControlDetailNavigation { get; set; } = null!;
-
-
     }
 }

@@ -13,8 +13,10 @@ public partial class ReResult:BaseViewModel
 
     public int IdTest { get; set; }
 
-    public double Result { get; set; }
+    public double? Result { get; set; }
 
+    public string? QualitativeResult { get; set; }
+    
     public DateTime Date { get; set; }
 
     public TimeSpan Time { get; set; }

@@ -22,6 +22,15 @@
             </i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+    <UserControl.Resources>
+        <Style x:Key="EnabledTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Opacity" Value="1"/>
+        </Style>
+        <Style x:Key="DisabledTextBoxStyle" TargetType="TextBox">
+            <Setter Property="Opacity" Value="0.5"/>
+        </Style>
+    </UserControl.Resources>
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -105,6 +114,13 @@
                         IsEditable="True"
                         Width="135" Height="50">
 
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding TestSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
                     </ComboBox>
 
                     <ComboBox
@@ -127,39 +143,52 @@
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         TextWrapping="Wrap" 
                         Width="135" Height="50" />
-
                     <TextBox
                         Margin="5"
-                             VerticalAlignment="Center" 
-                             materialDesign:HintAssist.Hint="Mean NSX"
-                             Text="{Binding MeanNSX}"
-                             AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             TextWrapping="Wrap"
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="Mean Qualitative"
+                        Text="{Binding QualitativeMean}"
+                        IsEnabled="{Binding QualitativeMeanVisibility}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap"
                         Width="135" Height="50" />
                     <TextBox
                         Margin="5"
-                             VerticalAlignment="Center" 
-                             materialDesign:HintAssist.Hint="SD NSX"
-                             Text="{Binding SDNSX}"
-                             AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             TextWrapping="Wrap" 
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="Mean NSX"
+                        Text="{Binding MeanNSX}"
+                        IsEnabled="{Binding QuantativeVisibility}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap"
+                        Width="135" Height="50" />
+                    <TextBox
+                        Margin="5"
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="SD NSX"
+                        Text="{Binding SDNSX}"
+                        AcceptsReturn="True"
+                        IsEnabled="{Binding QuantativeVisibility}"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap" 
                         Width="135" Height="50"/>
                     <TextBox
                         Margin="5"
-                             VerticalAlignment="Center" 
-                             materialDesign:HintAssist.Hint="Mean PXN"
-                             Text="{Binding MeanPXN}"
-                             AcceptsReturn="True"
-                             Style="{StaticResource MaterialDesignOutlinedTextBox}"
-                             TextWrapping="Wrap"
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="Mean PXN"
+                        Text="{Binding MeanPXN}"
+                        IsEnabled="{Binding QuantativeVisibility}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap"
                         Width="135" Height="50" />
                     <TextBox
                         Margin="5"
                         VerticalAlignment="Center" 
                         materialDesign:HintAssist.Hint="SD PXN"
                         Text="{Binding SdPXN}"
+                        IsEnabled="{Binding QuantativeVisibility}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         TextWrapping="Wrap" 
@@ -169,6 +198,7 @@
                         VerticalAlignment="Center"  
                         materialDesign:HintAssist.Hint="Current Mean"
                         Text="{Binding CurMean}"
+                        IsEnabled="{Binding QuantativeVisibility}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         TextWrapping="Wrap" Width="135" Height="50" />
@@ -177,6 +207,7 @@
                         VerticalAlignment="Center" 
                         materialDesign:HintAssist.Hint="Current Sd"
                         Text="{Binding CurSd}"
+                        IsEnabled="{Binding QuantativeVisibility}"
                         AcceptsReturn="True"
                         Style="{StaticResource MaterialDesignOutlinedTextBox}"
                         TextWrapping="Wrap" Width="135" Height="50"/>
@@ -196,20 +227,140 @@
 
             </materialDesign:Card>
 
+
             <materialDesign:Card Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
-                <ListView ItemsSource="{Binding List,Mode=TwoWay}" SelectedItem="{Binding SelectedItem}">
+                <ListView ItemsSource="{Binding List, Mode=TwoWay}" SelectedItem="{Binding SelectedItem}">
                     <ListView.View>
                         <GridView>
                             <GridViewColumn Header="Test" Width="100" DisplayMemberBinding="{Binding IdTestNavigation.Name}"/>
-                            <GridViewColumn Header="QC" Width="100" DisplayMemberBinding="{Binding IdControlInfoNavigation.Name}"/>
                             <GridViewColumn Header="LOT" Width="80" DisplayMemberBinding="{Binding Lot}"/>
                             <GridViewColumn Header="Level" Width="80" DisplayMemberBinding="{Binding IdLevelNavigation.Name}"/>
-                            <GridViewColumn Header="MeanNSX" Width="80" DisplayMemberBinding="{Binding MeanNsx}"/>
-                            <GridViewColumn Header="SDNSX" Width="80" DisplayMemberBinding="{Binding SdNsx}"/>
-                            <GridViewColumn Header="MeanPXN" Width="80" DisplayMemberBinding="{Binding MeanApp}"/>
-                            <GridViewColumn Header="SDPXN" Width="50" DisplayMemberBinding="{Binding SdApp}"/>
-                            <GridViewColumn Header="Current Mena" Width="80" DisplayMemberBinding="{Binding CurMean}"/>
-                            <GridViewColumn Header="Current Sd" Width="50" DisplayMemberBinding="{Binding CurSd}"/>
+                            <GridViewColumn Header="Mean Qualitative" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding QualitativeMean}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="1">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="MeanNSX" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding MeanNsx}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="SDNSX" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding SdNsx}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="MeanPXN" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding MeanApp}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="SDPXN" Width="50">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding SdApp}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Current Mean" Width="80">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding CurMean}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
+                            <GridViewColumn Header="Current Sd" Width="50">
+                                <GridViewColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBox Text="{Binding CurSd}">
+                                            <TextBox.Style>
+                                                <Style TargetType="TextBox">
+                                                    <Setter Property="IsEnabled" Value="False"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IdTestNavigation.TestType}" Value="2">
+                                                            <Setter Property="IsEnabled" Value="True"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </TextBox.Style>
+                                        </TextBox>
+                                    </DataTemplate>
+                                </GridViewColumn.CellTemplate>
+                            </GridViewColumn>
                             <GridViewColumn Header="Active" Width="50" DisplayMemberBinding="{Binding Status}"/>
                         </GridView>
                     </ListView.View>

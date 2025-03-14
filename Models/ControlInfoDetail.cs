@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace QC_Management.Models;
 
@@ -31,6 +32,7 @@ public partial class ControlInfoDetail
 
     public double? CurSd { get; set; }
 
+
     public virtual ControlInfo IdControlInfoNavigation { get; set; } = null!;
 
     public virtual Device? IdDeviceNavigation { get; set; }
@@ -40,4 +42,17 @@ public partial class ControlInfoDetail
     public virtual Test IdTestNavigation { get; set; } = null!;
 
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
+
+    public string? QualitativeMean { get; set; }
+
+    public bool IsQualitativeResultAcceptable(string result)
+    {
+        if (string.IsNullOrEmpty(QualitativeMean))
+        {
+            return false;
+        }
+
+        var acceptableValues = QualitativeMean.Split(',').Select(v => v.Trim()).ToList();
+        return acceptableValues.Contains(result);
+    }
 }

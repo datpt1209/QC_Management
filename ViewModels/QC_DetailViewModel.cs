@@ -80,6 +80,7 @@ namespace QC_Management.ViewModels
         public ICommand QC_InfoSelectionChangedCommand { get; set; }
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand QCTypeSelectionChangedCommand { get; set; }
+        public ICommand TestSelectionChangedCommand { get; set; }
 
         private double _meanNSX;
         public double MeanNSX
@@ -107,6 +108,26 @@ namespace QC_Management.ViewModels
         {
             get => _meanPXN;
             set => SetProperty(ref _meanPXN, value);
+        }
+
+        private string? _qualitativeMean;
+        public string? QualitativeMean
+        {
+            get => _qualitativeMean;
+            set => SetProperty(ref _qualitativeMean, value);
+        }
+
+        private bool _qualitativeMeanVisibility;
+        public bool QualitativeMeanVisibility
+        {
+            get => _qualitativeMeanVisibility;
+            set => SetProperty(ref _qualitativeMeanVisibility, value);
+        }
+        private bool _quantativeVisibility;
+        public bool QuantativeVisibility
+        {
+            get => _quantativeVisibility;
+            set => SetProperty(ref _quantativeVisibility, value);
         }
 
         private double _curMean;
@@ -198,6 +219,7 @@ namespace QC_Management.ViewModels
             LoadedCommand = new RelayCommand<ControlInfoDetail>(_ => true, _ => LoadNew());
             DeviceSelectionChangedCommand = new RelayCommand<Test>(_ => true, _ => UpdateTestList());
             QC_InfoSelectionChangedCommand = new RelayCommand<Test>(CanChangeQCInfo, _ => UpdateList());
+            TestSelectionChangedCommand = new RelayCommand<Test>(CanChangeTest, _ => UpdateView());
             QCTypeSelectionChangedCommand = new RelayCommand<ControlInfo>(CanChangeQCType, _ => UpdateControlInfoList());
         }
 
@@ -243,6 +265,7 @@ namespace QC_Management.ViewModels
             SelectedItem != null &&
             (SelectedItem.IdControlInfoNavigation != SelectedControlInfo ||
             SelectedItem.IdLevelNavigation != SelectedLevel ||
+            SelectedItem.QualitativeMean != QualitativeMean ||
             SelectedItem.IdTestNavigation != SelectedTest ||
             SelectedItem.MeanNsx != MeanNSX ||
             SelectedItem.SdNsx != SDNSX ||
@@ -261,6 +284,7 @@ namespace QC_Management.ViewModels
             SelectedItem.IdLevel = SelectedLevel.Id;
             SelectedItem.IdTest = SelectedTest.Id;
             SelectedItem.MeanNsx = MeanNSX;
+            SelectedItem.QualitativeMean = QualitativeMean;
             SelectedItem.SdNsx = SDNSX;
             SelectedItem.MeanApp = MeanPXN;
             SelectedItem.SdApp = SdPXN;
@@ -315,16 +339,31 @@ namespace QC_Management.ViewModels
         }
 
         private bool CanChangeQCType(ControlInfo p) => SelectedType != null;
-
+        private bool CanChangeTest(Test p) => SelectedType != null && SelectedTest != null;
         private void UpdateControlInfoList()
         {
             ControlInfoList = new ObservableCollection<ControlInfo>(DataProvider.Ins.DB.ControlInfos.Where(s => s.IdControlType == SelectedType.Id).ToList());
+        }
+
+        private void UpdateView()
+        {
+           if(SelectedTest.TestType == 1)
+            {
+                QualitativeMeanVisibility = true;
+                QuantativeVisibility = false;
+            }
+            else
+            {
+                QualitativeMeanVisibility = false;
+                QuantativeVisibility = true;
+            }
         }
 
         private void UpdateTestList()
         {
             TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
             ListType = new ObservableCollection<ControlType>(DataProvider.Ins.DB.ControlTypes.Where(x => x.IdCategory == SelectedDevice.IdCategory));
+        
         }
 
         private void UpdateSelectedItemDetails()
@@ -341,6 +380,7 @@ namespace QC_Management.ViewModels
             IsChecked = (bool)SelectedItem.Status;
             CurMean = (double)SelectedItem.CurMean;
             CurSd = (double)SelectedItem.CurSd;
+            QualitativeMean = SelectedItem.QualitativeMean;
         }
 
         private void LoadNew()

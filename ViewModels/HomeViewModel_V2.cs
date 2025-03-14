@@ -295,7 +295,10 @@ namespace QC_Management.ViewModels
                 if (SelectedDevice != null)
                 {
                     // Update the TestList based on the selected device
-                    var newTestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
+                    var newTestList = new ObservableCollection<Test>(DeviceTestList
+                        .Where(s => s.IdDevice == SelectedDevice.Id && s.IdTestNavigation.TestType == 2)
+                        .Select(s => s.IdTestNavigation)
+                        .OrderBy(s => s.Index));
 
                     // Check if the new list is different from the current one or if the SelectedTest is not in the new list
                     if (!TestList.SequenceEqual(newTestList) || !newTestList.Contains(SelectedTest))

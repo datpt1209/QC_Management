@@ -9,12 +9,6 @@
     <ApplicationIcon>Logo.ico</ApplicationIcon>
      </PropertyGroup>
 
-  <ItemGroup>
-    <None Remove="Report\CALResultsReport.rdlc" />
-    <None Remove="Report\ChartReport.rdlc" />
-    <None Remove="Report\ResultsReport.rdlc" />
-    <None Remove="Report\ReviewResultReport.rdlc" />
-  </ItemGroup>
 
   <ItemGroup>
     <Content Include="Logo.ico" />
