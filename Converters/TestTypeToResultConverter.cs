@@ -1,6 +1,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Data;
+using System.Windows.Forms;
 
 namespace QC_Management.Converters
 {
@@ -24,7 +25,24 @@ namespace QC_Management.Converters
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
-            throw new NotImplementedException();
+            if (value is string result && !string.IsNullOrWhiteSpace(result))
+            {
+                if (double.TryParse(result, out double number))
+                {
+                    // If the string can be parsed to a number, return 2, number, null
+                    return new object[] { 2, number, null };
+                }
+                else
+                {
+                    // If the string cannot be parsed to a number, return 1, null, result
+                    return new object[] { 1, null, result };
+                }
+            }
+            else
+            {
+                return new object[] { null, null, null };
+            }
+
         }
     }
 }

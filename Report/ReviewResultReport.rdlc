@@ -93,6 +93,34 @@
           <DataField>Comment</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="DateRunString">
+          <DataField>DateRunString</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="SeriesColor">
+          <DataField>SeriesColor</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsEmptyPoint">
+          <DataField>IsEmptyPoint</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QualitativeResult">
+          <DataField>QualitativeResult</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ResultType">
+          <DataField>ResultType</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QualitativeRange">
+          <DataField>QualitativeRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsOutRange">
+          <DataField>IsOutRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -278,7 +306,13 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= Round(Fields!MeanPXN.Value - 2*Fields!SDPXN.Value,2) &amp; " - " &amp;  Round(Fields!MeanPXN.Value + 2*Fields!SDPXN.Value,2)</Value>
+                                  <Value>=Switch(
+    Fields!ResultType.Value = 2,Round(Fields!MeanPXN.Value - 2*Fields!SDPXN.Value,2) 
+&amp; " - "
+&amp;  Round(Fields!MeanPXN.Value + 2*Fields!SDPXN.Value,2), 
+    Fields!ResultType.Value = 1, Fields!QualitativeRange.Value,
+    True, "Unknown Result Type"
+)</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -310,7 +344,11 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Result.Value</Value>
+                                  <Value>=Switch(
+    Fields!ResultType.Value = 2, Fields!Result.Value, 
+    Fields!ResultType.Value = 1, Fields!QualitativeResult.Value,
+    True, "Unknown Result Type"
+)</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -342,7 +380,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf(Fields!Result.Value &gt; (Fields!MeanPXN.Value + 2*Fields!SDPXN.Value) or Fields!Result.Value &lt; (Fields!MeanPXN.Value - 2*Fields!SDPXN.Value), "Không đạt", "Đạt")</Value>
+                                  <Value>= IIf(Fields!IsOutRange.Value, "Không đạt","Đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>

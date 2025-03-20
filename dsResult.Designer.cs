@@ -358,6 +358,14 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnIsEmptyPoint;
             
+            private global::System.Data.DataColumn columnQualitativeResult;
+            
+            private global::System.Data.DataColumn columnResultType;
+            
+            private global::System.Data.DataColumn columnQualitativeRange;
+            
+            private global::System.Data.DataColumn columnIsOutRange;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtResultDataTable() {
@@ -569,6 +577,38 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn QualitativeResultColumn {
+                get {
+                    return this.columnQualitativeResult;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ResultTypeColumn {
+                get {
+                    return this.columnResultType;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn QualitativeRangeColumn {
+                get {
+                    return this.columnQualitativeRange;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsOutRangeColumn {
+                get {
+                    return this.columnIsOutRange;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -626,7 +666,11 @@ namespace QC_Management {
                         string Comment, 
                         string DateRunString, 
                         string SeriesColor, 
-                        string IsEmptyPoint) {
+                        string IsEmptyPoint, 
+                        string QualitativeResult, 
+                        string ResultType, 
+                        string QualitativeRange, 
+                        string IsOutRange) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -650,7 +694,11 @@ namespace QC_Management {
                         Comment,
                         DateRunString,
                         SeriesColor,
-                        IsEmptyPoint};
+                        IsEmptyPoint,
+                        QualitativeResult,
+                        ResultType,
+                        QualitativeRange,
+                        IsOutRange};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -695,6 +743,10 @@ namespace QC_Management {
                 this.columnDateRunString = base.Columns["DateRunString"];
                 this.columnSeriesColor = base.Columns["SeriesColor"];
                 this.columnIsEmptyPoint = base.Columns["IsEmptyPoint"];
+                this.columnQualitativeResult = base.Columns["QualitativeResult"];
+                this.columnResultType = base.Columns["ResultType"];
+                this.columnQualitativeRange = base.Columns["QualitativeRange"];
+                this.columnIsOutRange = base.Columns["IsOutRange"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -744,6 +796,14 @@ namespace QC_Management {
                 base.Columns.Add(this.columnSeriesColor);
                 this.columnIsEmptyPoint = new global::System.Data.DataColumn("IsEmptyPoint", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsEmptyPoint);
+                this.columnQualitativeResult = new global::System.Data.DataColumn("QualitativeResult", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnQualitativeResult);
+                this.columnResultType = new global::System.Data.DataColumn("ResultType", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnResultType);
+                this.columnQualitativeRange = new global::System.Data.DataColumn("QualitativeRange", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnQualitativeRange);
+                this.columnIsOutRange = new global::System.Data.DataColumn("IsOutRange", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsOutRange);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1667,6 +1727,70 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string QualitativeResult {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.QualitativeResultColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'QualitativeResult\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.QualitativeResultColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ResultType {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.ResultTypeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ResultType\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.ResultTypeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string QualitativeRange {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.QualitativeRangeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'QualitativeRange\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.QualitativeRangeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsOutRange {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsOutRangeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsOutRange\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsOutRangeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -1927,6 +2051,54 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetIsEmptyPointNull() {
                 this[this.tabledtResult.IsEmptyPointColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsQualitativeResultNull() {
+                return this.IsNull(this.tabledtResult.QualitativeResultColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetQualitativeResultNull() {
+                this[this.tabledtResult.QualitativeResultColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsResultTypeNull() {
+                return this.IsNull(this.tabledtResult.ResultTypeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetResultTypeNull() {
+                this[this.tabledtResult.ResultTypeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsQualitativeRangeNull() {
+                return this.IsNull(this.tabledtResult.QualitativeRangeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetQualitativeRangeNull() {
+                this[this.tabledtResult.QualitativeRangeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsOutRangeNull() {
+                return this.IsNull(this.tabledtResult.IsOutRangeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsOutRangeNull() {
+                this[this.tabledtResult.IsOutRangeColumn] = global::System.Convert.DBNull;
             }
         }
         

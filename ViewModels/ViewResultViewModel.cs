@@ -19,10 +19,6 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Result> _ResultViewList;
         public ObservableCollection<Result> ResultViewList { get => _ResultViewList; set { _ResultViewList = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<ResultReView> _ResultReViewList;
-        public ObservableCollection<ResultReView> ResultReViewList { get => _ResultReViewList; set { _ResultReViewList = value; OnPropertyChanged(); } }
-
-
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
 
@@ -50,16 +46,6 @@ namespace QC_Management.ViewModels
         public ICommand DeleteOneTestCommand { get; set; }
         public ICommand AddCommand { get; set; }
 
-        private bool _IsReadOnly;
-        public bool IsReadOnly
-        {
-            get => _IsReadOnly;
-            set
-            {
-                _IsReadOnly = value;
-                OnPropertyChanged();
-            }
-        }
 
         private Visibility _IsVisibility;
         public Visibility IsVisibility
@@ -107,17 +93,6 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private Test _SelectedTest;
-        public Test SelectedTest
-        {
-            get => _SelectedTest;
-            set
-            {
-                _SelectedTest = value;
-                OnPropertyChanged();
-            }
-        }
-
         private LevelQc _SelectedLevel;
         public LevelQc SelectedLevel
         {
@@ -140,18 +115,6 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private bool _isOutRange = false;
-        public bool IsOutRange
-        {
-            get => _isOutRange;
-            set
-            {
-                if (SelectedItem.Result1 > (SelectedItem.IdControlDetailNavigation.CurMean + SelectedItem.IdControlDetailNavigation.CurSd * 2)
-                    || SelectedItem.Result1 < (SelectedItem.IdControlDetailNavigation.CurMean - SelectedItem.IdControlDetailNavigation.CurSd * 2))
-                    _isOutRange = true;
-                OnPropertyChanged();
-            }
-        }
 
         public ViewResultViewModel()
         {
@@ -204,6 +167,7 @@ namespace QC_Management.ViewModels
                 rp.ShowDialog();
 
             });
+
 
             EditCommand = new RelayCommand<object>((p) =>
             {

@@ -20,7 +20,7 @@ namespace QC_Management.Views
         {
             if (sender is TextBox textBox)
             {
-                var viewModel = DataContext as ResultViewModel;
+               var viewModel = DataContext as ViewResultViewModel;
                 if (viewModel?.SelectedItem != null)
                 {
                     var testType = viewModel.SelectedItem.ResultType;

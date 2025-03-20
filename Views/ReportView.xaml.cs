@@ -33,6 +33,10 @@ namespace QC_Management
                 reportSource = resultList
                     .Select(s => new
                     {
+                        ResultType = s.ResultType,
+                        IsOutRange = s.IsOutRange,
+                        QualitativeRange = s.IdControlDetailNavigation.QualitativeMean,
+                        QualitativeResult = s.QualitativeResult,
                         NameDevice = s.IdDeviceNavigation?.Name,
                         LOTQC = s.IdControlDetailNavigation?.Lot,
                         NameTest = s.IdTestNavigation?.Name,
@@ -63,6 +67,10 @@ namespace QC_Management
                 reportSource = resultList
                     .Select(s => new
                     {
+                        ResultType = s.ResultType,
+                        IsOutRange = s.IsOutRange,
+                        QualitativeRange = s.IdControlDetailNavigation.QualitativeMean,
+                        QualitativeResult = s.QualitativeResult,
                         NameDevice = s.IdDeviceNavigation?.Name,
                         LOTQC = s.IdControlDetailNavigation?.Lot,
                         NameTest = s.IdTestNavigation?.Name,

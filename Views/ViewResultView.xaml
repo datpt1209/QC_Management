@@ -21,6 +21,8 @@
             </i:InvokeCommandAction>
         </i:EventTrigger>
     </i:Interaction.Triggers>
+
+
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
@@ -41,7 +43,6 @@
                             SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"                             
                             materialDesign:HintAssist.Hint="Ngày thực hiện"                              
                             materialDesign:TextFieldAssist.HasClearButton="True" 
-                      
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="140" Height="50">
 
                         <i:Interaction.Triggers>
@@ -50,9 +51,7 @@
                                 </i:InvokeCommandAction>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
-
                     </DatePicker>
-
                     <ComboBox 
                         Margin="5"
                         ItemsSource="{Binding DeviceList}"
@@ -117,7 +116,7 @@
             </Grid>
 
             <materialDesign:Card Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
-                <DataGrid Name="input" ItemsSource="{Binding ResultViewList}"
+                <DataGrid Name="input" ItemsSource="{Binding ResultViewList, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="False"
                           SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
@@ -185,37 +184,56 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" >
-                            <DataGridTextColumn.ElementStyle>
-                                <Style TargetType="{x:Type TextBlock}">
-                                    <Setter Property="Foreground" Value="Green" />
-                                    <Setter Property="FontSize" Value="14"/>
-                                    <Setter Property="FontWeight" Value="Bold"/>
-                                    <Setter Property="HorizontalAlignment" Value="Center"/>
-                                    <!--Màu mặc định-->
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsOutRange}" Value="True">
-                                            <Setter Property="Foreground" Value="Red" />
-                                            <Setter Property="Background" Value="Yellow" />
-                                            <!--Thay đổi màu nền nếu ngoài 3 SD-->
-                                        </DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </DataGridTextColumn.ElementStyle>
-                            <DataGridTextColumn.EditingElementStyle>
-                                <Style TargetType="TextBox">
-                                    <EventSetter Event="PreviewTextInput" Handler="DataGridTextColumn_PreviewTextInput"/>
-                                    <EventSetter Event="DataObject.Pasting" Handler="DataGridTextColumn_Pasting"/>
-                                </Style>
-                            </DataGridTextColumn.EditingElementStyle>
-                            <DataGridTextColumn.Binding>
-                                <MultiBinding Converter="{StaticResource TestTypeToResultConverter}">
-                                    <Binding Path="ResultType" />
-                                    <Binding Path="Result1" />
-                                    <Binding Path="QualitativeResult" />
-                                </MultiBinding>
-                            </DataGridTextColumn.Binding>
-                        </DataGridTextColumn>
+                
+                        <DataGridTemplateColumn Header="Định lượng" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding TempResult, UpdateSourceTrigger=PropertyChanged}">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Foreground" Value="Green" />
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <!--<Setter Property="HorizontalAlignment" Value="Center"/>-->
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsOutRange}" Value="True">
+                                                        <Setter Property="Foreground" Value="Red" />
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                        <!--Thay đổi màu nền nếu ngoài 3 SD-->
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <!--<DataGridTemplateColumn Header="Định tính" CanUserSort="False">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <TextBox Text="{Binding QualitativeResult, UpdateSourceTrigger=PropertyChanged}">
+                                        <TextBox.Style>
+                                            <Style TargetType="TextBox">
+                                                <Setter Property="Foreground" Value="Green" />
+                                                <Setter Property="FontSize" Value="14"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                                <Setter Property="IsEnabled" Value="false"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding ResultType}" Value="1">
+                                                        <Setter Property="IsEnabled" Value="True"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsOutRange}" Value="True">
+                                                        <Setter Property="Foreground" Value="Red" />
+                                                        <Setter Property="Background" Value="Yellow" />
+                                                        --><!--Thay đổi màu nền nếu ngoài 3 SD--><!--
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBox.Style>
+                                    </TextBox>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>-->
                         <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName}"/>
                         <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date, StringFormat=dd/MM/yyyy}"/>
                         <DataGridTextColumn Header="Giờ thực hiện" IsReadOnly="True" Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
@@ -226,8 +244,7 @@
                                 <DataTemplate>
                                     <Button 
                                         Content="Delete" 
-                                        Command="{Binding DataContext.DeleteOneTestCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}" 
-                                       >
+                                        Command="{Binding DataContext.DeleteOneTestCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <TextBlock TextDecorations="Underline">

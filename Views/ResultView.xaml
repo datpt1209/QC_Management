@@ -135,6 +135,7 @@
                                         <TextBox Text="{Binding QualitativeMean}">
                                             <TextBox.Style>
                                                 <Style TargetType="TextBox">
+                                                    <Setter Property="Padding" Value="0"/>
                                                     <Setter Property="IsEnabled" Value="False"/>
                                                     <Setter Property="FontWeight" Value="Normal"/>
                                                     <Style.Triggers>
@@ -155,6 +156,7 @@
                                         <TextBox Text="{Binding MeanApp}">
                                             <TextBox.Style>
                                                 <Style TargetType="TextBox">
+                                                    <Setter Property="Padding" Value="0" />
                                                     <Setter Property="IsEnabled" Value="False"/>
                                                     <Setter Property="FontWeight" Value="Normal"/>
                                                     <Style.Triggers>
@@ -175,6 +177,7 @@
                                         <TextBox Text="{Binding SdApp}">
                                             <TextBox.Style>
                                                 <Style TargetType="TextBox">
+                                                    <Setter Property="Padding" Value="0"/>
                                                     <Setter Property="IsEnabled" Value="False"/>
                                                     <Setter Property="FontWeight" Value="Normal"/>
                                                     <Style.Triggers>

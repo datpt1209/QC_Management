@@ -227,19 +227,23 @@ namespace QC_Management.ViewModels
                 var newResult = new Result
                 {
                     IdControlDetailNavigation = qcInfor,
+                    IdDeviceNavigation = SelectedDevice,
+                    IdLevelNavigation = SelectedLevel,
+                    IdControlDetail = qcInfor.Id,
+                    IdUser = UserManager.Instance.CurrentUser.Id,
                     IdTestNavigation = SelectedTest,
-                    Result1 = (double)Result,
-                    DateRun = SelectedDate,
                     IdDevice = SelectedDevice.Id,
                     IdLevel = SelectedLevel.Id,
                     IndexQc = SelectedIndex,
                     IdTest = SelectedTest.Id,
+                    ResultType = SelectedTest.TestType,
+                    DateRun = SelectedDate,
                     Time = DateTime.Now.TimeOfDay,
-                    IdUser = UserManager.Instance.CurrentUser.Id,
                     Comment = Comment,
+                    TempResult = ResultString,
                 };
                 NewResults.Add(newResult);
-                Result = 0; // Clear the result input
+                ResultString = null; // Clear the result input
             }
         }
 

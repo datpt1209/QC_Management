@@ -17,15 +17,34 @@ public partial class Result : BaseViewModel
         set
         {
             _Result1 = value;
-            if (value > (IdControlDetailNavigation.CurMean + 2 * IdControlDetailNavigation.CurSd) || value < (IdControlDetailNavigation.CurMean - 2 * IdControlDetailNavigation.CurSd))
+            OnPropertyChanged();
+            CheckIfOutOfRange();
+        }
+    }
+
+    private string? _TempResult;
+    public string? TempResult
+    {
+        get => _TempResult;
+        set
+        {
+            _TempResult = value;
+            OnPropertyChanged();
+            if (ResultType == 2)
             {
-                IsOutRange = true;
+                if(double.TryParse(_TempResult, out double result))
+                {
+                    Result1 = result;
+                }
+                else
+                {
+                    Result1 = null;
+                }
             }
             else
             {
-                IsOutRange = false;
+                QualitativeResult = _TempResult;
             }
-            OnPropertyChanged();
         }
     }
 
@@ -58,6 +77,17 @@ public partial class Result : BaseViewModel
         }
     }
 
+    private bool? _isOutOfRangeNSX;
+    public bool? IsOutRangeNSX
+    {
+        get => _isOutOfRangeNSX;
+        set
+        {
+            _isOutOfRangeNSX = value;
+            OnPropertyChanged();
+        }
+    }
+
     private string? _QualitativeResult;
     public string? QualitativeResult
     {
@@ -79,13 +109,19 @@ public partial class Result : BaseViewModel
     public virtual Test IdTestNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
-
-
     private void CheckIfOutOfRange()
     {
         if (IdTestNavigation.TestType == 1 && !string.IsNullOrEmpty(_QualitativeResult))
         {
-            IsOutRange = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_QualitativeResult);
+            IsOutRange = IsOutRangeNSX = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_QualitativeResult);
+        }
+        if(IdTestNavigation.TestType == 2 && _Result1 != null)
+        {
+            IsOutRange = _Result1 > (IdControlDetailNavigation.CurMean + 2 * IdControlDetailNavigation.CurSd) 
+                || _Result1 < (IdControlDetailNavigation.CurMean - 2 * IdControlDetailNavigation.CurSd);
+
+            IsOutRangeNSX = _Result1 > (IdControlDetailNavigation.MeanNsx + 2 * IdControlDetailNavigation.SdNsx) 
+                || _Result1 < (IdControlDetailNavigation.MeanNsx - 2 * IdControlDetailNavigation.SdNsx);
         }
     }
 }

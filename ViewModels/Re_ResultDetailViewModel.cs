@@ -264,36 +264,7 @@ namespace QC_Management.ViewModels
 
                 foreach (var item in ResutlViewList)
                 {
-                    if (item.ResultType == 2 && !string.IsNullOrEmpty(item.TempResult))
-                    {
-                        if (double.TryParse(item.TempResult, out double resultValue))
-                        {
-                            Result result = new Result()
-                            {
-                                IdTest = item.idTest,
-                                ResultType = item.ResultType,
-                                IdTestNavigation = item.Test,
-                                IdDevice = reResultGroup.IdDevice,
-                                IdLevel = reResultGroup.IdLevel,
-                                DateRun = Date.Date,
-                                Time = DateTime.Now.TimeOfDay,
-                                IdUser = UserManager.Instance.CurrentUser.Id,
-                                IndexQc = Index,
-                                IdControlDetail = item.IdControlDetailNavigation.Id,
-                                IdControlDetailNavigation = item.IdControlDetailNavigation,
-                                Comment = item.Comment,
-                                IsOutRange = item.isOutOfRange,
-                                Result1 = resultValue,
-                            };
-                            results.Add(result);
-                        }
-                        else
-                        {
-                            // Notify user about the parsing error
-                            MessageBox.Show($"Error: TempResult '{item.TempResult}' is not a valid number.", "Parsing Error", MessageBoxButton.OK, MessageBoxImage.Error);
-                        }
-                    }
-                    else if (item.ResultType == 1 && !string.IsNullOrEmpty(item.TempResult))
+                    if (!string.IsNullOrEmpty(item.TempResult))
                     {
                         Result result = new Result()
                         {
@@ -310,10 +281,11 @@ namespace QC_Management.ViewModels
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
                             Comment = item.Comment,
                             IsOutRange = item.isOutOfRange,
-                            QualitativeResult = item.TempResult,
+                            TempResult = item.TempResult,
                         };
                         results.Add(result);
                     }
+
                 }
 
                 if (results.Count == 0)

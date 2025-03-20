@@ -107,5 +107,4 @@
     <local1:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <local1:TestTypeToResultConverter x:Key="TestTypeToResultConverter" />
 
-
 </ResourceDictionary>

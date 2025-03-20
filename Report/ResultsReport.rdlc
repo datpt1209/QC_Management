@@ -105,6 +105,22 @@
           <DataField>IsEmptyPoint</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="QualitativeResult">
+          <DataField>QualitativeResult</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ResultType">
+          <DataField>ResultType</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QualitativeRange">
+          <DataField>QualitativeRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsOutRange">
+          <DataField>IsOutRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -262,7 +278,11 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>=Fields!Result.Value</Value>
+                                  <Value>=Switch(
+    Fields!ResultType.Value = 2, Fields!Result.Value, 
+    Fields!ResultType.Value = 1, Fields!QualitativeResult.Value,
+	True, ""
+)</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -294,7 +314,7 @@
                             <Paragraph>
                               <TextRuns>
                                 <TextRun>
-                                  <Value>= IIf((Fields!SDs.Value &lt; -2 or Fields!SDs.Value &gt; 2), "Không đạt", "Đạt")</Value>
+                                  <Value>= IIf(Fields!IsOutRange.Value, "Không đạt","Đạt")</Value>
                                   <Style />
                                 </TextRun>
                               </TextRuns>
@@ -996,6 +1016,9 @@
                           <Border>
                             <Style>Solid</Style>
                           </Border>
+                          <RightBorder>
+                            <Style>=IIf(Fields!ResultType.Value = 1, "Solid" ,"None")</Style>
+                          </RightBorder>
                           <VerticalAlign>Middle</VerticalAlign>
                           <PaddingLeft>2pt</PaddingLeft>
                           <PaddingRight>2pt</PaddingRight>
@@ -1003,10 +1026,48 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
-                      <ColSpan>2</ColSpan>
                     </CellContents>
                   </TablixCornerCell>
-                  <TablixCornerCell />
+                  <TablixCornerCell>
+                    <CellContents>
+                      <Textbox Name="Textbox16">
+                        <CanGrow>true</CanGrow>
+                        <KeepTogether>true</KeepTogether>
+                        <Paragraphs>
+                          <Paragraph>
+                            <TextRuns>
+                              <TextRun>
+                                <Value />
+                                <Style>
+                                  <FontWeight>Bold</FontWeight>
+                                </Style>
+                              </TextRun>
+                            </TextRuns>
+                            <Style>
+                              <TextAlign>Center</TextAlign>
+                            </Style>
+                          </Paragraph>
+                        </Paragraphs>
+                        <rd:DefaultName>Textbox16</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
+                        <Style>
+                          <Border>
+                            <Style>Solid</Style>
+                          </Border>
+                          <LeftBorder>
+                            <Style>None</Style>
+                          </LeftBorder>
+                          <VerticalAlign>Middle</VerticalAlign>
+                          <PaddingLeft>2pt</PaddingLeft>
+                          <PaddingRight>2pt</PaddingRight>
+                          <PaddingTop>2pt</PaddingTop>
+                          <PaddingBottom>2pt</PaddingBottom>
+                        </Style>
+                      </Textbox>
+                    </CellContents>
+                  </TablixCornerCell>
                   <TablixCornerCell>
                     <CellContents>
                       <Textbox Name="Textbox82">
@@ -1028,6 +1089,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox67</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1065,6 +1129,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox9</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1161,7 +1228,7 @@
                           <Paragraph>
                             <TextRuns>
                               <TextRun>
-                                <Value>Hạn sử dụng</Value>
+                                <Value>Date</Value>
                                 <Style>
                                   <FontWeight>Bold</FontWeight>
                                 </Style>
@@ -1241,6 +1308,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox18</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1275,6 +1345,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox39</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1309,6 +1382,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox42</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1343,6 +1419,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox16</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1377,6 +1456,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox5</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1411,6 +1493,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox24</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1445,6 +1530,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox21</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1479,6 +1567,9 @@
                           </Paragraph>
                         </Paragraphs>
                         <rd:DefaultName>Textbox10</rd:DefaultName>
+                        <Visibility>
+                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                        </Visibility>
                         <Style>
                           <Border>
                             <Style>Solid</Style>
@@ -1631,7 +1722,7 @@
                     </SortExpression>
                   </SortExpressions>
                   <TablixHeader>
-                    <Size>1.30923cm</Size>
+                    <Size>1.22985cm</Size>
                     <CellContents>
                       <Textbox Name="Level3">
                         <CanGrow>true</CanGrow>
@@ -1675,7 +1766,7 @@
                         </SortExpression>
                       </SortExpressions>
                       <TablixHeader>
-                        <Size>1.75208cm</Size>
+                        <Size>2.50643cm</Size>
                         <CellContents>
                           <Textbox Name="LOTQC3">
                             <CanGrow>true</CanGrow>
@@ -1709,7 +1800,7 @@
                       <TablixMembers>
                         <TablixMember>
                           <TablixHeader>
-                            <Size>2.51728cm</Size>
+                            <Size>2.24214cm</Size>
                             <CellContents>
                               <Textbox Name="ExpirationDate3">
                                 <CanGrow>true</CanGrow>
@@ -1765,7 +1856,7 @@
                                     </SortExpression>
                                   </SortExpressions>
                                   <TablixHeader>
-                                    <Size>1.58063cm</Size>
+                                    <Size>3.15109cm</Size>
                                     <CellContents>
                                       <Textbox Name="Mean13">
                                         <CanGrow>true</CanGrow>
@@ -1774,7 +1865,11 @@
                                           <Paragraph>
                                             <TextRuns>
                                               <TextRun>
-                                                <Value>=Fields!Mean.Value</Value>
+                                                <Value>=Switch(
+    Fields!ResultType.Value = 2, Fields!Mean.Value, 
+    Fields!ResultType.Value = 1, Fields!QualitativeRange.Value,
+    True, "Unknown Result Type"
+)</Value>
                                                 <Style />
                                               </TextRun>
                                             </TextRuns>
@@ -1808,7 +1903,11 @@
                                               <Paragraph>
                                                 <TextRuns>
                                                   <TextRun>
-                                                    <Value>=Fields!SD.Value</Value>
+                                                    <Value>=Switch(
+    Fields!ResultType.Value = 2, Fields!SD.Value, 
+    Fields!ResultType.Value = 1, "",
+    True, "Unknown Result Type"
+)</Value>
                                                     <Style />
                                                   </TextRun>
                                                 </TextRuns>
@@ -1818,6 +1917,9 @@
                                               </Paragraph>
                                             </Paragraphs>
                                             <rd:DefaultName>SD11</rd:DefaultName>
+                                            <Visibility>
+                                              <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                            </Visibility>
                                             <Style>
                                               <Border>
                                                 <Style>Solid</Style>
@@ -1842,7 +1944,11 @@
                                                   <Paragraph>
                                                     <TextRuns>
                                                       <TextRun>
-                                                        <Value>=Fields!MeanPXN.Value</Value>
+                                                        <Value>=Switch(
+    Fields!ResultType.Value = 2, Fields!MeanPXN.Value, 
+    Fields!ResultType.Value = 1, Fields!QualitativeRange.Value,
+    True, "Unknown Result Type"
+)</Value>
                                                         <Style />
                                                       </TextRun>
                                                     </TextRuns>
@@ -1852,6 +1958,9 @@
                                                   </Paragraph>
                                                 </Paragraphs>
                                                 <rd:DefaultName>MeanPXN</rd:DefaultName>
+                                                <Visibility>
+                                                  <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                </Visibility>
                                                 <Style>
                                                   <Border>
                                                     <Style>Solid</Style>
@@ -1867,7 +1976,7 @@
                                           <TablixMembers>
                                             <TablixMember>
                                               <TablixHeader>
-                                                <Size>1.63998cm</Size>
+                                                <Size>1.26487cm</Size>
                                                 <CellContents>
                                                   <Textbox Name="SDPXN3">
                                                     <CanGrow>true</CanGrow>
@@ -1886,6 +1995,9 @@
                                                       </Paragraph>
                                                     </Paragraphs>
                                                     <rd:DefaultName>SDPXN</rd:DefaultName>
+                                                    <Visibility>
+                                                      <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                    </Visibility>
                                                     <Style>
                                                       <Border>
                                                         <Style>Solid</Style>
@@ -1920,6 +2032,9 @@
                                                           </Paragraph>
                                                         </Paragraphs>
                                                         <rd:DefaultName>Textbox17</rd:DefaultName>
+                                                        <Visibility>
+                                                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                        </Visibility>
                                                         <Style>
                                                           <Border>
                                                             <Style>Solid</Style>
@@ -1935,7 +2050,7 @@
                                                   <TablixMembers>
                                                     <TablixMember>
                                                       <TablixHeader>
-                                                        <Size>1.40197cm</Size>
+                                                        <Size>0.92276cm</Size>
                                                         <CellContents>
                                                           <Textbox Name="Textbox8">
                                                             <CanGrow>true</CanGrow>
@@ -1954,6 +2069,9 @@
                                                               </Paragraph>
                                                             </Paragraphs>
                                                             <rd:DefaultName>Textbox8</rd:DefaultName>
+                                                            <Visibility>
+                                                              <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                            </Visibility>
                                                             <Style>
                                                               <Border>
                                                                 <Style>Solid</Style>
@@ -1988,6 +2106,9 @@
                                                                   </Paragraph>
                                                                 </Paragraphs>
                                                                 <rd:DefaultName>Mean11</rd:DefaultName>
+                                                                <Visibility>
+                                                                  <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                                </Visibility>
                                                                 <Style>
                                                                   <Border>
                                                                     <Style>Solid</Style>
@@ -2003,7 +2124,7 @@
                                                           <TablixMembers>
                                                             <TablixMember>
                                                               <TablixHeader>
-                                                                <Size>1.52633cm</Size>
+                                                                <Size>1.23cm</Size>
                                                                 <CellContents>
                                                                   <Textbox Name="SD15">
                                                                     <CanGrow>true</CanGrow>
@@ -2022,6 +2143,9 @@
                                                                       </Paragraph>
                                                                     </Paragraphs>
                                                                     <rd:DefaultName>SD11</rd:DefaultName>
+                                                                    <Visibility>
+                                                                      <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                                    </Visibility>
                                                                     <Style>
                                                                       <Border>
                                                                         <Style>Solid</Style>
@@ -2056,6 +2180,9 @@
                                                                           </Paragraph>
                                                                         </Paragraphs>
                                                                         <rd:DefaultName>Textbox13</rd:DefaultName>
+                                                                        <Visibility>
+                                                                          <Hidden>=IIf(Fields!ResultType.Value = 1, True ,False)</Hidden>
+                                                                        </Visibility>
                                                                         <Style>
                                                                           <Border>
                                                                             <Style>Solid</Style>
@@ -2102,7 +2229,7 @@
             <Top>0.96987cm</Top>
             <Left>0.60537cm</Left>
             <Height>1.835cm</Height>
-            <Width>19.02106cm</Width>
+            <Width>19.8407cm</Width>
             <ZIndex>5</ZIndex>
             <Style>
               <Border>
@@ -2114,7 +2241,7 @@
         <Height>7.21432cm</Height>
         <Style />
       </Body>
-      <Width>19.97861cm</Width>
+      <Width>20.85646cm</Width>
       <Page>
         <PageHeader>
           <Height>2.81375cm</Height>
@@ -2174,7 +2301,7 @@
               </Paragraphs>
               <rd:DefaultName>Textbox6</rd:DefaultName>
               <Top>0.31433cm</Top>
-              <Left>15.6871cm</Left>
+              <Left>15.98343cm</Left>
               <Height>1.13772cm</Height>
               <Width>3.93933cm</Width>
               <ZIndex>1</ZIndex>

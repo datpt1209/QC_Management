@@ -248,7 +248,7 @@ namespace QC_Management.ViewModels
 
             PrintCalibCommand = new RelayCommand<object>((p) =>
             {
-                if (SelectedTest == null || SelectedDevice == null) return false;
+                if (SelectedTest == null || SelectedDevice == null || SelectedTest.TestType == 1) return false;
                 else
                     return true;
 
@@ -271,8 +271,9 @@ namespace QC_Management.ViewModels
 
             PrintChartCommand = new RelayCommand<object>((p) =>
             {
-                if (SelectedTest == null || SelectedDevice == null)
+                if (SelectedTest == null || SelectedDevice == null|| SelectedTest.TestType == 1)
                     return false;
+ 
                 else
                     return true;
 
@@ -296,7 +297,7 @@ namespace QC_Management.ViewModels
                 {
                     // Update the TestList based on the selected device
                     var newTestList = new ObservableCollection<Test>(DeviceTestList
-                        .Where(s => s.IdDevice == SelectedDevice.Id && s.IdTestNavigation.TestType == 2)
+                        .Where(s => s.IdDevice == SelectedDevice.Id)
                         .Select(s => s.IdTestNavigation)
                         .OrderBy(s => s.Index));
 
@@ -324,11 +325,29 @@ namespace QC_Management.ViewModels
 
             TestSelectionChangedCommand = new RelayCommand<CartesianChart>((p) =>
             {
-                return true;
+                if(SelectedTest == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
 
             }, async (p) =>
             {
-                await ViewChart();
+                if(SelectedTest.TestType == 2)
+                {
+                    await ViewChart();
+                }
+                else
+                {
+                    MessageBox.Show("Xét nghiệm định tính tạm thời chưa có Biều đồ Levey-Jenning. Xin cảm ơn!");
+                    Visibility1 = Visibility.Collapsed;
+                    Visibility2 = Visibility.Collapsed;
+                    Visibility3 = Visibility.Collapsed;
+                }
+                
             });
 
         }
