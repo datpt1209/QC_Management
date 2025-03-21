@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using QC_Management.Models;
 using QC_Management.Views;
 using System;
@@ -31,8 +32,8 @@ namespace QC_Management.ViewModels
         private ObservableCollection<DeviceTest> _TestList;
         public ObservableCollection<DeviceTest> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<LevelQc> _LevelList;
-        public ObservableCollection<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
+        private List<LevelQc> _LevelList;
+        public List<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ControlInfo> _ControlInfoList;
         public ObservableCollection<ControlInfo> ControlInfolList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
@@ -78,6 +79,8 @@ namespace QC_Management.ViewModels
         public ICommand LoadedCommand { get; set; }
         public ICommand DateChangedCommand { get; set; }
         public ICommand CheckRangeCommand { get; set; }
+        public ICommand DeviceSelectionChanged { get; set; }
+
 
         private ResultReView _SelectedItem;
         public ResultReView SelectedItem
@@ -228,6 +231,17 @@ namespace QC_Management.ViewModels
                 isOutOfRange = SelectedItem.isOutOfRange;
             });
 
+            DeviceSelectionChanged = new RelayCommand<LevelQc>((p) =>
+            {
+                if (SelectedDevice == null) return false;
+                else return true;
+
+            }, async (p) =>
+            {
+                List<LevelQc> result = await GetLevelsByDeviceAsync(DB, SelectedDevice.Id);
+                LevelList = result;
+            });
+
 
             InputCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
@@ -264,11 +278,12 @@ namespace QC_Management.ViewModels
                     s.IdLevel == SelectedLevel.Id
                     && s.Status == true
                     && s.IdDevice == SelectedDevice.Id).FirstOrDefault();
-                    if (qcInfor == null)
-                    {
-                        MessageBox.Show($"Không tìm thấy thông tin QC {item.Name}", "Thông báo", MessageBoxButton.OK);
-                    }
-                    else
+                    //if (qcInfor == null)
+                    //{
+                    //    MessageBox.Show($"Không tìm thấy thông tin QC {item.Name}", "Thông báo", MessageBoxButton.OK);
+                    //}
+                    //else
+                    if(qcInfor != null)
                     {
                         ResutlViewList.Add(new ResultReView()
                         {
@@ -345,6 +360,20 @@ namespace QC_Management.ViewModels
                 }
             });
         }
+
+        public async Task<List<LevelQc>> GetLevelsByDeviceAsync(QcManagmentContext dbContext, int deviceId)
+        {
+            var levels = await dbContext.ControlInfoDetails
+                                        .Where(c => c.IdDevice == deviceId)
+                                        .Select(c => new LevelQc
+                                        {
+                                            Id = c.IdLevel,
+                                            Name = c.IdLevelNavigation.Name
+                                        })
+                                        .Distinct()
+                                        .ToListAsync();
+            return levels;
+        }
         private void LoadReResults()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
@@ -406,7 +435,7 @@ namespace QC_Management.ViewModels
         {
             List = new ObservableCollection<Result>(DB.Results);
             TestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-            LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
+            //LevelList = new List<LevelQc>(DB.LevelQcs);
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
             IndexList =new List<int?>();

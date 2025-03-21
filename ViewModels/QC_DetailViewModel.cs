@@ -165,6 +165,13 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _lot, value);
         }
 
+        private string _LevelName;
+        public string LevelName
+        {
+            get => _LevelName;
+            set => SetProperty(ref _LevelName, value);
+        }
+
         private ControlInfoDetail _selectedItem;
         public ControlInfoDetail SelectedItem
         {
@@ -395,6 +402,7 @@ namespace QC_Management.ViewModels
             SdPXN = 0;
             CurMean = 0;
             CurSd = 0;
+            LevelName = "";
             QualitativeMean = "";
             if (SelectedTest.TestType == 1)
             {

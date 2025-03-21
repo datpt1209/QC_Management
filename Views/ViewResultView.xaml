@@ -185,7 +185,7 @@
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                 
-                        <DataGridTemplateColumn Header="Định lượng" CanUserSort="False">
+                        <DataGridTemplateColumn Header="Kết quả" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <TextBox Text="{Binding TempResult, UpdateSourceTrigger=PropertyChanged}">

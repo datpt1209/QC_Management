@@ -133,7 +133,6 @@
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         IsEditable="True" Width="135" Height="50"/>
-
                     <TextBox
                         Margin="5"
                         VerticalAlignment="Center"   
