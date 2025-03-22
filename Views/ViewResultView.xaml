@@ -62,7 +62,16 @@
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         IsEditable="True" VerticalAlignment="Top" 
-                        Width="189" Height="50"/>
+                        Width="189" Height="50">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding DeviceSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                    </ComboBox>
                     <ComboBox  
                         Margin="5"
                         ItemsSource="{Binding LevelList}"
@@ -122,12 +131,12 @@
                           SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
                           CanUserAddRows="False">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name}" IsReadOnly="True" />
-                        <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.Lot }" IsReadOnly="True" />
+                        <DataGridTextColumn Header="Xét nghiệm" Binding="{Binding IdTestNavigation.Name ,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" />
+                        <DataGridTextColumn Header="LOT QC" Binding="{Binding IdControlDetailNavigation.Lot,UpdateSourceTrigger=PropertyChanged }" IsReadOnly="True" />
                         <DataGridTemplateColumn Header="Qualitative" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding IdControlDetailNavigation.QualitativeMean}">
+                                    <TextBox Text="{Binding IdControlDetailNavigation.QualitativeMean,UpdateSourceTrigger=PropertyChanged}">
                                         <TextBox.Style>
                                             <Style TargetType="TextBox">
                                                 <Setter Property="IsEnabled" Value="False"/>
@@ -147,13 +156,13 @@
                         <DataGridTemplateColumn Header="Mean" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding IdControlDetailNavigation.CurMean}">
+                                    <TextBox Text="{Binding IdControlDetailNavigation.CurMean ,UpdateSourceTrigger=PropertyChanged}">
                                         <TextBox.Style>
                                             <Style TargetType="TextBox">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Setter Property="FontWeight" Value="Normal"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ResultType}" Value="2">
+                                                    <DataTrigger Binding="{Binding ResultType ,UpdateSourceTrigger=PropertyChanged}" Value="2">
                                                         <Setter Property="IsEnabled" Value="True"/>
                                                         <Setter Property="FontWeight" Value="Bold"/>
                                                     </DataTrigger>
@@ -167,13 +176,13 @@
                         <DataGridTemplateColumn Header="SD" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <TextBox Text="{Binding IdControlDetailNavigation.CurSd}">
+                                    <TextBox Text="{Binding IdControlDetailNavigation.CurSd,UpdateSourceTrigger=PropertyChanged}">
                                         <TextBox.Style>
                                             <Style TargetType="TextBox">
                                                 <Setter Property="IsEnabled" Value="False"/>
                                                 <Setter Property="FontWeight" Value="Normal"/>
                                                 <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ResultType}" Value="2">
+                                                    <DataTrigger Binding="{Binding ResultType,UpdateSourceTrigger=PropertyChanged}" Value="2">
                                                         <Setter Property="IsEnabled" Value="True"/>
                                                         <Setter Property="FontWeight" Value="Bold"/>
                                                     </DataTrigger>
@@ -234,11 +243,11 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>-->
-                        <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName}"/>
-                        <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date, StringFormat=dd/MM/yyyy}"/>
+                        <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName,UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date,UpdateSourceTrigger=PropertyChanged, StringFormat=dd/MM/yyyy}"/>
                         <DataGridTextColumn Header="Giờ thực hiện" IsReadOnly="True" Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
-                        <DataGridTextColumn Header="Ghi chú"  Binding="{Binding Comment}"/>
-                        <DataGridTextColumn Header="Lỗi Westgard"  Binding="{Binding WestgardRule}"/>
+                        <DataGridTextColumn Header="Ghi chú"  Binding="{Binding Comment,UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="Lỗi Westgard"  Binding="{Binding WestgardRule,UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTemplateColumn Header="Actions">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>

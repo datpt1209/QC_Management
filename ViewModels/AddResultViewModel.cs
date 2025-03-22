@@ -1,5 +1,7 @@
-﻿using QC_Management.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using QC_Management.Models;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +13,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace QC_Management.ViewModels
 {
 
-    public class AddResultViewModel : BaseViewModel
+public class AddResultViewModel : BaseViewModel
     {
         private DateTime _selectedDate;
         private Device _selectedDevice;
@@ -20,12 +22,9 @@ namespace QC_Management.ViewModels
         private int _selectedIndex;
         private System.Windows.Window _window;
         private ObservableCollection<Result> _newResults;
-        private ObservableCollection<DeviceTest> _testList;
         private string _comment;
         private bool _isOutOfRange;
         private bool _isOut2SD;
-
-
         private string _resultString;
         private double _result;
 
@@ -60,11 +59,8 @@ namespace QC_Management.ViewModels
             }
         }
 
-
-
         private ObservableCollection<Test> _TestList;
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
-
 
         public DateTime SelectedDate
         {
@@ -75,7 +71,7 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-        
+
         public bool isOutOfRange
         {
             get => _isOutOfRange;
@@ -175,29 +171,30 @@ namespace QC_Management.ViewModels
 
         private async Task SaveAsync()
         {
-
             if (NewResults.Count == 0)
             {
                 MessageBox.Show("Chưa nhập kết quả QC", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {
-                // Gọi hàm lưu dữ liệu
-                bool isSaved = await SaveDataAsync(DataProvider.Ins.DB, NewResults);
+                using (var DB = new QcManagmentContext())
+                {
+                    // Gọi hàm lưu dữ liệu
+                    bool isSaved = await SaveDataAsync(DB, NewResults);
 
-                // Hiển thị thông báo thành công hoặc thất bại
-                if (isSaved)
-                {
-                    MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    _window.DialogResult = true;
-                    _window.Close();
-                }
-                else
-                {
-                    MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Hiển thị thông báo thành công hoặc thất bại
+                    if (isSaved)
+                    {
+                        MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        _window.DialogResult = true;
+                        _window.Close();
+                    }
+                    else
+                    {
+                        MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
                 }
             }
-
         }
 
         private void Cancel()
@@ -210,40 +207,56 @@ namespace QC_Management.ViewModels
         {
             if (SelectedDevice != null)
             {
-                var DeviceTestList = DataProvider.Ins.DB.DeviceTests.ToList();
-                // Assuming DataProvider.Ins.DB is accessible here
-                TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-               
+                using (var DB = new QcManagmentContext())
+                {
+                    TestList = new ObservableCollection<Test>(DB.DeviceTests
+                        .Include(s => s.IdTestNavigation)
+                        .Where(s => s.IdDevice == SelectedDevice.Id)
+                        .Select(s => s.IdTestNavigation)
+                        .OrderBy(s => s.Index));
+                }
             }
         }
+
         private void AddResult()
         {
             if (SelectedTest != null && Result != null)
             {
-                var qcInfor = SelectedTest.ControlInfoDetails.Where(s =>
-                      s.IdLevel == SelectedLevel.Id
-                      && s.Status == true
-                      && s.IdDevice == SelectedDevice.Id).FirstOrDefault();
-                var newResult = new Result
+                using (var DB = new QcManagmentContext())
                 {
-                    IdControlDetailNavigation = qcInfor,
-                    IdDeviceNavigation = SelectedDevice,
-                    IdLevelNavigation = SelectedLevel,
-                    IdControlDetail = qcInfor.Id,
-                    IdUser = UserManager.Instance.CurrentUser.Id,
-                    IdTestNavigation = SelectedTest,
-                    IdDevice = SelectedDevice.Id,
-                    IdLevel = SelectedLevel.Id,
-                    IndexQc = SelectedIndex,
-                    IdTest = SelectedTest.Id,
-                    ResultType = SelectedTest.TestType,
-                    DateRun = SelectedDate,
-                    Time = DateTime.Now.TimeOfDay,
-                    Comment = Comment,
-                    TempResult = ResultString,
-                };
-                NewResults.Add(newResult);
-                ResultString = null; // Clear the result input
+                    var qcInfor = DB.ControlInfoDetails
+                        .Where(s =>
+                             s.IdLevel == SelectedLevel.Id
+                             && s.IdTest == SelectedTest.Id
+                            && s.Status == true
+                            && s.IdDevice == SelectedDevice.Id).FirstOrDefault();
+
+                    if (qcInfor != null)
+                    {
+                        var newResult = new Result
+                        {
+                            IdTest = SelectedTest.Id,
+                            ResultType = SelectedTest.TestType,
+                            IdTestNavigation = SelectedTest,
+                            IdDevice = SelectedDevice.Id,
+                            IdLevel = SelectedLevel.Id,
+                            DateRun = SelectedDate,
+                            Time = DateTime.Now.TimeOfDay,
+                            IdUser = UserManager.Instance.CurrentUser.Id,
+                            IndexQc = SelectedIndex,
+                            IdControlDetail = qcInfor.Id,
+                            IdControlDetailNavigation = qcInfor,
+                            Comment = Comment,
+                            TempResult = ResultString,
+                        };
+                        NewResults.Add(newResult);
+                        ResultString = null; // Clear the result input
+                    }
+                    else
+                    {
+                        MessageBox.Show("Không tìm thấy thông tin kiểm soát.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    }
+                }
             }
         }
 
@@ -251,18 +264,73 @@ namespace QC_Management.ViewModels
         {
             try
             {
-                DB.AddRange(results);
-                await DB.SaveChangesAsync();
+                foreach (var result in results)
+                {
+                    // Kiểm tra và gắn thực thể ControlInfoDetail nếu chưa được theo dõi
+                    if (DB.Entry(result.IdControlDetailNavigation).State == EntityState.Detached)
+                    {
+                        var existingControlDetail = await DB.ControlInfoDetails.FindAsync(result.IdControlDetail);
+                        if (existingControlDetail != null)
+                        {
+                            DB.Entry(existingControlDetail).State = EntityState.Unchanged;
+                            result.IdControlDetailNavigation = existingControlDetail;
+                        }
+                    }
 
+                    // Kiểm tra và gắn thực thể Test nếu chưa được theo dõi
+                    if (DB.Entry(result.IdTestNavigation).State == EntityState.Detached)
+                    {
+                        var existingTest = await DB.Tests.FindAsync(result.IdTest);
+                        if (existingTest != null)
+                        {
+                            DB.Entry(existingTest).State = EntityState.Unchanged;
+                            result.IdTestNavigation = existingTest;
+                        }
+                    }
+
+                    //// Kiểm tra và gắn thực thể Device nếu chưa được theo dõi
+                    //if (DB.Entry(result.IdDeviceNavigation).State == EntityState.Detached)
+                    //{
+                    //    var existingDevice = await DB.Devices.FindAsync(result.IdDevice);
+                    //    if (existingDevice != null)
+                    //    {
+                    //        DB.Entry(existingDevice).State = EntityState.Unchanged;
+                    //        result.IdDeviceNavigation = existingDevice;
+                    //    }
+                    //}
+
+                    //// Kiểm tra và gắn thực thể LevelQc nếu chưa được theo dõi
+                    //if (DB.Entry(result.IdLevelNavigation).State == EntityState.Detached)
+                    //{
+                    //    var existingLevel = await DB.LevelQcs.FindAsync(result.IdLevel);
+                    //    if (existingLevel != null)
+                    //    {
+                    //        DB.Entry(existingLevel).State = EntityState.Unchanged;
+                    //        result.IdLevelNavigation = existingLevel;
+                    //    }
+                    //}
+
+                    // Thêm hoặc cập nhật thực thể Result
+                    var existingResult = await DB.Results.FindAsync(result.Id);
+                    if (existingResult == null)
+                    {
+                        DB.Results.Add(result);
+                    }
+                    else
+                    {
+                        DB.Entry(existingResult).CurrentValues.SetValues(result);
+                    }
+                }
+
+                await DB.SaveChangesAsync();
                 return true; // Trả về true nếu lưu thành công
             }
             catch (Exception ex)
             {
                 // Xử lý lỗi nếu có
-                MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Có lỗi: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 return false; // Trả về false nếu lưu thất bại
             }
         }
-
     }
 }

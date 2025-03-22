@@ -1,10 +1,12 @@
-﻿using QC_Management.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using QC_Management.Models;
 using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using XAct.Library.Settings;
@@ -28,8 +30,8 @@ namespace QC_Management.ViewModels
         private ObservableCollection<DeviceTest> _TestList;
         public ObservableCollection<DeviceTest> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<LevelQc> _LevelList;
-        public ObservableCollection<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
+        private List<LevelQc> _LevelList;
+        public List<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ControlInfo> _ControlInfoList;
         public ObservableCollection<ControlInfo> ControlInfolList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
@@ -45,6 +47,8 @@ namespace QC_Management.ViewModels
         public ICommand DateChangedCommand { get; set; }
         public ICommand DeleteOneTestCommand { get; set; }
         public ICommand AddCommand { get; set; }
+
+        public ICommand DeviceSelectionChangedCommand { get; set; }
 
 
         private Visibility _IsVisibility;
@@ -94,7 +98,7 @@ namespace QC_Management.ViewModels
         }
 
         private LevelQc _SelectedLevel;
-        public LevelQc SelectedLevel
+        public LevelQc? SelectedLevel
         {
             get => _SelectedLevel;
             set
@@ -119,14 +123,13 @@ namespace QC_Management.ViewModels
         public ViewResultViewModel()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
-
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 return true;
 
             }, (p) =>
             {
-                LoadNew(DB);
+                LoadNew();
             });
 
             ViewCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -137,17 +140,13 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                if( SelectedIndex == 0)
-                {
-                    ResultViewList = new ObservableCollection<Result>(List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdLevel == SelectedLevel.Id && s.DateRun == SelectedDate).ToList());
-                   
-                }
-                else
-                {
-                    ResultViewList = new ObservableCollection<Result>(List.Where(s => s.IdDevice == SelectedDevice.Id 
-                    && s.IdLevel == SelectedLevel.Id 
-                    && s.DateRun == SelectedDate && s.IndexQc == SelectedIndex).ToList());
-                }
+                ResultViewList = new ObservableCollection<Result>(DB.Results
+                                    .Include(s => s.IdTestNavigation)
+                                    .Include(s => s.IdUserNavigation)
+                                    .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+                                    .Where(s => s.IdDevice == SelectedDevice.Id 
+                && s.IdLevel == SelectedLevel.Id 
+                && s.DateRun == SelectedDate && s.IndexQc == SelectedIndex).ToList());
                 if (ResultViewList.Count() == 0 || ResultViewList == null)
                 {
                     MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -161,10 +160,20 @@ namespace QC_Management.ViewModels
                     return true;
             }, (p) =>
             {
-                //ReportView rp = new ReportView(ResultViewList);
-                //rp.ShowDialog();
+                
                 ReivewReportView rp = new ReivewReportView(ResultViewList.ToList());
                 rp.ShowDialog();
+
+            });
+
+            DeviceSelectionChangedCommand = new RelayCommand<object>((p) =>
+            {
+                if (SelectedDevice == null ) return false;
+                else
+                    return true;
+            }, async (p) =>
+            {
+               await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
 
             });
 
@@ -224,8 +233,8 @@ namespace QC_Management.ViewModels
                         DataProvider.Ins.DB.RemoveRange(deleteItem);
                         DataProvider.Ins.DB.SaveChanges();
                         MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Reload(DB);
-                        FilterResults();
+                        Reload();
+                        FilterResults(DB);
 
                     }
                     catch (Exception ex)
@@ -254,36 +263,54 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                IndexList = LoadIndexList();
+                IndexList = LoadIndexList(DB);
             });
 
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
                 SelectedLevel = null;
+                if(SelectedDevice != null)
+                {
+                   await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
+                }
             });
 
         }
 
-        private List<int?> LoadIndexList()
+        private List<int?> LoadIndexList(QcManagmentContext DB)
         {
             var IndexList = new List<int?>();
-            var listTest = List.Where(s => s.IdDevice == SelectedDevice.Id
+            var listTest =  DB.Results.Where(s => s.IdDevice == SelectedDevice.Id
                             && s.DateRun == SelectedDate
-                            && s.IdLevel == SelectedLevel.Id);
+                            && s.IdLevel == SelectedLevel.Id)
+            .GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
 
-            var list = List.Where(s => s.IdDevice == SelectedDevice.Id
-            && s.DateRun == SelectedDate
-            && s.IdLevel == SelectedLevel.Id)
-            .GroupBy(s => s.IndexQc).Select(s => s.Key);
-            if (list != null)
+            if (listTest != null)
             {
-                IndexList = list.ToList();
+                IndexList = listTest;
             }
             return IndexList;
+        }
+
+        public async Task UpdateLevelsByDeviceAsync(int deviceId)
+        {
+            using (var dbContext = new QcManagmentContext())
+            {
+                var levels = await dbContext.Results
+                                            .Where(c => c.IdDevice == deviceId && c.DateRun == SelectedDate.Date)
+                                            .Select(c => new LevelQc
+                                            {
+                                                Id = c.IdLevel,
+                                                Name = c.IdLevelNavigation.Name
+                                            })
+                                            .Distinct()
+                                            .ToListAsync();
+                LevelList = levels;
+            }
         }
 
         private void AddNewResult()
@@ -301,13 +328,14 @@ namespace QC_Management.ViewModels
 
         private void OpenAddResultWindow()
         {
+            QcManagmentContext DB = DataProvider.Ins.DB;
             var addResultWindow = new AddResultWindow();
             var viewModel = new AddResultViewModel(SelectedDate, SelectedDevice, SelectedLevel, SelectedIndex, addResultWindow);
             addResultWindow.DataContext = viewModel;
             if (addResultWindow.ShowDialog() == true)
             {
-                Reload(DataProvider.Ins.DB);
-                FilterResults();
+                Reload();
+                FilterResults(DB);
             }
         }
         private async void DeleteResult(Result result)
@@ -337,7 +365,7 @@ namespace QC_Management.ViewModels
                 MessageBox.Show($"Error deleting result: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-        private void FilterResults()
+        private void FilterResults(QcManagmentContext DB)
         {
             if (SelectedDevice == null || SelectedLevel == null ) return;
 
@@ -355,13 +383,14 @@ namespace QC_Management.ViewModels
             if (ResultViewList.Count() == 0 || ResultViewList == null)
             {
                 SelectedIndex = null;
-                IndexList = LoadIndexList();
+                IndexList = LoadIndexList(DB);
                
                 MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        public void LoadNew(QcManagmentContext DB)
+        public void LoadNew()
         {
+            QcManagmentContext DB = DataProvider.Ins.DB;
             if(UserManager.Instance.CurrentUser.Role == 1)
             {
                 IsVisibility = Visibility.Visible;
@@ -370,20 +399,17 @@ namespace QC_Management.ViewModels
             {
                 IsVisibility = Visibility.Hidden;
             }
-            List = new ObservableCollection<Result>(DB.Results);
+            List = new ObservableCollection<Result>();
             ResultViewList = new ObservableCollection<Result>();
-            TestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-            LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
+            TestList = new ObservableCollection<DeviceTest>();
             DeviceList = new ObservableCollection<Device>(DB.Devices);
-            ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-            UserList = new ObservableCollection<User>(DB.Users);
+            ControlInfolList = new ObservableCollection<ControlInfo>();
+           
         }
-        public void Reload(QcManagmentContext DB)
+        public void Reload()
         {
+            QcManagmentContext DB = DataProvider.Ins.DB;
             List = new ObservableCollection<Result>(DB.Results);
-            //SelectedIndex = null;
-            //SelectedDevice = null;
-            //SelectedDate = DateTime.Now;
             ResultViewList = new ObservableCollection<Result>();
         }
     }

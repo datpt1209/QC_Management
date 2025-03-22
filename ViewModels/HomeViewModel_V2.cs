@@ -24,18 +24,11 @@ namespace QC_Management.ViewModels
 {
     public class HomeViewModel_V2 : BaseViewModel
     {
-        private readonly QcManagmentContext _dbContext;
+        private QcManagmentContext _dbContext;
         private ObservableCollection<Result> _List;
         private Func<double, string> _yAxisLabelFormatter;
         private ObservableCollection<Device> _DeviceList;
-        private ObservableCollection<ControlInfo> _ControlInfoList;
-        private ObservableCollection<ControlInfoDetail> _ControlInfoDetailList;
-        private ObservableCollection<Test> _TestListDB;
-        private ObservableCollection<User> _UserList;
-        private ObservableCollection<UnitTable> _UnitList;
         private ObservableCollection<Test> _TestList;
-        private ObservableCollection<DeviceTest> _DeviceTestList;
-        private ObservableCollection<LevelQc> _LevelList;
         private ObservableCollection<string> _Dates3;
         private ObservableCollection<string> _Dates1;
         private ObservableCollection<string> _Dates;
@@ -78,11 +71,8 @@ namespace QC_Management.ViewModels
         private bool _isCheck;
         private Test _SelectedTest;
         private Device _SelectedDevice;
-        private ControlInfo _SelectedControlInfo;
-        private ControlInfoDetail _SelectedControlInfoDetail;
-
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
-        public ChartValues<ObservablePoint> LineAtOneValues { get; set; }
+      
         public Func<double, string> YAxisLabelFormatter
         {
             get { return _yAxisLabelFormatter; }
@@ -93,18 +83,9 @@ namespace QC_Management.ViewModels
             }
         }
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
-
-        public ObservableCollection<ControlInfo> ControlInfoList { get => _ControlInfoList; set { _ControlInfoList = value; OnPropertyChanged(); } }
-        public ObservableCollection<ControlInfoDetail> ControlInfoDetailList { get => _ControlInfoDetailList; set { _ControlInfoDetailList = value; OnPropertyChanged(); } }
-        public ObservableCollection<Test> TestListDB { get => _TestListDB; set { _TestListDB = value; OnPropertyChanged(); } }
-        public ObservableCollection<User> UserList { get => _UserList; set { _UserList = value; OnPropertyChanged(); } }
-        public ObservableCollection<UnitTable> UnitList { get => _UnitList; set { _UnitList = value; OnPropertyChanged(); } }
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
-        public ObservableCollection<DeviceTest> DeviceTestList { get => _DeviceTestList; set { _DeviceTestList = value; OnPropertyChanged(); } }
-        public ObservableCollection<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
         public ObservableCollection<string> Dates3 { get => _Dates3; set { _Dates3 = value; OnPropertyChanged(); } }
         public ObservableCollection<string> Dates1 { get => _Dates1; set { _Dates1 = value; OnPropertyChanged(); } }
-        public ObservableCollection<string> Dates { get => _Dates; set { _Dates = value; OnPropertyChanged(); } }
         public ObservableCollection<string> Dates2 { get => _Dates2; set { _Dates2 = value; OnPropertyChanged(); } }
         public Visibility Visibility1 { get => _Visibility1; set { _Visibility1 = value; OnPropertyChanged(); } }
         public Visibility Visibility2 { get => _Visibility2; set { _Visibility2 = value; OnPropertyChanged(); } }
@@ -149,18 +130,12 @@ namespace QC_Management.ViewModels
         public ICommand PrintCommand { get; set; }
         public ICommand PrintCalibCommand { get; set; }
         public ICommand PrintChartCommand { get; set; }
-        public ICommand ViewCommand { get; set; }
-        public ICommand EditCommand { get; set; }
-        public ICommand DeleteCommand { get; set; }
         public ICommand LoadedCommand { get; set; }
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand TestSelectionChangedCommand { get; set; }
         public ICommand appRangeCommand { get; set; }
-        public ICommand ScrollViewer_LoadedCommand { get; set; }
-        public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
         public DateTime StartDate { get => _StartDate; set { _StartDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _EndDate; set { _EndDate = value; OnPropertyChanged(); } }
-        public string LOT { get => _LOT; set { _LOT = value; OnPropertyChanged(); } }
         public bool isCheck { get => _isCheck; set { _isCheck = value; OnPropertyChanged(); } }
         public Test SelectedTest
         {
@@ -177,24 +152,6 @@ namespace QC_Management.ViewModels
             set
             {
                 _SelectedDevice = value;
-                OnPropertyChanged();
-            }
-        }
-        public ControlInfo SelectedControlInfo
-        {
-            get => _SelectedControlInfo;
-            set
-            {
-                _SelectedControlInfo = value;
-                OnPropertyChanged();
-            }
-        }
-        public ControlInfoDetail SelectedControlInfoDetail
-        {
-            get => _SelectedControlInfoDetail;
-            set
-            {
-                _SelectedControlInfoDetail = value;
                 OnPropertyChanged();
             }
         }
@@ -234,7 +191,7 @@ namespace QC_Management.ViewModels
 
             PrintCommand = new RelayCommand<object>((p) =>
             {
-                if (SelectedTest == null || SelectedDevice == null) return false;
+                if (SelectedTest == null || SelectedDevice == null || List.Count == 0) return false;
                 else
                     return true;
 
@@ -248,7 +205,7 @@ namespace QC_Management.ViewModels
 
             PrintCalibCommand = new RelayCommand<object>((p) =>
             {
-                if (SelectedTest == null || SelectedDevice == null || SelectedTest.TestType == 1) return false;
+                if (SelectedTest == null || SelectedDevice == null || SelectedTest.TestType == 1 || List.Count == 0) return false;
                 else
                     return true;
 
@@ -296,30 +253,30 @@ namespace QC_Management.ViewModels
                 if (SelectedDevice != null)
                 {
                     // Update the TestList based on the selected device
-                    var newTestList = new ObservableCollection<Test>(DeviceTestList
+                     TestList = new ObservableCollection<Test>(_dbContext.DeviceTests
                         .Where(s => s.IdDevice == SelectedDevice.Id)
                         .Select(s => s.IdTestNavigation)
                         .OrderBy(s => s.Index));
 
-                    // Check if the new list is different from the current one or if the SelectedTest is not in the new list
-                    if (!TestList.SequenceEqual(newTestList) || !newTestList.Contains(SelectedTest))
-                    {
-                        TestList = newTestList;
-                        OnPropertyChanged(nameof(TestList));
+                    //// Check if the new list is different from the current one or if the SelectedTest is not in the new list
+                    //if (!TestList.SequenceEqual(newTestList) || !newTestList.Contains(SelectedTest))
+                    //{
+                    //    TestList = newTestList;
+                    //    OnPropertyChanged(nameof(TestList));
 
-                        // Set SelectedTest to the first test in the updated list or null if the list is empty
-                        //SelectedTest = TestList.FirstOrDefault();
-                    }
-                    else
-                    {
-                        // Force refresh of SelectedTest even if the list hasn't changed
-                        var tempTest = SelectedTest;
-                        SelectedTest = null;
-                        OnPropertyChanged(nameof(SelectedTest));
-                        SelectedTest = tempTest;
-                    }
+                    //    // Set SelectedTest to the first test in the updated list or null if the list is empty
+                    //    //SelectedTest = TestList.FirstOrDefault();
+                    //}
+                    //else
+                    //{
+                    //    // Force refresh of SelectedTest even if the list hasn't changed
+                    //    var tempTest = SelectedTest;
+                    //    SelectedTest = null;
+                    //    OnPropertyChanged(nameof(SelectedTest));
+                    //    SelectedTest = tempTest;
+                    //}
 
-                    OnPropertyChanged(nameof(SelectedTest));
+                    //OnPropertyChanged(nameof(SelectedTest));
                 }
             });
 
@@ -357,25 +314,15 @@ namespace QC_Management.ViewModels
             IsLoading = true;
             try
             {
-                var DB = await Task.Run(() =>  DataProvider.Ins.DB);
-                List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
-                UserList = new ObservableCollection<User>(DB.Users);
-                LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
-                DeviceList = new ObservableCollection<Device>(DB.Devices);
-                DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-                UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
-                TestListDB = new ObservableCollection<Test>(DB.Tests);
-                if (SelectedDevice == null)
+                _dbContext = await Task.Run(() =>  DataProvider.Ins.DB);
+                DeviceList = new ObservableCollection<Device>(_dbContext.Devices);
+                if(SelectedDevice != null)
                 {
-                    TestList = new ObservableCollection<Test>();
+                       TestList = new ObservableCollection<Test>(_dbContext.DeviceTests
+                        .Where(s => s.IdDevice == SelectedDevice.Id)
+                        .Select(s => s.IdTestNavigation)
+                        .OrderBy(s => s.Index));
                 }
-                else
-                {
-                    TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-                }
-                ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
-                ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-                //SelectedTest = null;
                 Visibility1 = Visibility.Collapsed;
                 Visibility2 = Visibility.Collapsed;
                 Visibility3 = Visibility.Collapsed;
@@ -423,6 +370,12 @@ namespace QC_Management.ViewModels
 
         private async Task ViewChart()
         {
+            Visibility1 = Visibility.Collapsed;
+            Visibility2 = Visibility.Collapsed;
+            Visibility3 = Visibility.Collapsed;
+
+            IsLoading = true;
+            OnPropertyChanged(nameof(IsLoading));
             InitializeYAxisLabelFormatter();
             try
             {
@@ -430,22 +383,26 @@ namespace QC_Management.ViewModels
                 {
                     return;
                 }
-
-                Visibility1 = Visibility.Collapsed;
-                Visibility2 = Visibility.Collapsed;
-                Visibility3 = Visibility.Collapsed;
-
-                IsLoading = true;
-                OnPropertyChanged(nameof(IsLoading));
-
-               
-
-                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate)
-                    .OrderBy(s => s.DateRun.Year)
-                    .ThenBy(s => s.DateRun.Month)
-                    .ThenBy(s => s.DateRun.Day)
-                    .ThenBy(s => s.IndexQc)
-                    .ToList();
+                var results = new ObservableCollection<Result>(_dbContext.Results
+                                .AsNoTracking()
+                                .Include(s => s.IdControlDetailNavigation)
+                                .Include(s => s.IdUserNavigation)
+                                .Include(s => s.IdLevelNavigation)
+                                .Include(s => s.IdTestNavigation)
+                                .Include(s => s.IdDeviceNavigation)
+                                .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
+                                .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+                                .Where(s => s.IdDevice == SelectedDevice.Id
+                                           && s.IdTest == SelectedTest.Id
+                                           && s.DateRun >= StartDate
+                                           && s.DateRun <= EndDate
+                                           )
+                                .OrderBy(s => s.DateRun.Year)
+                                .ThenBy(s => s.DateRun.Month)
+                                .ThenBy(s => s.DateRun.Day)
+                                .ThenBy(s => s.IndexQc));
+                List = results;
+                              
                 if (!results.Any())
                 {
                    
@@ -560,117 +517,27 @@ namespace QC_Management.ViewModels
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }
 
-        /* Chart 2
-        private CartesianChart LoadChart2(IGrouping<int, Result> results)
-        {
-            var kqline = new ChartValues<Result>();
-            Visibility visibility = new Visibility();
-            Dates = new ObservableCollection<string>();
-            YAxisLabels = new List<string>();
-
-
-            foreach (var item in results)
-            {
-                kqline.Add(item);
-                Dates.Add(item.DateRun.ToShortDateString());
-
-            }
-            if (kqline == null || kqline.Count == 0)
-            {
-                visibility = Visibility.Collapsed;
-            }
-            else visibility = Visibility.Visible;
-
-            CartesianMapper<Result> Mapper = Mappers.Xy<Result>()
-                .X((value, index) => index)
-                .Y((value, index) => (value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx)
-                .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx) > 2
-                || ((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx) < -2 ? Brushes.Red : null)
-                .Stroke(item => Brushes.Transparent);
-            var seriesViews = new SeriesCollection
-                    {
-                        new LineSeries(Mapper)
-                        {
-                            Title = "Result",
-                            PointForeground = Brushes.Blue,
-                            StrokeThickness = 3,
-                            Values = kqline,
-                            LineSmoothness = 0,
-                            Stroke = Brushes.LightGray,
-                            Fill = Brushes.Transparent,
-                            PointGeometry = DefaultGeometries.Circle,
-                            PointGeometrySize = 15,
-                        }
-                    };
-            CartesianChart cartesianChart = new CartesianChart();
-            cartesianChart.Series = seriesViews;
-            AxesCollection axesX = new AxesCollection();
-            Axis axisX = new Axis();
-            axisX.Labels = Dates;
-            axisX.LabelsRotation = 0;
-            axisX.Separator.Step = 1;
-            axesX.Add(axisX);
-            Axis axisY = new Axis();
-            axisY.MaxValue = 3;
-            axisY.MinValue = -3;
-            axisY.Separator.Step = 1;
-            AxesCollection axesY = new AxesCollection();
-            axesY.Add(axisY);
-            cartesianChart.AxisY = axesY;
-            cartesianChart.AxisX = axesX;
-            cartesianChart.Visibility = visibility;
-            cartesianChart.DataTooltip.Visibility = Visibility.Hidden;
-
-            return cartesianChart;
-        }
-        */
-
-        //private void LoadNew()
+       
+        //private double CalculateMean(ObservableCollection<double> values)
         //{
-        //    var DB = DataProvider.Ins.DB;
-        //    List = new ObservableCollection<Result>(DB.Results.OrderBy(s => s.DateRun));
-        //    UserList = new ObservableCollection<User>(DB.Users);
-        //    LevelList = new ObservableCollection<LevelQc>(DB.LevelQcs);
-        //    DeviceList = new ObservableCollection<Device>(DB.Devices);
-        //    DeviceTestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-        //    UnitList = new ObservableCollection<UnitTable>(DB.UnitTables);
-        //    TestListDB = new ObservableCollection<Test>(DB.Tests);
-        //    if(SelectedDevice == null)
+        //    double sum = 0;
+        //    foreach (var value in values)
         //    {
-        //        TestList = new ObservableCollection<Test>();
+        //        sum += value;
         //    }
-        //    else
-        //    {
-        //        TestList = new ObservableCollection<Test>(DeviceTestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index));
-        //    }
-        //    ControlInfoDetailList = new ObservableCollection<ControlInfoDetail>(DB.ControlInfoDetails);
-        //    ControlInfoList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
-        //    //SelectedTest = null;
-        //    Visibility1 = Visibility.Collapsed;
-        //    Visibility2 = Visibility.Collapsed;
-        //    Visibility3 = Visibility.Collapsed;
-        //    isCheck = false;
+        //    return sum / values.Count;
         //}
-        private double CalculateMean(ObservableCollection<double> values)
-        {
-            double sum = 0;
-            foreach (var value in values)
-            {
-                sum += value;
-            }
-            return sum / values.Count;
-        }
 
-        private double CalculateStandardDeviation(ObservableCollection<double> values, double mean)
-        {
-            double sumSquaredDifference = 0;
-            foreach (var value in values)
-            {
-                sumSquaredDifference += Math.Pow(value - mean, 2);
-            }
-            double variance = sumSquaredDifference / values.Count;
-            return Math.Sqrt(variance);
-        }
+        //private double CalculateStandardDeviation(ObservableCollection<double> values, double mean)
+        //{
+        //    double sumSquaredDifference = 0;
+        //    foreach (var value in values)
+        //    {
+        //        sumSquaredDifference += Math.Pow(value - mean, 2);
+        //    }
+        //    double variance = sumSquaredDifference / values.Count;
+        //    return Math.Sqrt(variance);
+        //}
 
         private async Task LoadChartAsync(bool isCheck)
         {

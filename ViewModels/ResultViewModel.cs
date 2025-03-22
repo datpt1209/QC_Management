@@ -204,8 +204,8 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 LoadNew(DB);
-                LoadReResults();
-                LoadCalGroup();
+                LoadReResults(DB);
+                LoadCalGroup(DB);
             });
 
             DateChangedCommand = new RelayCommand<ControlInfoDetail>((p) =>
@@ -238,7 +238,7 @@ namespace QC_Management.ViewModels
 
             }, async (p) =>
             {
-                List<LevelQc> result = await GetLevelsByDeviceAsync(DB, SelectedDevice.Id);
+                List<LevelQc> result = await GetLevelsByDeviceAsync(SelectedDevice.Id);
                 LevelList = result;
             });
 
@@ -252,6 +252,21 @@ namespace QC_Management.ViewModels
             {
                 IndexList = new List<int?>();
                 //int index = 0;
+                var results = new ObservableCollection<Result>(DB.Results
+                        .AsNoTracking()
+                        .Include(s => s.IdControlDetailNavigation)
+                        .Include(s => s.IdUserNavigation)
+                        .Include(s => s.IdLevelNavigation)
+                        .Include(s => s.IdTestNavigation)
+                        .Include(s => s.IdDeviceNavigation)
+                        .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
+                        .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+                        .Where(s => s.IdDevice == SelectedDevice.Id
+                                   && s.DateRun == SelectedDate.Date
+                                   && s.IdLevel == SelectedLevel.Id
+                                   ));
+                List = results;
+
                 var indexList = List.Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate && s.IdLevel == SelectedLevel.Id).GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
                 if (indexList == null || indexList.Count() == 0)
                 {
@@ -264,14 +279,18 @@ namespace QC_Management.ViewModels
                     foreach (var item in indexList)
                     {
                         IndexList.Add(item);
-                        
                     }
                     IndexList.Add(indexList.Max() + 1);
                     SelectedIndex = (int)IndexList[IndexList.Count() - 1];
                 }
 
                 ResutlViewList = new ObservableCollection<ResultReView>();
-                var view = TestList.Where(s => s.IdDevice == SelectedDevice.Id).Select(s => s.IdTestNavigation).OrderBy(s => s.Index).ToList();
+
+                var view =  DB.DeviceTests
+                                .Include(s => s.IdTestNavigation.ControlInfoDetails) 
+                                .Where(s => s.IdDevice == SelectedDevice.Id)
+                                .Select(s => s.IdTestNavigation)
+                                .OrderBy(s => s.Index).ToList();
                 foreach (var item in view)
                 {
                     var qcInfor = item.ControlInfoDetails.Where(s =>
@@ -361,23 +380,25 @@ namespace QC_Management.ViewModels
             });
         }
 
-        public async Task<List<LevelQc>> GetLevelsByDeviceAsync(QcManagmentContext dbContext, int deviceId)
+        public async Task<List<LevelQc>> GetLevelsByDeviceAsync(int deviceId)
         {
-            var levels = await dbContext.ControlInfoDetails
-                                        .Where(c => c.IdDevice == deviceId)
-                                        .Select(c => new LevelQc
-                                        {
-                                            Id = c.IdLevel,
-                                            Name = c.IdLevelNavigation.Name
-                                        })
-                                        .Distinct()
-                                        .ToListAsync();
-            return levels;
+            using (var dbContext = new QcManagmentContext())
+            {
+                var levels = await dbContext.ControlInfoDetails
+                                            .Where(c => c.IdDevice == deviceId && c.Status == true)
+                                            .Select(c => new LevelQc
+                                            {
+                                                Id = c.IdLevel,
+                                                Name = c.IdLevelNavigation.Name
+                                            })
+                                            .Distinct()
+                                            .ToListAsync();
+                return levels;
+            }
         }
-        private void LoadReResults()
+        private void LoadReResults(QcManagmentContext DB)
         {
-            QcManagmentContext DB = DataProvider.Ins.DB;
-            var reResults = DB.ReResults.ToList();
+            var reResults = DB.ReResults.Include(s => s.IdTestNavigation).ToList();
             var groupedResults = reResults
                 .GroupBy(r => new { r.IdDevice, r.IdLevel, r.Date, r.Index })
                 .Select(g => new ReResultGroup
@@ -396,10 +417,9 @@ namespace QC_Management.ViewModels
             GroupedReResults = new ObservableCollection<ReResultGroup>(groupedResults);
         }
 
-        private void LoadCalGroup()
+        private void LoadCalGroup(QcManagmentContext DB)
         {
-            QcManagmentContext DB = DataProvider.Ins.DB;
-            var reCalResults = DB.ReCalResults.ToList();
+            var reCalResults = DB.ReCalResults.Include(s => s.IdTestNavigation).ToList();
             var groupedCalResults = reCalResults
                 .GroupBy(r => new { r.IdDevice, r.DateRun, r.IndexCal })
                 .Select(g => new CalGroup
@@ -433,11 +453,10 @@ namespace QC_Management.ViewModels
         }
         public void LoadNew(QcManagmentContext DB)
         {
-            List = new ObservableCollection<Result>(DB.Results);
-            TestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
-            //LevelList = new List<LevelQc>(DB.LevelQcs);
+            //List = new ObservableCollection<Result>(DB.Results);
+            //TestList = new ObservableCollection<DeviceTest>(DB.DeviceTests);
             DeviceList = new ObservableCollection<Device>(DB.Devices);
-            ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
+            //ControlInfolList = new ObservableCollection<ControlInfo>(DB.ControlInfos);
             IndexList =new List<int?>();
             ResutlViewList = null;
             SelectedLevel = null;
@@ -467,8 +486,9 @@ namespace QC_Management.ViewModels
         }
         private void ReLoad()
         {
-            LoadReResults();
-            LoadCalGroup();
+            QcManagmentContext DB = DataProvider.Ins.DB;
+            LoadReResults(DB);
+            LoadCalGroup(DB);
           
         }
 
