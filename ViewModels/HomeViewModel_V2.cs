@@ -82,6 +82,8 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged(nameof(YAxisLabelFormatter));
             }
         }
+
+      
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
         public ObservableCollection<string> Dates3 { get => _Dates3; set { _Dates3 = value; OnPropertyChanged(); } }
@@ -134,6 +136,8 @@ namespace QC_Management.ViewModels
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand TestSelectionChangedCommand { get; set; }
         public ICommand appRangeCommand { get; set; }
+
+        public ICommand DateSelectionChangedCommand { get; set; }
         public DateTime StartDate { get => _StartDate; set { _StartDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _EndDate; set { _EndDate = value; OnPropertyChanged(); } }
         public bool isCheck { get => _isCheck; set { _isCheck = value; OnPropertyChanged(); } }
@@ -155,12 +159,13 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-        public ICommand LoadDataCommand { get; set; }
         public HomeViewModel_V2()
         {
             _dbContext  = new QcManagmentContext();
-
-            LoadDataCommand = new RelayCommand<object>((p) => true, async (p) => await LoadNew());
+            Visibility1 = Visibility.Collapsed;
+            Visibility2 = Visibility.Collapsed;
+            Visibility3 = Visibility.Collapsed;
+            isCheck = false;
 
             LoadedCommand = new RelayCommand<Test>((p) =>
             {
@@ -169,6 +174,10 @@ namespace QC_Management.ViewModels
             }, async (p) =>
             {
                 await LoadNew();
+                if (SelectedDevice != null)
+                {
+                    await ViewChart(List);
+                }
             });
 
             appRangeCommand = new RelayCommand<Test>((p) =>
@@ -177,17 +186,8 @@ namespace QC_Management.ViewModels
 
             },async (p) =>
             {
-               await ViewChart();
+               await ViewChart(List);
             });
-
-            //ScrollViewer_LoadedCommand = new RelayCommand<ScrollViewer>((p) =>
-            //{
-            //    return true;
-
-            //}, (p) =>
-            //{
-            //    OnScrollViewerLoaded(p);
-            //});
 
             PrintCommand = new RelayCommand<object>((p) =>
             {
@@ -197,7 +197,7 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
+                var results = List.ToList();
                 ReportView rp = new ReportView(results, isCheck);
                 rp.ShowDialog();
 
@@ -212,6 +212,7 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                     var calresults = DataProvider.Ins.DB.CalResults
+                        .Include(s => s.IdUserNavigation)
                         .Include(s => s.IdCalDetailNavigation)
                         .ThenInclude(cd => cd.IdCalInforNavigation)
                         .ThenInclude(ct => ct.IdCalTypeNavigation)
@@ -237,7 +238,7 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 // Thiết lập dữ liệu cho báo cáo
-                var results = List.Where(s => s.IdDevice == SelectedDevice.Id && s.IdTest == SelectedTest.Id && s.DateRun >= StartDate && s.DateRun <= EndDate).ToList();
+                var results = List.ToList();
                 ChartReportView rp = new ChartReportView(results, isCheck);
                 rp.ShowDialog();
 
@@ -293,9 +294,10 @@ namespace QC_Management.ViewModels
 
             }, async (p) =>
             {
-                if(SelectedTest.TestType == 2)
+                await UpdateLissResultAsync();
+                if (SelectedTest.TestType == 2)
                 {
-                    await ViewChart();
+                    await ViewChart(List);
                 }
                 else
                 {
@@ -304,11 +306,64 @@ namespace QC_Management.ViewModels
                     Visibility2 = Visibility.Collapsed;
                     Visibility3 = Visibility.Collapsed;
                 }
-                
+
+            });
+
+            DateSelectionChangedCommand = new RelayCommand<CartesianChart>((p) =>
+            {
+                if (SelectedTest == null)
+                {
+                    return false;
+                }
+                else
+                {
+                    return true;
+                }
+
+            }, async (p) =>
+            {
+                await UpdateLissResultAsync();
+                if (SelectedTest.TestType == 2)
+                {
+                    await ViewChart(List);
+                }
+                else
+                {
+                    MessageBox.Show("Xét nghiệm định tính tạm thời chưa có Biều đồ Levey-Jenning. Xin cảm ơn!");
+                    Visibility1 = Visibility.Collapsed;
+                    Visibility2 = Visibility.Collapsed;
+                    Visibility3 = Visibility.Collapsed;
+                }
+
             });
 
         }
 
+        private async Task UpdateLissResultAsync()
+        {
+            using (var context = new QcManagmentContext())
+            {
+                var results = new ObservableCollection<Result>(await context.Results
+                    .AsNoTracking()
+                    .Include(s => s.IdControlDetailNavigation)
+                    .Include(s => s.IdUserNavigation)
+                    .Include(s => s.IdLevelNavigation)
+                    .Include(s => s.IdTestNavigation)
+                    .Include(s => s.IdDeviceNavigation)
+                    .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
+                    .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+                    .Where(s => s.IdDevice == SelectedDevice.Id
+                               && s.IdTest == SelectedTest.Id
+                               && s.DateRun >= StartDate
+                               && s.DateRun <= EndDate)
+                    .OrderBy(s => s.DateRun.Year)
+                    .ThenBy(s => s.DateRun.Month)
+                    .ThenBy(s => s.DateRun.Day)
+                    .ThenBy(s => s.IndexQc)
+                    .ToListAsync());
+                List = results;
+            }
+        }
         private async Task LoadNew()
         {
             IsLoading = true;
@@ -323,10 +378,6 @@ namespace QC_Management.ViewModels
                         .Select(s => s.IdTestNavigation)
                         .OrderBy(s => s.Index));
                 }
-                Visibility1 = Visibility.Collapsed;
-                Visibility2 = Visibility.Collapsed;
-                Visibility3 = Visibility.Collapsed;
-                isCheck = false;
             }
             catch (Exception ex)
             {
@@ -336,8 +387,6 @@ namespace QC_Management.ViewModels
             {
                 IsLoading = false;
             }
-
-            
         }
         private void InitializeYAxisLabelFormatter()
         {
@@ -368,7 +417,7 @@ namespace QC_Management.ViewModels
         //    }
         //}
 
-        private async Task ViewChart()
+        private async Task ViewChart(ObservableCollection<Result> results)
         {
             Visibility1 = Visibility.Collapsed;
             Visibility2 = Visibility.Collapsed;
@@ -383,25 +432,6 @@ namespace QC_Management.ViewModels
                 {
                     return;
                 }
-                var results = new ObservableCollection<Result>(_dbContext.Results
-                                .AsNoTracking()
-                                .Include(s => s.IdControlDetailNavigation)
-                                .Include(s => s.IdUserNavigation)
-                                .Include(s => s.IdLevelNavigation)
-                                .Include(s => s.IdTestNavigation)
-                                .Include(s => s.IdDeviceNavigation)
-                                .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
-                                .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
-                                .Where(s => s.IdDevice == SelectedDevice.Id
-                                           && s.IdTest == SelectedTest.Id
-                                           && s.DateRun >= StartDate
-                                           && s.DateRun <= EndDate
-                                           )
-                                .OrderBy(s => s.DateRun.Year)
-                                .ThenBy(s => s.DateRun.Month)
-                                .ThenBy(s => s.DateRun.Day)
-                                .ThenBy(s => s.IndexQc));
-                List = results;
                               
                 if (!results.Any())
                 {

@@ -143,6 +143,8 @@ namespace QC_Management.ViewModels
                 ResultViewList = new ObservableCollection<Result>(DB.Results
                                     .Include(s => s.IdTestNavigation)
                                     .Include(s => s.IdUserNavigation)
+                                    .Include(s => s.IdLevelNavigation)
+                                    .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
                                     .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
                                     .Where(s => s.IdDevice == SelectedDevice.Id 
                 && s.IdLevel == SelectedLevel.Id 

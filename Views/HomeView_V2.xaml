@@ -54,26 +54,40 @@
                         </i:Interaction.Triggers>
                     </ComboBox>
 
-                    <DatePicker          
-                         Margin="5"
-                            SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}"                             
-                            materialDesign:HintAssist.Hint="Ngày bắt đầu"                              
-                            materialDesign:TextFieldAssist.HasClearButton="True"                               
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Width="140" Height="50" />
+                    <DatePicker       
+                        Margin="5"
+                        SelectedDate="{Binding StartDate, UpdateSourceTrigger=PropertyChanged}"   
+                        materialDesign:HintAssist.Hint="Ngày bắt đầu" 
+                        materialDesign:TextFieldAssist.HasClearButton="True"  
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        Width="140" Height="50">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectedDateChanged">
+                                <i:InvokeCommandAction Command="{Binding DateSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </DatePicker>
                     <DatePicker          
                         Margin="5"
-                            SelectedDate="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}"                             
-                            materialDesign:HintAssist.Hint="Ngày kết thúc"                              
-                            materialDesign:TextFieldAssist.HasClearButton="True"                               
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}"
-                        Width="140" Height="50" />
+                        SelectedDate="{Binding EndDate, UpdateSourceTrigger=PropertyChanged}"      
+                        materialDesign:HintAssist.Hint="Ngày kết thúc"       
+                        materialDesign:TextFieldAssist.HasClearButton="True"   
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        Width="140" Height="50">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectedDateChanged">
+                                <i:InvokeCommandAction Command="{Binding DateSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+
+                    </DatePicker>
                     <CheckBox
                         Command="{Binding appRangeCommand}"
                         Content="AppRange"
                         IsChecked="{Binding isCheck}"
                         Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}">
-
                     </CheckBox>
                     <Button Command="{Binding PrintCommand}" Content="In QC"  Margin="5" Width="100"/>
                     <Button Command="{Binding PrintChartCommand}" Content="In Biểu đồ"  Margin="5" Width="100"/>
@@ -204,8 +218,8 @@
                             <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator 
-                StrokeThickness="0.5" 
-                Step="1">
+                                            StrokeThickness="0.5" 
+                                            Step="1">
                                         <lvc:Separator.Stroke>
                                             <SolidColorBrush Color="#FF151F23">
                                             </SolidColorBrush>
@@ -229,81 +243,81 @@
                         <lvc:CartesianChart.Series>
                             <lvc:LineSeries 
                    
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="3SD" 
-StrokeThickness="3"
-Values="{Binding PlusThreeSDValues2}"
-Stroke="Red"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding PlusThreeSDValues2}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-StrokeThickness="3"
-Title="+2SD" 
-Values="{Binding PlusTwoSDValues2}" 
-Stroke="Orange" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="+2SD" 
+                                Values="{Binding PlusTwoSDValues2}" 
+                                Stroke="Orange" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}" 
-StrokeThickness="3"
-Title="1SD" 
-Values="{Binding PlusOneSDValues2}"
-Stroke="Green" 
-Fill="#FFC4EEB4"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}" 
+                                StrokeThickness="3"
+                                Title="1SD" 
+                                Values="{Binding PlusOneSDValues2}"
+                                Stroke="Green" 
+                                Fill="#FFC4EEB4"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-Title="Mean" 
-StrokeThickness="3"
-Values="{Binding MeanValues2}"
-Stroke="Green"
-PointGeometry="{x:Null}"
-DataLabels="False" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
+                                Title="Mean" 
+                                StrokeThickness="3"
+                                Values="{Binding MeanValues2}"
+                                Stroke="Green"
+                                PointGeometry="{x:Null}"
+                                DataLabels="False" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-StrokeThickness="3"
-Title="-1SD" 
-Values="{Binding MinusOneSDValues2}"
-Stroke="Green" 
-Fill="White"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="-1SD" 
+                                Values="{Binding MinusOneSDValues2}"
+                                Stroke="Green" 
+                                Fill="White"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="-2SD" 
-StrokeThickness="3"
-Values="{Binding MinusTwoSDValues2}"
-Stroke="Orange"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-2SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusTwoSDValues2}"
+                                Stroke="Orange"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="-3SD" 
-StrokeThickness="3"
-Values="{Binding MinusThreeSDValues2}"
-Stroke="Red"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusThreeSDValues2}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries
-Title="result"
-StrokeThickness="4" 
-Stroke="#1C8FC5" 
-Fill="Transparent"
-LineSmoothness="0" 
-PointGeometrySize="15" 
-PointForeground="#222E31"
-Values="{Binding ChartValues2}">
+                                Title="result"
+                                StrokeThickness="4" 
+                                Stroke="#1C8FC5" 
+                                Fill="Transparent"
+                                LineSmoothness="0" 
+                                PointGeometrySize="15" 
+                                PointForeground="#222E31"
+                                Values="{Binding ChartValues2}">
                             </lvc:LineSeries>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
@@ -345,86 +359,86 @@ Values="{Binding ChartValues2}">
 
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <lvc:CartesianChart
-                            x:Name="chart3" Width="{Binding totalWidth3}"
-                            HorizontalAlignment="Left"
-           Visibility="{Binding Visibility3}">
+                        x:Name="chart3" Width="{Binding totalWidth3}"
+                        HorizontalAlignment="Left"
+                        Visibility="{Binding Visibility3}">
                         <lvc:CartesianChart.Series>
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="3SD" 
-StrokeThickness="3"
-Values="{Binding PlusThreeSDValues3}"
-Stroke="Red"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding PlusThreeSDValues3}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-StrokeThickness="3"
-Title="+2SD" 
-Values="{Binding PlusTwoSDValues3}" 
-Stroke="Orange" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="+2SD" 
+                                Values="{Binding PlusTwoSDValues3}" 
+                                Stroke="Orange" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}" 
-StrokeThickness="3"
-Title="1SD" 
-Values="{Binding PlusOneSDValues3}"
-Stroke="Green" 
-Fill="#FFC4EEB4"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}" 
+                                StrokeThickness="3"
+                                Title="1SD" 
+                                Values="{Binding PlusOneSDValues3}"
+                                Stroke="Green" 
+                                Fill="#FFC4EEB4"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-Title="Mean" 
-StrokeThickness="3"
-Values="{Binding MeanValues3}"
-Stroke="Green"
-PointGeometry="{x:Null}"
-DataLabels="False" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
+                                Title="Mean" 
+                                StrokeThickness="3"
+                                Values="{Binding MeanValues3}"
+                                Stroke="Green"
+                                PointGeometry="{x:Null}"
+                                DataLabels="False" 
+                                Fill="Transparent"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-StrokeThickness="3"
-Title="-1SD" 
-Values="{Binding MinusOneSDValues3}"
-Stroke="Green" 
-Fill="White"
-IsHitTestVisible="False"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                StrokeThickness="3"
+                                Title="-1SD" 
+                                Values="{Binding MinusOneSDValues3}"
+                                Stroke="Green" 
+                                Fill="White"
+                                IsHitTestVisible="False"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="-2SD" 
-StrokeThickness="3"
-Values="{Binding MinusTwoSDValues3}"
-Stroke="Orange"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-2SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusTwoSDValues3}"
+                                Stroke="Orange"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="-3SD" 
-StrokeThickness="3"
-Values="{Binding MinusThreeSDValues3}"
-Stroke="Red"
-Fill="Transparent"/>
+                                DataLabels="False"
+                                PointGeometry="{x:Null}"
+                                Title="-3SD" 
+                                StrokeThickness="3"
+                                Values="{Binding MinusThreeSDValues3}"
+                                Stroke="Red"
+                                Fill="Transparent"/>
 
                             <lvc:LineSeries
-Title="result"
-StrokeThickness="4" 
-Stroke="#1C8FC5" 
-Fill="Transparent"
-LineSmoothness="0" 
-PointGeometrySize="15" 
-PointForeground="#222E31"
-Values="{Binding ChartValues3}">
+                                Title="result"
+                                StrokeThickness="4" 
+                                Stroke="#1C8FC5" 
+                                Fill="Transparent"
+                                LineSmoothness="0" 
+                                PointGeometrySize="15" 
+                                PointForeground="#222E31"
+                                Values="{Binding ChartValues3}">
                             </lvc:LineSeries>
                         </lvc:CartesianChart.Series>
                         <lvc:CartesianChart.AxisX>
@@ -444,8 +458,8 @@ Values="{Binding ChartValues3}">
                             <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator 
-                          StrokeThickness="0.5" 
-                           Step="1">
+                                        StrokeThickness="0.5" 
+                                        Step="1">
                                         <lvc:Separator.Stroke>
                                             <SolidColorBrush Color="#FF151F23">
                                             </SolidColorBrush>

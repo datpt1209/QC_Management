@@ -59,6 +59,7 @@ namespace QC_Management
             rds.Value = reportSource;
             reportViewer.LocalReport.DataSources.Clear();
             reportViewer.LocalReport.DataSources.Add(rds);
+            reportViewer.SetDisplayMode(DisplayMode.PrintLayout);
             reportViewer.RefreshReport();
         }
 
