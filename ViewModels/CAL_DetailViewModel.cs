@@ -104,9 +104,6 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _isCalEnble, value);
         }
 
-        private string _lot;
-  
-
         private CalDetail _selectedItem;
         public CalDetail SelectedItem
         {

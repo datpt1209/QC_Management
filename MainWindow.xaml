@@ -175,10 +175,10 @@
 
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="PencilBoxMultiple" Margin="5,0,0,0" Height="30" Width="40"/>
-                            <TextBlock Text="Nhập kết quả QC"  Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Nhập kết quả"  Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="tt_input" Content="Input QC Result" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="tt_input" Content="Nhập kết quả" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
                     
@@ -194,10 +194,10 @@
 
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="CardSearchOutline" Margin="5,0,0,0" Height="30" Width="40"/>
-                            <TextBlock Text="Xem kết quả QC"  Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Xem kết quả"  Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="ViewReuslt" Content="View QC Result" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="ViewReuslt" Content="Xem kết quả" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
 
@@ -217,10 +217,10 @@
                         
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="AlphaQBox" Height="30" Width="40" Margin="5,0,0,0"/>
-                            <TextBlock Text="Thông tin QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Thông tin" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="tt_qcInfor" Content="QC Information" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="tt_qcInfor" Content="Thông tin QC" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
 
@@ -243,7 +243,7 @@
                             <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="tt_range" Content="Range" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="tt_range" Content="Range QC" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
                     
@@ -264,10 +264,10 @@
 
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="AlphaCBox" Height="30" Width="40" Margin="5,0,0,0"/>
-                            <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Thông tin Cal" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="Cal_range" Content="Range" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="Cal_range" Content="Thông tin Cal" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
             
@@ -287,10 +287,10 @@
 
                         <StackPanel Orientation="Horizontal" Width="170">
                             <materialDesign:PackIcon Kind="AlphaCBoxOutline" Height="30" Width="40" Margin="5,0,0,0"/>
-                            <TextBlock Text="Range QC" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
+                            <TextBlock Text="Range CAL" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
                         </StackPanel>
                         <ListViewItem.ToolTip>
-                            <ToolTip x:Name="Cal_detail" Content="Range" Style="{StaticResource tt_style}"/>
+                            <ToolTip x:Name="Cal_detail" Content="Range CAL" Style="{StaticResource tt_style}"/>
                         </ListViewItem.ToolTip>
                     </ListViewItem>
 

@@ -31,7 +31,6 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Test> _TestList;
         private ObservableCollection<string> _Dates3;
         private ObservableCollection<string> _Dates1;
-        private ObservableCollection<string> _Dates;
         private ObservableCollection<string> _Dates2;
         private Visibility _Visibility1;
         private Visibility _Visibility2;
@@ -64,10 +63,8 @@ namespace QC_Management.ViewModels
         private float _totalWidth1;
         private float _totalWidth2;
         private float _totalWidth3;
-        private string _DisplayName;
         private DateTime _StartDate = DateTime.Now.AddDays(-14);
         private DateTime _EndDate = DateTime.Now;
-        private string _LOT;
         private bool _isCheck;
         private Test _SelectedTest;
         private Device _SelectedDevice;
@@ -248,7 +245,7 @@ namespace QC_Management.ViewModels
             {
                 return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
 
                 if (SelectedDevice != null)
@@ -258,26 +255,21 @@ namespace QC_Management.ViewModels
                         .Where(s => s.IdDevice == SelectedDevice.Id)
                         .Select(s => s.IdTestNavigation)
                         .OrderBy(s => s.Index));
-
-                    //// Check if the new list is different from the current one or if the SelectedTest is not in the new list
-                    //if (!TestList.SequenceEqual(newTestList) || !newTestList.Contains(SelectedTest))
-                    //{
-                    //    TestList = newTestList;
-                    //    OnPropertyChanged(nameof(TestList));
-
-                    //    // Set SelectedTest to the first test in the updated list or null if the list is empty
-                    //    //SelectedTest = TestList.FirstOrDefault();
-                    //}
-                    //else
-                    //{
-                    //    // Force refresh of SelectedTest even if the list hasn't changed
-                    //    var tempTest = SelectedTest;
-                    //    SelectedTest = null;
-                    //    OnPropertyChanged(nameof(SelectedTest));
-                    //    SelectedTest = tempTest;
-                    //}
-
-                    //OnPropertyChanged(nameof(SelectedTest));
+                }
+                if(SelectedTest != null)
+                {
+                    await UpdateLissResultAsync();
+                    if (SelectedTest.TestType == 2)
+                    {
+                        await ViewChart(List);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Xét nghiệm định tính tạm thời chưa có Biều đồ Levey-Jenning. Xin cảm ơn!");
+                        Visibility1 = Visibility.Collapsed;
+                        Visibility2 = Visibility.Collapsed;
+                        Visibility3 = Visibility.Collapsed;
+                    }
                 }
             });
 
@@ -405,18 +397,6 @@ namespace QC_Management.ViewModels
                 }
             };
         }
-
-        //private void OnScrollViewerLoaded(ScrollViewer scrollViewer)
-        //{
-           
-        //    if (scrollViewer != null)
-        //    {
-        //        MessageBox.Show("Loaded event has been called!");
-
-        //        scrollViewer.ScrollToHorizontalOffset(100);
-        //    }
-        //}
-
         private async Task ViewChart(ObservableCollection<Result> results)
         {
             Visibility1 = Visibility.Collapsed;

@@ -82,8 +82,8 @@ namespace QC_Management.ViewModels
         public ICommand QCTypeSelectionChangedCommand { get; set; }
         public ICommand TestSelectionChangedCommand { get; set; }
 
-        private double _meanNSX;
-        public double MeanNSX
+        private double? _meanNSX;
+        public double? MeanNSX
         {
             get => _meanNSX;
             set => SetProperty(ref _meanNSX, value);
@@ -96,15 +96,15 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _selectedType, value);
         }
 
-        private double _sdNSX;
-        public double SDNSX
+        private double? _sdNSX;
+        public double? SDNSX
         {
             get => _sdNSX;
             set => SetProperty(ref _sdNSX, value);
         }
 
-        private double _meanPXN;
-        public double MeanPXN
+        private double? _meanPXN;
+        public double? MeanPXN
         {
             get => _meanPXN;
             set => SetProperty(ref _meanPXN, value);
@@ -130,15 +130,15 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _quantativeVisibility, value);
         }
 
-        private double _curMean;
-        public double CurMean
+        private double? _curMean;
+        public double? CurMean
         {
             get => _curMean;
             set => SetProperty(ref _curMean, value);
         }
 
-        private double _curSd;
-        public double CurSd
+        private double? _curSd;
+        public double? CurSd
         {
             get => _curSd;
             set => SetProperty(ref _curSd, value);
@@ -151,8 +151,8 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _isChecked, value);
         }
 
-        private double _sdPXN;
-        public double SdPXN
+        private double? _sdPXN;
+        public double? SdPXN
         {
             get => _sdPXN;
             set => SetProperty(ref _sdPXN, value);
@@ -323,7 +323,6 @@ namespace QC_Management.ViewModels
                 SelectedItem.Lot = LOT;
                 SelectedItem.Status = IsChecked;
                 SelectedItem.QualitativeMean = QualitativeMean;
- 
             }
             else
             {
@@ -345,9 +344,44 @@ namespace QC_Management.ViewModels
             }
             try
             {
+                // Lưu thay đổi cho QC_Detail
                 DataProvider.Ins.DB.SaveChanges();
+
+                // Tìm tất cả các Result liên quan đến QC_Detail này
+                var relatedResults = DataProvider.Ins.DB.Results
+                    .Where(r => r.IdControlDetail == SelectedItem.Id)
+                    .ToList();
+
+                // Cập nhật trạng thái isOutRange cho từng Result
+                foreach (var result in relatedResults)
+                {
+                    if (SelectedItem.IdTestNavigation.TestType == 1) // Định tính
+                    {
+                        // Kiểm tra giá trị QualitativeResult
+                        result.IsOutRange = !SelectedItem.IsQualitativeResultAcceptable(result.QualitativeResult);
+                    }
+                    else if (result.Result1.HasValue) // Định lượng
+                    {
+                        // Kiểm tra giá trị Result1 so với ngưỡng MeanNsx và SdNsx
+                        var lowerBoundNSX = SelectedItem.MeanNsx - SelectedItem.SdNsx;
+                        var UpperBoundNSX = SelectedItem.MeanNsx + SelectedItem.SdNsx;
+
+                        result.IsOutRangeNSX = result.Result1 < lowerBoundNSX || result.Result1 > UpperBoundNSX;
+
+                        // Kiểm tra giá trị Result1 so với ngưỡng MeanNsx và SdNsx
+                        var lowerBound = SelectedItem.MeanApp - SelectedItem.SdApp;
+                        var UpperBound = SelectedItem.MeanApp + SelectedItem.SdApp;
+
+                        result.IsOutRange = result.Result1 < lowerBound || result.Result1 > UpperBound;
+                    }
+                }
+
+                // Lưu thay đổi cho các Result
+                DataProvider.Ins.DB.SaveChanges();
+
                 MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 RefreshLists();
+
             }
             catch (Exception ex)
             {
@@ -428,16 +462,18 @@ namespace QC_Management.ViewModels
             SelectedControlInfo = SelectedItem.IdControlInfoNavigation;
             SelectedLevel = SelectedItem.IdLevelNavigation;
             SelectedTest = SelectedItem.IdTestNavigation;
-            MeanNSX = (double)SelectedItem.MeanNsx;
-            SDNSX = (double)SelectedItem.SdNsx;
-            MeanPXN = (double)SelectedItem.MeanApp;
-            SdPXN = (double)SelectedItem.SdApp;
+            MeanNSX = SelectedItem.MeanNsx;
+            SDNSX = SelectedItem.SdNsx;
+            MeanPXN = SelectedItem.MeanApp;
+            SdPXN = SelectedItem.SdApp;
             SelectedDevice = SelectedItem.IdDeviceNavigation;
             LOT = SelectedItem.Lot;
             IsChecked = (bool)SelectedItem.Status;
-            CurMean = (double)SelectedItem.CurMean;
-            CurSd = (double)SelectedItem.CurSd;
+            CurMean = SelectedItem.CurMean;
+            CurSd = SelectedItem.CurSd;
             QualitativeMean = SelectedItem.QualitativeMean;
+
+            
         }
 
         private void LoadNew()

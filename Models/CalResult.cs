@@ -4,7 +4,7 @@ using QC_Management.Models;
 
 namespace QC_Management;
 
-public partial class CalResult
+public partial class CalResult:BaseViewModel
 {
     public int Id { get; set; }
 
@@ -20,11 +20,31 @@ public partial class CalResult
 
     public int? IndexCal { get; set; }
 
-    public double Result { get; set; }
+    private bool _isOutOfRange;
+    public bool isOutOfRange
+    {
+        get => _isOutOfRange;
 
+        set
+        {
+            _isOutOfRange = value;
+            OnPropertyChanged();
+        }
+    }
+
+    private double? _Result;
+    public double? Result
+    {
+        get => _Result;
+        set
+        {
+            _Result = value;
+        }
+    }
     public int? IdCalDetail { get; set; }
 
     public int? IdUser { get; set; }
+
 
     public string? Comment { get; set; } = null!;
 
@@ -35,4 +55,6 @@ public partial class CalResult
     public virtual Test IdTestNavigation { get; set; } = null!;
 
     public virtual User? IdUserNavigation { get; set; }
+
+
 }

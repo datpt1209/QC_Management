@@ -37,13 +37,21 @@
             <!--các element binding từ selected item-->
             <materialDesign:Card Grid.Row="0" Margin="5">
                 <WrapPanel Margin="5">
-
+                    <ComboBox 
+                        Margin="5"
+                        ItemsSource="{Binding ResultTypes}"
+                        SelectedItem="{Binding SelectedResultType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:HintAssist.Hint="Loại kết quả"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        Width="150" Height="50"
+                         Background="{Binding SelectedResultType, Converter={StaticResource SelectedTypeToBackgroundConverter}}"/>
+                    
                     <DatePicker          
                          Margin="5" 
-                            SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"                             
-                            materialDesign:HintAssist.Hint="Ngày thực hiện"                              
-                            materialDesign:TextFieldAssist.HasClearButton="True" 
-                            Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="140" Height="50">
+                         SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"                             
+                         materialDesign:HintAssist.Hint="Ngày thực hiện"                              
+                         materialDesign:TextFieldAssist.HasClearButton="True" 
+                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="140" Height="50">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectedDateChanged">
@@ -52,6 +60,7 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </DatePicker>
+
                     <ComboBox 
                         Margin="5"
                         ItemsSource="{Binding DeviceList}"
@@ -62,7 +71,7 @@
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         IsEditable="True" VerticalAlignment="Top" 
-                        Width="189" Height="50">
+                        Width="189" Height="50" >
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -81,7 +90,9 @@
                         materialDesign:HintAssist.Hint="Level"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="189" Height="50">
+                        IsEditable="True" VerticalAlignment="Top"
+                        Width="189" Height="50"
+                        Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}">
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
@@ -100,7 +111,10 @@
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="50"/>
+                        IsEditable="True" VerticalAlignment="Top" Width="100" Height="50"
+                       Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}">
+                        
+                    </ComboBox>
 
                 </WrapPanel>
             </materialDesign:Card>
@@ -123,8 +137,10 @@
                     </materialDesign:Card>
                 </Grid>
             </Grid>
-
-            <materialDesign:Card Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+            <materialDesign:Card 
+                   Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}"
+ 
+                 Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
                 <DataGrid Name="input" ItemsSource="{Binding ResultViewList, Mode=TwoWay}"
                           AutoGenerateColumns="False"
                           IsReadOnly="False"
@@ -193,7 +209,7 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                
+
                         <DataGridTemplateColumn Header="Kết quả" CanUserSort="False">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -217,32 +233,6 @@
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
-                        <!--<DataGridTemplateColumn Header="Định tính" CanUserSort="False">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <TextBox Text="{Binding QualitativeResult, UpdateSourceTrigger=PropertyChanged}">
-                                        <TextBox.Style>
-                                            <Style TargetType="TextBox">
-                                                <Setter Property="Foreground" Value="Green" />
-                                                <Setter Property="FontSize" Value="14"/>
-                                                <Setter Property="FontWeight" Value="Bold"/>
-                                                <Setter Property="IsEnabled" Value="false"/>
-                                                <Style.Triggers>
-                                                    <DataTrigger Binding="{Binding ResultType}" Value="1">
-                                                        <Setter Property="IsEnabled" Value="True"/>
-                                                    </DataTrigger>
-                                                    <DataTrigger Binding="{Binding IsOutRange}" Value="True">
-                                                        <Setter Property="Foreground" Value="Red" />
-                                                        <Setter Property="Background" Value="Yellow" />
-                                                        --><!--Thay đổi màu nền nếu ngoài 3 SD--><!--
-                                                    </DataTrigger>
-                                                </Style.Triggers>
-                                            </Style>
-                                        </TextBox.Style>
-                                    </TextBox>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>-->
                         <DataGridTextColumn Header="Người thực hiện" IsReadOnly="True" Binding="{Binding IdUserNavigation.DisplayName,UpdateSourceTrigger=PropertyChanged}"/>
                         <DataGridTextColumn Header="Ngày thực hiện" IsReadOnly="True" Binding="{Binding DateRun.Date,UpdateSourceTrigger=PropertyChanged, StringFormat=dd/MM/yyyy}"/>
                         <DataGridTextColumn Header="Giờ thực hiện" IsReadOnly="True" Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
@@ -253,11 +243,103 @@
                                 <DataTemplate>
                                     <Button 
                                         Content="Delete" 
-                                        Command="{Binding DataContext.DeleteOneTestCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                        Command="{Binding DataContext.DeleteOneQCResultCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
                                         <Button.Template>
                                             <ControlTemplate TargetType="Button">
                                                 <TextBlock TextDecorations="Underline">
                                                     <ContentPresenter />
+                                                </TextBlock>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                        <Button.Style>
+                                            <Style TargetType="Button">
+                                                <Setter Property="Foreground" Value="Blue" />
+                                                <Style.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="true">
+                                                        <Setter Property="Foreground" Value="Red" />
+                                                    </Trigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </Button.Style>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </materialDesign:Card>
+
+            <materialDesign:Card 
+                   Visibility="{Binding Visibility2, UpdateSourceTrigger=PropertyChanged}"
+ 
+                            Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+                <DataGrid ItemsSource="{Binding CalList, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="False"
+                          SelectedItem="{Binding SelectedCalResult, Mode=OneWayToSource}"
+                          CanUserAddRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Xét nghiệm" 
+                                            Binding="{Binding IdTestNavigation.Name ,UpdateSourceTrigger=PropertyChanged}"
+                                            IsReadOnly="True" />
+                        <DataGridTextColumn Header="LOT QC" 
+                                            Binding="{Binding IdCalDetailNavigation.IdCalInforNavigation.CalLot,UpdateSourceTrigger=PropertyChanged }" 
+                                            IsReadOnly="True" />
+
+                        <DataGridTextColumn Header="Level" 
+                                            Binding="{Binding Level,UpdateSourceTrigger=PropertyChanged }" 
+                                            IsReadOnly="True" />
+
+                        <DataGridTextColumn Header="Min" CanUserSort="False"
+                                            Binding="{Binding IdCalDetailNavigation.MinValue,UpdateSourceTrigger=PropertyChanged }" 
+                                            IsReadOnly="True" />
+
+                        <DataGridTextColumn Header="Max" CanUserSort="False"
+                                            Binding="{Binding IdCalDetailNavigation.MaxValue,UpdateSourceTrigger=PropertyChanged }" 
+                                            IsReadOnly="True" />
+
+                        <DataGridTextColumn Header="Kết quả" CanUserSort="False" 
+                            IsReadOnly="False" Binding="{Binding Result, Converter= {StaticResource TextCoverter}}">
+                            <DataGridTextColumn.ElementStyle>
+                                <Style TargetType="{x:Type TextBlock}">
+                                    <Setter Property="Foreground" Value="Green" />
+                                    <Setter Property="FontWeight" Value="Bold" />
+                                    <Setter Property="FontSize" Value="14" />
+                                    <Setter Property="HorizontalAlignment" Value="Center" />
+                                    <!--Màu mặc định-->
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                            <Setter Property="Foreground" Value="Red" />
+                                            <Setter Property="Background" Value="Yellow" />
+                                            <!--Thay đổi màu nền nếu ngoài 3 SD-->
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </DataGridTextColumn.ElementStyle>
+
+                        </DataGridTextColumn>
+                        <DataGridTextColumn Header="Người thực hiện" 
+                                            IsReadOnly="True" 
+                                            Binding="{Binding IdUserNavigation.DisplayName,UpdateSourceTrigger=PropertyChanged}"/>
+                        <DataGridTextColumn Header="Ngày thực hiện" 
+                                            IsReadOnly="True" 
+                                            Binding="{Binding DateRun.Date,UpdateSourceTrigger=PropertyChanged, StringFormat=dd/MM/yyyy}"/>
+                        <DataGridTextColumn Header="Giờ thực hiện" 
+                                            IsReadOnly="True" 
+                                            Binding="{Binding Time, Converter={StaticResource TimeSpanConverter}}"/>
+                        <DataGridTextColumn Header="Ghi chú"  
+                                            Binding="{Binding Comment,UpdateSourceTrigger=PropertyChanged}"/>
+
+                        <DataGridTemplateColumn Header="Actions">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button 
+                                        Content="Delete" 
+                                        Command="{Binding DataContext.DeleteOneCalResultCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <TextBlock TextDecorations="Underline">
+                                             <ContentPresenter />
                                                 </TextBlock>
                                             </ControlTemplate>
                                         </Button.Template>

@@ -206,8 +206,9 @@ namespace QC_Management.ViewModels
                             IdCalDetail = item.IdCalDetailNavigation.Id,
                             IdCalDetailNavigation = item.IdCalDetailNavigation,
                             Comment = item.Comment,
-                            Result = (double)item.Result
-                            
+                            Result = (double)item.Result,
+                            isOutOfRange = item.isOutOfRange,
+
                         };
                         results.Add(result);
                     }

@@ -59,5 +59,16 @@ namespace QC_Management
                 tt_user_role.Visibility = Visibility.Visible;
             }
         }
+
+        protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+        {
+            base.OnClosing(e);
+
+            MessageBoxResult result = MessageBox.Show("Do you really want to close the application?", "Confirmation", MessageBoxButton.OKCancel, MessageBoxImage.Question);
+            if (result != MessageBoxResult.OK)
+            {
+                e.Cancel = true;
+            }
+        }
     }
 }

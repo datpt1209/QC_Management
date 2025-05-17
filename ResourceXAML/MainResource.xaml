@@ -25,7 +25,6 @@
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
     <viewmodel:CAL_DetailViewModel x:Key="CalDetailVM"></viewmodel:CAL_DetailViewModel>
-    
     <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
@@ -106,5 +105,7 @@
     <local1:DataGridColorConverter x:Key="DataGridConverter" />
     <local1:BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     <local1:TestTypeToResultConverter x:Key="TestTypeToResultConverter" />
+    <local1:ResultTypeToVisibilityConverter x:Key="ResultTypeToVisibilityConverter" />
+    <local1:SelectedTypeToBackgroundConverter x:Key="SelectedTypeToBackgroundConverter"/>
 
 </ResourceDictionary>
