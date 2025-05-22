@@ -69,7 +69,6 @@ namespace QC_Management.ViewModels
         private Test _SelectedTest;
         private Device _SelectedDevice;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
-      
         public Func<double, string> YAxisLabelFormatter
         {
             get { return _yAxisLabelFormatter; }
@@ -79,8 +78,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged(nameof(YAxisLabelFormatter));
             }
         }
-
-      
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
         public ObservableCollection<string> Dates3 { get => _Dates3; set { _Dates3 = value; OnPropertyChanged(); } }
@@ -119,13 +116,12 @@ namespace QC_Management.ViewModels
         public ChartValues<double> PlusThreeSDValues1 { get => _PlusThreeSDValues1; set { _PlusThreeSDValues1 = value; OnPropertyChanged(); } }
         public ChartValues<double> PlusThreeSDValues2 { get => _PlusThreeSDValues2; set { _PlusThreeSDValues2 = value; OnPropertyChanged(); } }
         public ChartValues<double> PlusThreeSDValues3 { get => _PlusThreeSDValues3; set { _PlusThreeSDValues3 = value; OnPropertyChanged(); } }
-       public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
+        public ChartValues<double> MinusThreeSDValues3 { get => _MinusThreeSDValues3; set { _MinusThreeSDValues3 = value; OnPropertyChanged(); } }
         public ChartValues<double> MinusThreeSDValues2 { get => _MinusThreeSDValues2; set { _MinusThreeSDValues2 = value; OnPropertyChanged(); } }
-         public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
+        public ChartValues<double> MinusThreeSDValues1 { get => _MinusThreeSDValues1; set { _MinusThreeSDValues1 = value; OnPropertyChanged(); } }
         public float totalWidth1 { get => _totalWidth1; set { _totalWidth1 = value; OnPropertyChanged(); } }
         public float totalWidth2 { get => _totalWidth2; set { _totalWidth2 = value; OnPropertyChanged(); } }
         public float totalWidth3 { get => _totalWidth3; set { _totalWidth3 = value; OnPropertyChanged(); } }
-
         public ICommand PrintCommand { get; set; }
         public ICommand PrintCalibCommand { get; set; }
         public ICommand PrintChartCommand { get; set; }
@@ -133,10 +129,30 @@ namespace QC_Management.ViewModels
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand TestSelectionChangedCommand { get; set; }
         public ICommand appRangeCommand { get; set; }
-
         public ICommand DateSelectionChangedCommand { get; set; }
         public DateTime StartDate { get => _StartDate; set { _StartDate = value; OnPropertyChanged(); } }
         public DateTime EndDate { get => _EndDate; set { _EndDate = value; OnPropertyChanged(); } }
+
+        public ObservableCollection<string> FilterOptions { get; set; } = new()
+         {
+             "Nhà sản xuât",
+             "Đang sử dụng",
+             "Thống kê"
+         };
+
+        private string _SelectedFilterOptions;
+        public string SelectedFilterOptions
+        {
+            get => _SelectedFilterOptions;
+            set
+            {
+                _SelectedFilterOptions = value;
+                OnPropertyChanged();
+            }
+        }
+
+        public ICommand SeenChartTypeSelectionChangedCommand { get; set; }
+
         public bool isCheck { get => _isCheck; set { _isCheck = value; OnPropertyChanged(); } }
         public Test SelectedTest
         {
@@ -159,6 +175,7 @@ namespace QC_Management.ViewModels
         public HomeViewModel_V2()
         {
             _dbContext  = new QcManagmentContext();
+            SelectedFilterOptions = FilterOptions[1];
             Visibility1 = Visibility.Collapsed;
             Visibility2 = Visibility.Collapsed;
             Visibility3 = Visibility.Collapsed;
@@ -195,10 +212,20 @@ namespace QC_Management.ViewModels
             }, (p) =>
             {
                 var results = List.ToList();
-                ReportView rp = new ReportView(results, isCheck);
+                ReportView rp = new ReportView(results, SelectedFilterOptions);
                 rp.ShowDialog();
 
             });
+
+            SeenChartTypeSelectionChangedCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+
+            }, async (p) =>
+            {
+                await ViewChart(List);
+            });
+
 
             PrintCalibCommand = new RelayCommand<object>((p) =>
             {
@@ -236,7 +263,7 @@ namespace QC_Management.ViewModels
             {
                 // Thiết lập dữ liệu cho báo cáo
                 var results = List.ToList();
-                ChartReportView rp = new ChartReportView(results, isCheck);
+                ChartReportView rp = new ChartReportView(results, SelectedFilterOptions);
                 rp.ShowDialog();
 
             });
@@ -328,7 +355,6 @@ namespace QC_Management.ViewModels
                 }
 
             });
-
         }
 
         private async Task UpdateLissResultAsync()
@@ -353,6 +379,29 @@ namespace QC_Management.ViewModels
                     .ThenBy(s => s.DateRun.Day)
                     .ThenBy(s => s.IndexQc)
                     .ToListAsync());
+
+
+
+                // Tính lại mean và sd cho từng nhóm IdControlDetail
+                var controlDetailGroups = results
+                    .Where(r => r.IdControlDetailNavigation != null && r.Result1.HasValue)
+                    .GroupBy(r => r.IdControlDetailNavigation.Id);
+
+                foreach (var group in controlDetailGroups)
+                {
+                    var valueList = group.Select(r => r.Result1.Value).ToList();
+                    if (valueList.Count == 0) continue;
+
+                    double mean = Math.Round(valueList.Average(), 2);
+                    double sd = Math.Round(Math.Sqrt(valueList.Sum(v => Math.Pow(v - mean, 2)) / valueList.Count), 2);
+
+                    // Gán lại cho tất cả các Result trong nhóm
+                    foreach (var r in group)
+                    {
+                        r.IdControlDetailNavigation.MeanApp = mean;
+                        r.IdControlDetailNavigation.SdApp = sd;
+                    }
+                }
                 List = results;
             }
         }
@@ -365,7 +414,7 @@ namespace QC_Management.ViewModels
                 DeviceList = new ObservableCollection<Device>(_dbContext.Devices);
                 if(SelectedDevice != null)
                 {
-                       TestList = new ObservableCollection<Test>(_dbContext.DeviceTests
+                    TestList = new ObservableCollection<Test>(_dbContext.DeviceTests
                         .Where(s => s.IdDevice == SelectedDevice.Id)
                         .Select(s => s.IdTestNavigation)
                         .OrderBy(s => s.Index));
@@ -415,10 +464,11 @@ namespace QC_Management.ViewModels
                               
                 if (!results.Any())
                 {
-                   
                     MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+
+         
 
                 var levelList = results.GroupBy(s => s.IdLevel).ToList();
 
@@ -495,7 +545,7 @@ namespace QC_Management.ViewModels
                     }
                 });
 
-                await LoadChartAsync(isCheck);
+                await LoadChartAsync(SelectedFilterOptions);
             }
             catch (Exception ex)
             {
@@ -527,7 +577,7 @@ namespace QC_Management.ViewModels
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }
 
-       
+
         //private double CalculateMean(ObservableCollection<double> values)
         //{
         //    double sum = 0;
@@ -549,29 +599,42 @@ namespace QC_Management.ViewModels
         //    return Math.Sqrt(variance);
         //}
 
-        private async Task LoadChartAsync(bool isCheck)
+        private async Task LoadChartAsync(string fillter)
         {
-            var mapper1 = Mappers.Xy<Result>()
+            var mapperCur = Mappers.Xy<Result>()
                   .X((value, index) => index) // lets use the position of the item as X
                   .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd), 2))
-                  .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd > 2 || (value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd < -2) ? Brushes.Red : null)
+                  .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd > 2 
+                  || (value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd < -2) ? Brushes.Red : null)
                   .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
 
-            var mapper2 = Mappers.Xy<Result>()
+            var mapperApp = Mappers.Xy<Result>()
                .X((value, index) => index) // lets use the position of the item as X
                .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp), 2))
-               .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp > 2 || (value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp < -2) ? Brushes.Red : null)
+               .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp > 2 
+               || (value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp < -2) ? Brushes.Red : null)
                .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
+
+            var mapperNSX = Mappers.Xy<Result>()
+                 .X((value, index) => index) // lets use the position of the item as X
+                 .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx), 2))
+                 .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx > 2 
+                 || (value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx < -2) ? Brushes.Red : null)
+                 .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
 
             await Task.Run(() =>
             {
-                if (isCheck == false)
+                if (fillter == FilterOptions[1])
                 {
-                    Charting.For<Result>(mapper1, SeriesOrientation.Horizontal);
+                    Charting.For<Result>(mapperCur, SeriesOrientation.Horizontal);
+                }
+                else if (fillter == FilterOptions[0])
+                {
+                    Charting.For<Result>(mapperNSX, SeriesOrientation.Horizontal);
                 }
                 else
                 {
-                    Charting.For<Result>(mapper2, SeriesOrientation.Horizontal);
+                    Charting.For<Result>(mapperApp, SeriesOrientation.Horizontal);
                 }
             });
         }

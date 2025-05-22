@@ -366,6 +366,8 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnIsOutRange;
             
+            private global::System.Data.DataColumn columnId;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtResultDataTable() {
@@ -609,6 +611,14 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IdColumn {
+                get {
+                    return this.columnId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -670,7 +680,8 @@ namespace QC_Management {
                         string QualitativeResult, 
                         string ResultType, 
                         string QualitativeRange, 
-                        string IsOutRange) {
+                        string IsOutRange, 
+                        string Id) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -698,7 +709,8 @@ namespace QC_Management {
                         QualitativeResult,
                         ResultType,
                         QualitativeRange,
-                        IsOutRange};
+                        IsOutRange,
+                        Id};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -747,6 +759,7 @@ namespace QC_Management {
                 this.columnResultType = base.Columns["ResultType"];
                 this.columnQualitativeRange = base.Columns["QualitativeRange"];
                 this.columnIsOutRange = base.Columns["IsOutRange"];
+                this.columnId = base.Columns["Id"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -804,6 +817,8 @@ namespace QC_Management {
                 base.Columns.Add(this.columnQualitativeRange);
                 this.columnIsOutRange = new global::System.Data.DataColumn("IsOutRange", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsOutRange);
+                this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnId);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1791,6 +1806,22 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Id {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Id\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -2099,6 +2130,18 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetIsOutRangeNull() {
                 this[this.tabledtResult.IsOutRangeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIdNull() {
+                return this.IsNull(this.tabledtResult.IdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIdNull() {
+                this[this.tabledtResult.IdColumn] = global::System.Convert.DBNull;
             }
         }
         

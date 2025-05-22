@@ -16,7 +16,7 @@
              Background="{DynamicResource MaterialDesignPaper}"
              FontFamily="{DynamicResource MaterialDesignFont}"
              DataContext="{StaticResource HomeViewVM_V2}"
-             Name="Objectview" d:DesignHeight="600" d:DesignWidth="800">
+             x:Name="HomeView" d:DesignHeight="600" d:DesignWidth="800">
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}">
@@ -83,16 +83,24 @@
                         </i:Interaction.Triggers>
 
                     </DatePicker>
-                    <CheckBox
-                        Command="{Binding appRangeCommand}"
-                        Content="AppRange"
-                        IsChecked="{Binding isCheck}"
-                        Style="{StaticResource MaterialDesignFilterChipOutlineCheckBox}">
-                    </CheckBox>
+                    <ListBox
+                        Margin="5"
+                        VerticalAlignment="Center"
+                        x:Name="RadioButtonGroupChoiceChipAccentOutline"
+                        SelectedItem="{Binding SelectedFilterOptions, UpdateSourceTrigger=PropertyChanged}"
+                        ItemsSource="{Binding FilterOptions}"
+                        SelectionMode="Single"
+                        Style="{StaticResource MaterialDesignChoiceChipPrimaryListBox}">
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding SeenChartTypeSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ListBox>
                     <Button Command="{Binding PrintCommand}" Content="In QC"  Margin="5" Width="100"/>
                     <Button Command="{Binding PrintChartCommand}" Content="In Biểu đồ"  Margin="5" Width="100"/>
                     <Button Command="{Binding PrintCalibCommand}" Content="In Calib"  Margin="5" Width="100"/>
-
                 </WrapPanel>
             </materialDesign:Card>
         </Grid>
@@ -211,8 +219,9 @@
                         </lvc:CartesianChart.AxisX>
 
                         <lvc:CartesianChart.DataTooltip>
-                            <local:CustomersTooltip/>
+                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
                         </lvc:CartesianChart.DataTooltip>
+
 
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
@@ -330,7 +339,7 @@
                         </lvc:CartesianChart.AxisX>
 
                         <lvc:CartesianChart.DataTooltip>
-                            <local:CustomersTooltip/>
+                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
                         </lvc:CartesianChart.DataTooltip>
 
                         <lvc:CartesianChart.AxisY>
@@ -356,7 +365,6 @@
 
         <Grid Grid.Column="1" Grid.Row="3">
             <materialDesign:Card Margin="5,5,5,10">
-
                 <ScrollViewer HorizontalScrollBarVisibility="Auto">
                     <lvc:CartesianChart
                         x:Name="chart3" Width="{Binding totalWidth3}"
@@ -451,9 +459,9 @@
                         </lvc:CartesianChart.AxisX>
 
                         <lvc:CartesianChart.DataTooltip>
-                            <local:CustomersTooltip/>
+                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
                         </lvc:CartesianChart.DataTooltip>
-
+                        
                         <lvc:CartesianChart.AxisY>
                             <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
                                 <lvc:Axis.Separator>

@@ -105,6 +105,26 @@
           <DataField>IsEmptyPoint</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="QualitativeResult">
+          <DataField>QualitativeResult</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="ResultType">
+          <DataField>ResultType</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="QualitativeRange">
+          <DataField>QualitativeRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsOutRange">
+          <DataField>IsOutRange</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="Id">
+          <DataField>Id</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -162,16 +182,17 @@
                 <ChartMember>
                   <Group Name="Chart2_CategoryGroup">
                     <GroupExpressions>
-                      <GroupExpression>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
-                    </GroupExpressions>
-                  </Group>
+					  <GroupExpression>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
+				
+					</GroupExpressions>
+				  </Group>
                   <SortExpressions>
                     <SortExpression>
                       <Value>=Fields!DateRun.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-                  <Label>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
-                </ChartMember>
+					<Label>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
+				</ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>
             <ChartSeriesHierarchy>

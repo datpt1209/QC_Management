@@ -7,6 +7,7 @@
              xmlns:local1="clr-namespace:QC_Management.Models"
              xmlns:local="clr-namespace:QC_Management.Views"
              mc:Ignorable="d" 
+             
              d:DesignHeight="300" d:DesignWidth="300" 
              d:DataContext="{d:DesignInstance local:CustomersTooltip}">
 
@@ -17,41 +18,39 @@
         BorderThickness="2" 
         BorderBrush="#555555"
         CornerRadius="10">
-            <ItemsControl ItemsSource="{Binding FilteredPoints}" Grid.IsSharedSizeScope="True">
+            <ItemsControl ItemsSource="{Binding DisplayPoints, RelativeSource={RelativeSource AncestorType=UserControl}}">
                 <ItemsControl.ItemTemplate>
-                    <DataTemplate DataType="{x:Type wpf:DataPointViewModel}">
+                    <DataTemplate>
                         <Grid Margin="2">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="Auto"/>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0">
-                        <Run Text="LOT: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.Lot}"></Run>
+                                <Run Text="LOT: "/>
+                                <Run Text="{Binding Lot}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="1">
-                        <Run Text="Date: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.DateRun, StringFormat=dd/MM/yyyy}"></Run>
+                                <Run Text="Date: "/>
+                                <Run Text="{Binding DateRun, StringFormat=dd/MM/yyyy}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="2">
-                        <Run Text="Result: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.Result1}"></Run>
+                                <Run Text="Result: "/>
+                                <Run Text="{Binding Result1}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="3">
-                        <Run Text="Mean: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.MeanApp}"></Run>
-                        <Run Text="  -  "></Run>
-                        <Run Text="SD: "></Run>
-                        <Run Text="{Binding ChartPoint.Instance.IdControlDetailNavigation.SdApp}"></Run>
+                                <Run Text="Mean: "/>
+                                <Run Text="{Binding Mean}"/>
+                                <Run Text="  -  "/>
+                                <Run Text="SD: "/>
+                                <Run Text="{Binding SD}"/>
                             </TextBlock>
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
         </Border>
-        
     </Grid>
-    
 </UserControl>
