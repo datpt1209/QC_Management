@@ -15,7 +15,6 @@ namespace QC_Management.ViewModels
 {
     public class ViewResultViewModel : BaseViewModel
     {
-
         private QcManagmentContext _dbContext;
 
         private ObservableCollection<CalResult>? _CalList;
@@ -50,7 +49,6 @@ namespace QC_Management.ViewModels
 
         private Visibility _Visibility2;
         public Visibility Visibility2 { get => _Visibility2; set { _Visibility2 = value; OnPropertyChanged(); } }
-
         public ObservableCollection<string> ResultTypes { get; set; }
         private void UpdateDataGridSource()
         {
@@ -309,7 +307,17 @@ namespace QC_Management.ViewModels
                     foreach (var item in ResultViewList)
                     {
                         var editResult = DataProvider.Ins.DB.Results.Where(s => s.Id == item.Id).FirstOrDefault();
-                        editResult = item;
+                        if (editResult != null)
+                        {
+                            editResult.TempResult = item.TempResult;
+                            editResult.Comment = item.Comment;
+                            editResult.WestgardRule = item.WestgardRule;
+                            editResult.IsExclude = item.IsExclude; // Cập nhật Exclude
+                            editResult.Result1 = item.Result1;
+                            editResult.IsOutRange = item.IsOutRange;
+                            editResult.IsOutRangeNSX = item.IsOutRangeNSX;
+                            editResult.QualitativeResult = item.QualitativeResult;
+                        }
                     }
                     try
                     {

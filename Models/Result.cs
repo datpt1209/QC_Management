@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QC_Management.Models;
 
@@ -7,6 +8,8 @@ public partial class Result : BaseViewModel
 {
     public int Id { get; set; }
 
+    [NotMapped]
+    public double? ZScore { get; set; }
     public int IdTest { get; set; }
     public int? ResultType { get; set; }
 
@@ -99,6 +102,7 @@ public partial class Result : BaseViewModel
             CheckIfOutOfRange();
         }
     }
+    public bool? IsExclude { get; set; } = false; // Default value is false
 
     public virtual ControlInfoDetail? IdControlDetailNavigation { get; set; }
 

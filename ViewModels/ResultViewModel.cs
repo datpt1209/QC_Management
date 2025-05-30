@@ -299,6 +299,7 @@ namespace QC_Management.ViewModels
                         calDetails.Select(cd => new CalibInputViewModel
                         {
                             IdTest = cd.IdTest,
+                            CalDetailId = cd.Id,
                             TestName = cd.IdTestNavigation.Name,
                             Lot = cd.IdCalInforNavigation.CalLot,
                             Level = cd.Level,
@@ -553,6 +554,7 @@ namespace QC_Management.ViewModels
                     var calResult = new CalResult
                     {
                         IdDevice = SelectedDevice.Id,
+                        IdCalDetail = item.CalDetailId,
                         IdTest = item.IdTest,
                         DateRun = SelectedDate,
                         Time = DateTime.Now.TimeOfDay,

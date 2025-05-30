@@ -363,14 +363,14 @@ namespace QC_Management.ViewModels
                     else if (result.Result1.HasValue) // Định lượng
                     {
                         // Kiểm tra giá trị Result1 so với ngưỡng MeanNsx và SdNsx
-                        var lowerBoundNSX = SelectedItem.MeanNsx - SelectedItem.SdNsx;
-                        var UpperBoundNSX = SelectedItem.MeanNsx + SelectedItem.SdNsx;
+                        var lowerBoundNSX = SelectedItem.MeanNsx - 2* SelectedItem.SdNsx;
+                        var UpperBoundNSX = SelectedItem.MeanNsx + 2* SelectedItem.SdNsx;
 
                         result.IsOutRangeNSX = result.Result1 < lowerBoundNSX || result.Result1 > UpperBoundNSX;
 
                         // Kiểm tra giá trị Result1 so với ngưỡng MeanNsx và SdNsx
-                        var lowerBound = SelectedItem.MeanApp - SelectedItem.SdApp;
-                        var UpperBound = SelectedItem.MeanApp + SelectedItem.SdApp;
+                        var lowerBound = SelectedItem.CurMean - 2 * SelectedItem.CurSd;
+                        var UpperBound = SelectedItem.CurMean + 2 * SelectedItem.CurSd;
 
                         result.IsOutRange = result.Result1 < lowerBound || result.Result1 > UpperBound;
                     }

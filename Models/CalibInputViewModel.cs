@@ -11,6 +11,7 @@ public class CalibInputViewModel : BaseViewModel
     public string? TestName { get; set; }
     public string? Lot { get; set; }
     public int? Level { get; set; }
+    public int? CalDetailId { get; set; } = null!; // Thông tin chi tiết của phép đo
     public double? Min { get; set; }
     public double? Max { get; set; }
     public string? Comment { get; set; } = null!;

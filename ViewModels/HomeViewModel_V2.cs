@@ -357,54 +357,87 @@ namespace QC_Management.ViewModels
             });
         }
 
-        private async Task UpdateLissResultAsync()
+       private async Task UpdateLissResultAsync()
+{
+    using (var context = new QcManagmentContext())
+    {
+        var results = new ObservableCollection<Result>(await context.Results
+            .AsNoTracking()
+            .Include(s => s.IdControlDetailNavigation)
+            .Include(s => s.IdUserNavigation)
+            .Include(s => s.IdLevelNavigation)
+            .Include(s => s.IdTestNavigation)
+            .Include(s => s.IdDeviceNavigation)
+            .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
+            .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+            .Where(s => s.IdDevice == SelectedDevice.Id
+                       && s.IdTest == SelectedTest.Id
+                       && s.DateRun >= StartDate
+                       && s.DateRun <= EndDate)
+            .OrderBy(s => s.DateRun.Year)
+            .ThenBy(s => s.DateRun.Month)
+            .ThenBy(s => s.DateRun.Day)
+            .ThenBy(s => s.IndexQc)
+            .ToListAsync());
+
+        // Tính lại mean và sd cho từng nhóm IdControlDetail
+        var controlDetailGroups = results
+            .Where(r => r.IdControlDetailNavigation != null && r.Result1.HasValue)
+            .GroupBy(r => r.IdControlDetailNavigation.Id);
+
+        foreach (var group in controlDetailGroups)
         {
-            using (var context = new QcManagmentContext())
+            var valueList = group.Select(r => r.Result1.Value).ToList();
+            if (valueList.Count == 0) continue;
+
+            double mean = Math.Round(valueList.Average(), 3);
+            double sd = Math.Round(Math.Sqrt(valueList.Sum(v => Math.Pow(v - mean, 2)) / valueList.Count), 3);
+            if (sd == 0) sd = 0.01;
+
+            // Gán lại cho tất cả các Result trong nhóm
+            foreach (var r in group)
             {
-                var results = new ObservableCollection<Result>(await context.Results
-                    .AsNoTracking()
-                    .Include(s => s.IdControlDetailNavigation)
-                    .Include(s => s.IdUserNavigation)
-                    .Include(s => s.IdLevelNavigation)
-                    .Include(s => s.IdTestNavigation)
-                    .Include(s => s.IdDeviceNavigation)
-                    .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
-                    .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
-                    .Where(s => s.IdDevice == SelectedDevice.Id
-                               && s.IdTest == SelectedTest.Id
-                               && s.DateRun >= StartDate
-                               && s.DateRun <= EndDate)
-                    .OrderBy(s => s.DateRun.Year)
-                    .ThenBy(s => s.DateRun.Month)
-                    .ThenBy(s => s.DateRun.Day)
-                    .ThenBy(s => s.IndexQc)
-                    .ToListAsync());
-
-
-
-                // Tính lại mean và sd cho từng nhóm IdControlDetail
-                var controlDetailGroups = results
-                    .Where(r => r.IdControlDetailNavigation != null && r.Result1.HasValue)
-                    .GroupBy(r => r.IdControlDetailNavigation.Id);
-
-                foreach (var group in controlDetailGroups)
-                {
-                    var valueList = group.Select(r => r.Result1.Value).ToList();
-                    if (valueList.Count == 0) continue;
-
-                    double mean = Math.Round(valueList.Average(), 2);
-                    double sd = Math.Round(Math.Sqrt(valueList.Sum(v => Math.Pow(v - mean, 2)) / valueList.Count), 2);
-
-                    // Gán lại cho tất cả các Result trong nhóm
-                    foreach (var r in group)
-                    {
-                        r.IdControlDetailNavigation.MeanApp = mean;
-                        r.IdControlDetailNavigation.SdApp = sd;
-                    }
-                }
-                List = results;
+                r.IdControlDetailNavigation.MeanApp = mean;
+                r.IdControlDetailNavigation.SdApp = sd;
             }
         }
+
+        // Tính ZScore cho từng Result
+        foreach (var r in results)
+        {
+            if (r.IdControlDetailNavigation != null && r.Result1.HasValue)
+            {
+                double? mean = null, sd = null;
+                switch (SelectedFilterOptions)
+                {
+                    case "Nhà sản xuât":
+                        mean = r.IdControlDetailNavigation.MeanNsx;
+                        sd = r.IdControlDetailNavigation.SdNsx;
+                        break;
+                    case "Đang sử dụng":
+                        mean = r.IdControlDetailNavigation.CurMean;
+                        sd = r.IdControlDetailNavigation.CurSd;
+                        break;
+                    case "Thống kê":
+                        mean = r.IdControlDetailNavigation.MeanApp;
+                        sd = r.IdControlDetailNavigation.SdApp;
+                        break;
+                }
+                if (mean.HasValue && sd.HasValue && sd.Value != 0)
+                    r.ZScore = Math.Round((r.Result1.Value - mean.Value) / sd.Value, 2);
+                else
+                    r.ZScore = null;
+            }
+            else
+            {
+                r.ZScore = null;
+            }
+        }
+
+        List = results;
+    }
+}
+
         private async Task LoadNew()
         {
             IsLoading = true;
@@ -545,7 +578,7 @@ namespace QC_Management.ViewModels
                     }
                 });
 
-                await LoadChartAsync(SelectedFilterOptions);
+                await LoadChartAsync();
             }
             catch (Exception ex)
             {
@@ -577,65 +610,23 @@ namespace QC_Management.ViewModels
             return new Tuple<ChartValues<Result>, Visibility, ObservableCollection<string>>(dataPoints, visibility, dates);
         }
 
-
-        //private double CalculateMean(ObservableCollection<double> values)
-        //{
-        //    double sum = 0;
-        //    foreach (var value in values)
-        //    {
-        //        sum += value;
-        //    }
-        //    return sum / values.Count;
-        //}
-
-        //private double CalculateStandardDeviation(ObservableCollection<double> values, double mean)
-        //{
-        //    double sumSquaredDifference = 0;
-        //    foreach (var value in values)
-        //    {
-        //        sumSquaredDifference += Math.Pow(value - mean, 2);
-        //    }
-        //    double variance = sumSquaredDifference / values.Count;
-        //    return Math.Sqrt(variance);
-        //}
-
-        private async Task LoadChartAsync(string fillter)
+        private async Task LoadChartAsync()
         {
-            var mapperCur = Mappers.Xy<Result>()
-                  .X((value, index) => index) // lets use the position of the item as X
-                  .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd), 2))
-                  .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd > 2 
-                  || (value.Result1 - value.IdControlDetailNavigation.CurMean) / value.IdControlDetailNavigation.CurSd < -2) ? Brushes.Red : null)
-                  .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
-
-            var mapperApp = Mappers.Xy<Result>()
-               .X((value, index) => index) // lets use the position of the item as X
-               .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp), 2))
-               .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp > 2 
-               || (value.Result1 - value.IdControlDetailNavigation.MeanApp) / value.IdControlDetailNavigation.SdApp < -2) ? Brushes.Red : null)
-               .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
-
-            var mapperNSX = Mappers.Xy<Result>()
-                 .X((value, index) => index) // lets use the position of the item as X
-                 .Y(value => Math.Round((double)((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx), 2))
-                 .Fill((value, index) => ((value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx > 2 
-                 || (value.Result1 - value.IdControlDetailNavigation.MeanNsx) / value.IdControlDetailNavigation.SdNsx < -2) ? Brushes.Red : null)
-                 .Stroke(item => Brushes.Transparent);//and PurchasedItems property as Y
+            var mapper = Mappers.Xy<Result>()
+        .X((value, index) => index)
+        .Y(value =>
+        {
+            if (!value.ZScore.HasValue) return 0;
+            if (value.ZScore >= 4) return 4;
+            if (value.ZScore <= -4) return -4;
+            return value.ZScore.Value;
+        })
+        .Fill((value, index) => (value.ZScore.HasValue && (value.ZScore > 2 || value.ZScore < -2)) ? Brushes.Red : null)
+        .Stroke(item => Brushes.Transparent);
 
             await Task.Run(() =>
             {
-                if (fillter == FilterOptions[1])
-                {
-                    Charting.For<Result>(mapperCur, SeriesOrientation.Horizontal);
-                }
-                else if (fillter == FilterOptions[0])
-                {
-                    Charting.For<Result>(mapperNSX, SeriesOrientation.Horizontal);
-                }
-                else
-                {
-                    Charting.For<Result>(mapperApp, SeriesOrientation.Horizontal);
-                }
+                Charting.For<Result>(mapper, SeriesOrientation.Horizontal);
             });
         }
         public static float CmToPixels(float cm)

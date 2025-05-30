@@ -224,7 +224,7 @@
 
 
                         <lvc:CartesianChart.AxisY>
-                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
+                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator 
                                             StrokeThickness="0.5" 
@@ -343,7 +343,7 @@
                         </lvc:CartesianChart.DataTooltip>
 
                         <lvc:CartesianChart.AxisY>
-                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
+                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator 
                           StrokeThickness="0.5" 
@@ -463,7 +463,7 @@
                         </lvc:CartesianChart.DataTooltip>
                         
                         <lvc:CartesianChart.AxisY>
-                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="3" MinValue="-3">
+                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
                                 <lvc:Axis.Separator>
                                     <lvc:Separator 
                                         StrokeThickness="0.5" 
