@@ -223,6 +223,7 @@ namespace QC_Management.ViewModels
 
             }, async (p) =>
             {
+                await UpdateLissResultAsync();
                 await ViewChart(List);
             });
 
@@ -422,11 +423,12 @@ namespace QC_Management.ViewModels
                         mean = r.IdControlDetailNavigation.MeanApp;
                         sd = r.IdControlDetailNavigation.SdApp;
                         break;
-                }
-                if (mean.HasValue && sd.HasValue && sd.Value != 0)
-                    r.ZScore = Math.Round((r.Result1.Value - mean.Value) / sd.Value, 2);
-                else
-                    r.ZScore = null;
+                        }
+                        if (sd == 0) sd = 0.001; // Tránh chia cho 0
+                        if (mean.HasValue && sd.HasValue && sd.Value != 0)
+                           r.ZScore = Math.Round((r.Result1.Value - mean.Value) / sd.Value, 2);
+                        else
+                            r.ZScore = null;
             }
             else
             {
@@ -500,9 +502,6 @@ namespace QC_Management.ViewModels
                     MessageBox.Show("Không có dữ liệu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
-
-         
-
                 var levelList = results.GroupBy(s => s.IdLevel).ToList();
 
                 await Task.Run(() =>
