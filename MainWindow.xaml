@@ -271,29 +271,6 @@
                         </ListViewItem.ToolTip>
                     </ListViewItem>
             
-                    <!--CAL Detail--> 
-                    
-                    <ListViewItem 
-                         Visibility="{Binding Visibility1}"
-                        HorizontalAlignment="Left" 
-                                  Margin="0,0,0,0 " MouseEnter="ListViewItem_MouseEnter">
-
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="Selected">
-                                <i:InvokeCommandAction Command="{Binding LoadCALDetailViewCommand}" CommandParameter="{Binding ElementName=HomeItem}">
-                                </i:InvokeCommandAction>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-
-                        <StackPanel Orientation="Horizontal" Width="170">
-                            <materialDesign:PackIcon Kind="AlphaCBoxOutline" Height="30" Width="40" Margin="5,0,0,0"/>
-                            <TextBlock Text="Range CAL" Margin="5,0,0,0" Style="{StaticResource font_style}"/>
-                        </StackPanel>
-                        <ListViewItem.ToolTip>
-                            <ToolTip x:Name="Cal_detail" Content="Range CAL" Style="{StaticResource tt_style}"/>
-                        </ListViewItem.ToolTip>
-                    </ListViewItem>
-
                     <!--Test-->
                     <ListViewItem 
                          Visibility="{Binding Visibility1}"

@@ -1,24 +1,15 @@
 ﻿using LiveCharts;
 using LiveCharts.Configurations;
-using LiveCharts.Defaults;
-using LiveCharts.Definitions.Charts;
 using LiveCharts.Wpf;
-using MaterialDesignThemes.Wpf.Converters;
 using Microsoft.EntityFrameworkCore;
 using QC_Management.Models;
-using QC_Management.Views;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using XAct;
-using XAct.UI.Views;
 
 namespace QC_Management.ViewModels
 {

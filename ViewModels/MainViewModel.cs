@@ -72,7 +72,6 @@ namespace QC_Management.ViewModels
             LoadTestViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new TestViewModel()));
             LoadDeviceViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new DeviceViewModel()));
             LoadCALViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new CAL_InforViewModel()));
-            LoadCALDetailViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new CAL_DetailViewModel()));
         }
 
         private void LoadWindow(Window window)

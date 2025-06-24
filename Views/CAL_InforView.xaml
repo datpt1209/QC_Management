@@ -25,17 +25,17 @@
     </i:Interaction.Triggers>
 
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
-        <Grid Grid.Row="1" Margin="0,0,0,-14">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"></ColumnDefinition>
+            <ColumnDefinition Width="*"></ColumnDefinition>
+        </Grid.ColumnDefinitions>
+  
+        <Grid Grid.Column="0" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition Height="auto"></RowDefinition>
                 <RowDefinition></RowDefinition>
             </Grid.RowDefinitions>
-
             <materialDesign:Card Grid.Row="0" Margin="5">
                 <WrapPanel Margin="5">
                     <ComboBox
@@ -91,6 +91,106 @@
                             <GridViewColumn Header="Id" Width="30" DisplayMemberBinding="{Binding Id}"/>
                             <GridViewColumn Header="LOT" Width="80" DisplayMemberBinding="{Binding CalLot}"/>
                             <GridViewColumn Header="Hạn sử dụng" Width="100" DisplayMemberBinding="{Binding ExpirationDate,StringFormat=dd/MM/yyyy}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
+            </materialDesign:Card>
+        </Grid>
+        <Grid Grid.Column="1" Margin="5">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition Height="auto"></RowDefinition>
+                <RowDefinition></RowDefinition>
+            </Grid.RowDefinitions>
+            <!--các element binding từ selected item-->
+            <materialDesign:Card Grid.Row="0" Margin="5">
+                <WrapPanel Margin="5">
+                    <ComboBox
+                            DisplayMemberPath="Name"
+                            Margin="5"
+                            ItemsSource="{Binding DeviceList}"
+                            SelectedItem="{Binding SelectedDevice}"
+                            materialDesign:ComboBoxAssist.MaxLength="2"
+                            materialDesign:HintAssist.Hint="Deivce"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                            IsEditable="True" 
+                            Width="135" Height="50">
+
+                        <i:Interaction.Triggers>
+                            <i:EventTrigger EventName="SelectionChanged">
+                                <i:InvokeCommandAction Command="{Binding DeviceSelectionChangedCommand}">
+                                </i:InvokeCommandAction>
+                            </i:EventTrigger>
+                        </i:Interaction.Triggers>
+                    </ComboBox>
+
+
+                    <ComboBox
+                        Margin="5"
+                        ItemsSource="{Binding TestList}"
+                        DisplayMemberPath="Name"
+                        SelectedItem="{Binding SelectedTest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        materialDesign:ComboBoxAssist.MaxLength="2"
+                        materialDesign:HintAssist.Hint="Xét nghiệm"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        IsEditable="True"
+                        Width="135" Height="50">
+
+                    </ComboBox>
+                    <TextBox
+                        Margin="5"
+                        VerticalAlignment="Center"   
+                        materialDesign:HintAssist.Hint="Level"  
+                        Text="{Binding SelectedLevel}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap" 
+                        Width="135" Height="50" />
+                    <TextBox
+                        Margin="5"
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="Min"
+                        Text="{Binding Min}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap"
+                        Width="135" Height="50" />
+
+                    <TextBox
+                        Margin="5"
+                        VerticalAlignment="Center" 
+                        materialDesign:HintAssist.Hint="Max"
+                        Text="{Binding Max}"
+                        AcceptsReturn="True"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        TextWrapping="Wrap" Width="135" Height="50"/>
+                    <CheckBox
+                        Content="Kích hoạt"
+                        IsChecked="{Binding CALIsEnable}"/>
+
+                </WrapPanel>
+            </materialDesign:Card>
+
+            <materialDesign:Card Grid.Row="1" Margin="5">
+                <WrapPanel>
+                    <Button Command="{Binding CalDetailAddCommand}" Content="Thêm" Margin="5" Width="100"></Button>
+                    <Button Command="{Binding CalDetailDeleteCommand}" Content="Xóa" Margin="5" Width="100"></Button>
+                    <Button Command="{Binding CalDetailEditCommand}" Content="Sửa" Margin="5" Width="100"></Button>
+                </WrapPanel>
+
+            </materialDesign:Card>
+
+            <materialDesign:Card Grid.Row="2" Margin="5" VerticalAlignment="Stretch">
+                <ListView ItemsSource="{Binding CalDetail_List ,Mode=TwoWay}" SelectedItem="{Binding SelectedCalDetail}">
+                    <ListView.View>
+                        <GridView>
+                            <GridViewColumn Header="Device" Width="100" DisplayMemberBinding="{Binding IdDeviceNavigation.Name}"/>
+                            <GridViewColumn Header="Test" Width="100" DisplayMemberBinding="{Binding IdTestNavigation.Name}"/>
+                            <GridViewColumn Header="LOT Cal" Width="100" DisplayMemberBinding="{Binding IdCalInforNavigation.CalLot}"/>
+                            <GridViewColumn Header="Level" Width="80" DisplayMemberBinding="{Binding Level}"/>
+                            <GridViewColumn Header="MinValue" Width="80" DisplayMemberBinding="{Binding MinValue}"/>
+                            <GridViewColumn Header="MaxValuue" Width="80" DisplayMemberBinding="{Binding MaxValue}"/>
+                            <GridViewColumn Header="Active" Width="50" DisplayMemberBinding="{Binding Status}"/>
                         </GridView>
                     </ListView.View>
                 </ListView>
