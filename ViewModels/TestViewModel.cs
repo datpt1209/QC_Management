@@ -15,6 +15,9 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Category> _CategoryList;
         public ObservableCollection<Category> CategoryList { get => _CategoryList; set { _CategoryList = value; OnPropertyChanged(); } }
 
+        private ObservableCollection<TestType> _TestTypeList;
+        public ObservableCollection<TestType> TestTypeList { get => _TestTypeList; set { _TestTypeList = value; OnPropertyChanged(); } }
+
         private ObservableCollection<Category> _CategoryByTestList;
         public ObservableCollection<Category> CategoryByTestList { get => _CategoryByTestList; set { _CategoryByTestList = value; OnPropertyChanged(); } }
 
@@ -36,6 +39,17 @@ namespace QC_Management.ViewModels
             }
         }
 
+        private TestType _SelectedTestType;
+        public TestType SelectedTestType
+        {
+            get => _SelectedTestType;
+            set
+            {
+                _SelectedTestType = value;
+                OnPropertyChanged();
+
+            }
+        }
 
         private Category _SelectedCategoryByTest;
         public Category SelectedCategoryByTest

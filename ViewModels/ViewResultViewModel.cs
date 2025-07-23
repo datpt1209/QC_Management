@@ -142,7 +142,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
-
         public ViewResultViewModel()
         {
             ResultTypes = new ObservableCollection<string> { "CALIB", "QC" };

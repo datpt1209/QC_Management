@@ -114,19 +114,32 @@
                         <TextBox VerticalAlignment="Top" HorizontalAlignment="Stretch"
                              materialDesign:HintAssist.Hint="Tên xét nghiệm"
                              Text="{Binding DisplayName, UpdateSourceTrigger=PropertyChanged}"
-                             Margin="5 5 5 5"
+                             Margin="5"
                              AcceptsReturn="True"
                              Style="{StaticResource MaterialDesignOutlinedTextBox}"
                              TextWrapping="Wrap" />
+                        
                         <ComboBox
-                        ItemsSource="{Binding UnitList}"
-                        DisplayMemberPath="Name"
-                        SelectedItem="{Binding SelectedUnitTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        materialDesign:ComboBoxAssist.MaxLength="2"
-                        materialDesign:HintAssist.Hint="Đơn vị tính"
+                            Margin="5"
+                            ItemsSource="{Binding UnitList}"
+                            DisplayMemberPath="Name"
+                            SelectedItem="{Binding SelectedUnitTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            materialDesign:ComboBoxAssist.MaxLength="2"
+                            materialDesign:HintAssist.Hint="Đơn vị tính"
                             Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                        materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" Height="50"/>
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            IsEditable="True" Height="50"/>
+                        
+                        <ComboBox
+                            Margin="5"
+                            ItemsSource="{Binding TestTypeList}"
+                            DisplayMemberPath="Name"
+                            SelectedItem="{Binding SelectedUnitTable, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            materialDesign:ComboBoxAssist.MaxLength="2"
+                            materialDesign:HintAssist.Hint="Đơn vị tính"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                            materialDesign:HintAssist.HintOpacity=".26"
+                            IsEditable="True" Height="50"/>
 
                     </WrapPanel>
                 </materialDesign:Card>

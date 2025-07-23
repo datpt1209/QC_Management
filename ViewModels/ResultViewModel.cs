@@ -90,7 +90,6 @@ namespace QC_Management.ViewModels
         public ICommand CheckRangeCommand { get; set; }
         public ICommand DeviceSelectionChanged { get; set; }
 
-
         private ResultReView _SelectedItem;
         public ResultReView SelectedItem
         {
@@ -313,16 +312,7 @@ namespace QC_Management.ViewModels
                 else
                 {
                     IndexList = new List<int?>();
-                    //int index = 0;
                     var results = new ObservableCollection<Result>(DB.Results
-                            //.AsNoTracking()
-                            //.Include(s => s.IdControlDetailNavigation)
-                            //.Include(s => s.IdUserNavigation)
-                            //.Include(s => s.IdLevelNavigation)
-                            //.Include(s => s.IdTestNavigation)
-                            //.Include(s => s.IdDeviceNavigation)
-                            //.Include(s => s.IdTestNavigation.IdUnitTableNavigation)
-                            //.Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
                             .Where(s => s.IdDevice == SelectedDevice.Id
                                        && s.DateRun == SelectedDate.Date
                                        && s.IdLevel == SelectedLevel.Id
@@ -378,11 +368,11 @@ namespace QC_Management.ViewModels
                                 IdControlDetailNavigation = qcInfor
                             });
                         }
-                        else
-                        {
-                           MessageBox.Show($"Không tìm thấy giá trị {item.Name} cho {SelectedDevice.Name}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                           return;
-                        }
+                        //else
+                        //{
+                        //   MessageBox.Show($"Không tìm thấy giá trị {item.Name} cho {SelectedDevice.Name}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        //   return;
+                        //}
                     }
                     
                 }
@@ -578,7 +568,6 @@ namespace QC_Management.ViewModels
             {
                 DB.AddRange(results);
                 await DB.SaveChangesAsync();
-
                 return true; // Trả về true nếu lưu thành công
             }
             catch (Exception ex)
