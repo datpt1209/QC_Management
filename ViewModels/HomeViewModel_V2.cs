@@ -101,6 +101,19 @@ namespace QC_Management.ViewModels
         private double? _sd1;
         public double? SD1 { get => _sd1; set { _sd1 = value; OnPropertyChanged(); } }
 
+        private string _range1;
+        public string Range1 { get => _range1; set { _range1 = value; OnPropertyChanged(); } }
+        private string _totalPoints1;
+        public string TotalPoints1
+        {
+            get => _totalPoints1;
+            set
+            {
+                _totalPoints1 = value;
+                OnPropertyChanged();
+            }
+        }
+
         // Repeat for Chart 2, 3, 4
         private string _levelName2;
         public string LevelName2 { get => _levelName2; set { _levelName2 = value; OnPropertyChanged(); } }
@@ -108,6 +121,20 @@ namespace QC_Management.ViewModels
         public double? Mean2 { get => _mean2; set { _mean2 = value; OnPropertyChanged(); } }
         private double? _sd2;
         public double? SD2 { get => _sd2; set { _sd2 = value; OnPropertyChanged(); } }
+        private string _range2;
+        public string Range2 { get => _range2; set { _range2 = value; OnPropertyChanged(); } }
+        private string _totalPoints2;
+
+        public string TotalPoints2
+        {
+            get => _totalPoints2;
+            set
+            {
+                _totalPoints2 = value;
+                OnPropertyChanged();
+            }
+        }
+
 
         private string _levelName3;
         public string LevelName3 { get => _levelName3; set { _levelName3 = value; OnPropertyChanged(); } }
@@ -115,6 +142,19 @@ namespace QC_Management.ViewModels
         public double? Mean3 { get => _mean3; set { _mean3 = value; OnPropertyChanged(); } }
         private double? _sd3;
         public double? SD3 { get => _sd3; set { _sd3 = value; OnPropertyChanged(); } }
+        private string _range3;
+        public string Range3 { get => _range3; set { _range3 = value; OnPropertyChanged(); } }
+
+        private string _totalPoints3;
+        public string TotalPoints3
+        {
+            get => _totalPoints3;
+            set
+            {
+                _totalPoints3 = value;
+                OnPropertyChanged();
+            }
+        }
 
         private string _levelName4;
         public string LevelName4 { get => _levelName4; set { _levelName4 = value; OnPropertyChanged(); } }
@@ -122,6 +162,18 @@ namespace QC_Management.ViewModels
         public double? Mean4 { get => _mean4; set { _mean4 = value; OnPropertyChanged(); } }
         private double? _sd4;
         public double? SD4 { get => _sd4; set { _sd4 = value; OnPropertyChanged(); } }
+        private string _range4;
+        public string Range4 { get => _range4; set { _range4 = value; OnPropertyChanged(); } }
+        private string _totalPoints4;
+        public string TotalPoints4
+        {
+            get => _totalPoints4;
+            set
+            {
+                _totalPoints4 = value;
+                OnPropertyChanged();
+            }
+        }
 
 
         public bool IsLoading
@@ -623,6 +675,8 @@ namespace QC_Management.ViewModels
                                     LevelName1 = levelName;
                                     Mean1 = mean;
                                     SD1 = sd;
+                                    Range1 = $"{(mean - 2 * sd):F2}  -  {(mean + 2 * sd):F2}";
+                                    TotalPoints1 = $"{chartValues.Count}";
                                     MeanValues1 = meanValues;
                                     PlusOneSDValues1 = plusOneSDValues;
                                     MinusOneSDValues1 = minusOneSDValues;
@@ -642,6 +696,8 @@ namespace QC_Management.ViewModels
                                     LevelName2 = levelName;
                                     Mean2 = mean;
                                     SD2 = sd;
+                                    Range2 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
+                                    TotalPoints2 = $"{chartValues.Count}";
                                     MeanValues2 = meanValues;
                                     PlusOneSDValues2 = plusOneSDValues;
                                     MinusOneSDValues2 = minusOneSDValues;
@@ -660,6 +716,8 @@ namespace QC_Management.ViewModels
                                     LevelName3 = levelName;
                                     Mean3 = mean;
                                     SD3 = sd;
+                                    Range3 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
+                                    TotalPoints3 = $"{chartValues.Count}";
                                     MeanValues3 = meanValues;
                                     PlusOneSDValues3 = plusOneSDValues;
                                     MinusOneSDValues3 = minusOneSDValues;
@@ -676,6 +734,8 @@ namespace QC_Management.ViewModels
                                     LevelName4 = levelName;
                                     Mean4 = mean;
                                     SD4 = sd;
+                                    Range4 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
+                                    TotalPoints4 = $"{chartValues.Count}";
                                     MeanValues4 = meanValues;
                                     PlusOneSDValues4 = plusOneSDValues;
                                     MinusOneSDValues4 = minusOneSDValues;

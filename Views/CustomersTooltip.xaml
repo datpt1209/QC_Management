@@ -37,16 +37,14 @@
                                 <Run Text="{Binding DateRun, StringFormat=dd/MM/yyyy}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="2">
-                                <Run Text="Result: "/>
-                                <Run Text="{Binding Result1}"/>
+                                <Run Text="Time: "/>
+                                <Run Text="{Binding Time, StringFormat=hh\\:mm\\:ss}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="3">
-                                <Run Text="Mean: "/>
-                                <Run Text="{Binding Mean}"/>
-                                <Run Text="  -  "/>
-                                <Run Text="SD: "/>
-                                <Run Text="{Binding SD}"/>
+                                <Run Text="Result: " FontWeight="Bold"/>
+                                <Run Text="{Binding Result1}" FontWeight="Bold"/>
                             </TextBlock>
+                            
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

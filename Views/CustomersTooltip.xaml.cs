@@ -80,29 +80,12 @@ namespace QC_Management.Views
                     // Map DataPointViewModel to TooltipDisplayModel
                     var result = point.ChartPoint.Instance as Result;
                     var detail = result.IdControlDetailNavigation;
-                    double? mean = null, sd = null;
-                    switch (SelectedFilter)
-                    {
-                        case "Nhà sản xuât":
-                            mean = detail?.MeanNsx;
-                            sd = detail?.SdNsx;
-                            break;
-                        case "Đang sử dụng":
-                            mean = detail?.CurMean;
-                            sd = detail?.CurSd;
-                            break;
-                        case "Thống kê":
-                            mean = detail?.MeanApp;
-                            sd = detail?.SdApp;
-                            break;
-                    }
                     yield return new TooltipDisplayModel
                     {
                         Lot = detail?.Lot,
                         DateRun = result.DateRun,
                         Result1 = result.Result1,
-                        Mean = mean,
-                        SD = sd
+                        Time = result.Time
                     };
                 }
             }
@@ -118,7 +101,6 @@ namespace QC_Management.Views
         public string Lot { get; set; }
         public DateTime DateRun { get; set; }
         public double? Result1 { get; set; }
-        public double? Mean { get; set; }
-        public double? SD { get; set; }
+        public TimeSpan? Time { get; set; }
     }
 }

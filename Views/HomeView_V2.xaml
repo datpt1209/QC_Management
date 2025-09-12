@@ -138,60 +138,57 @@
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
                             <RowDefinition Height="*"/>
-
                         </Grid.RowDefinitions>
                         <Grid Grid.Row="0" Visibility="{Binding Visibility1}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="130"/>
                             </Grid.ColumnDefinitions>
-                            <ScrollViewer Grid.Row="0" HorizontalScrollBarVisibility="Auto">
-                                <lvc:CartesianChart 
-                            Height="{Binding ChartHeight}"
-                                    x:Name="chart" Width="{Binding totalWidth1}"
-                                    HorizontalAlignment="Left"
-                                    >
-                                    <lvc:CartesianChart.Series>
-                                        <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-Title="3SD" 
-StrokeThickness="3"
-Values="{Binding PlusThreeSDValues1}"
-Stroke="Red"
-Fill="Transparent"/>
+                            <materialDesign:Card Margin="5" Grid.Row="0">
+                                <ScrollViewer  HorizontalScrollBarVisibility="Auto">
+                                    <lvc:CartesianChart 
+                                        Height="{Binding ChartHeight}"
+                                        x:Name="chart" Width="{Binding totalWidth1}"
+                                        HorizontalAlignment="Left">
+                                        <lvc:CartesianChart.Series>
+                                            <lvc:LineSeries 
+                                                DataLabels="False"
+                                                PointGeometry="{x:Null}"
+                                                Title="3SD" 
+                                                StrokeThickness="3"
+                                                Values="{Binding PlusThreeSDValues1}"
+                                                Stroke="Red"
+                                                Fill="Transparent"/>
+                                            <lvc:LineSeries 
+                                                DataLabels="False"
+                                                PointGeometry="{x:Null}"
+                                                StrokeThickness="3"
+                                                Title="+2SD" 
+                                                Values="{Binding PlusTwoSDValues1}" 
+                                                Stroke="Orange" 
+                                                Fill="Transparent"
+                                                IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}"
-StrokeThickness="3"
-Title="+2SD" 
-Values="{Binding PlusTwoSDValues1}" 
-Stroke="Orange" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
+                                            <lvc:LineSeries 
+                                            DataLabels="False"
+                                            PointGeometry="{x:Null}" 
+                                            StrokeThickness="3"
+                                            Title="1SD" 
+                                            Values="{Binding PlusOneSDValues1}"
+                                            Stroke="Green" 
+                                            Fill="#FFC4EEB4"
+                                            IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
-DataLabels="False"
-PointGeometry="{x:Null}" 
-StrokeThickness="3"
-Title="1SD" 
-Values="{Binding PlusOneSDValues1}"
-Stroke="Green" 
-Fill="#FFC4EEB4"
-IsHitTestVisible="False"/>
-
-                                        <lvc:LineSeries 
-Title="Mean" 
-StrokeThickness="3"
-Values="{Binding MeanValues1}"
-Stroke="Green"
-PointGeometry="{x:Null}"
-DataLabels="False" 
-Fill="Transparent"
-IsHitTestVisible="False"/>
-
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
+                                            Title="Mean" 
+                                            StrokeThickness="3"
+                                            Values="{Binding MeanValues1}"
+                                            Stroke="Green"
+                                            PointGeometry="{x:Null}"
+                                            DataLabels="False" 
+                                            Fill="Transparent"
+                                            IsHitTestVisible="False"/>
+                                            <lvc:LineSeries 
 DataLabels="False"
 PointGeometry="{x:Null}"
 StrokeThickness="3"
@@ -201,7 +198,7 @@ Stroke="Green"
 Fill="White"
 IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
 DataLabels="False"
 PointGeometry="{x:Null}"
 Title="-2SD" 
@@ -210,7 +207,7 @@ Values="{Binding MinusTwoSDValues1}"
 Stroke="Orange"
 Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
 DataLabels="False"
 PointGeometry="{x:Null}"
 Title="-3SD" 
@@ -219,7 +216,7 @@ Values="{Binding MinusThreeSDValues1}"
 Stroke="Red"
 Fill="Transparent"/>
 
-                                        <lvc:LineSeries
+                                            <lvc:LineSeries
                                             Title="result"
                                             StrokeThickness="4" 
                                             Stroke="#1C8FC5" 
@@ -228,67 +225,78 @@ Fill="Transparent"/>
                                             PointGeometrySize="15" 
                                             PointForeground="#222E31"
                                             Values="{Binding ChartValues1}">
-                                        </lvc:LineSeries>
-                                    </lvc:CartesianChart.Series>
+                                            </lvc:LineSeries>
+                                        </lvc:CartesianChart.Series>
 
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding Dates1}">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator Step="1">
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisX>
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Labels="{Binding Dates1}">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator Step="1">
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisX>
 
-                                    <lvc:CartesianChart.DataTooltip>
-                                        <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
-                                    </lvc:CartesianChart.DataTooltip>
+                                        <lvc:CartesianChart.DataTooltip>
+                                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
+                                        </lvc:CartesianChart.DataTooltip>
 
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator 
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator 
                                                     StrokeThickness="0.5" 
                                                     Step="1">
-                                                    <lvc:Separator.Stroke>
-                                                        <SolidColorBrush Color="#FF151F23">
-                                                        </SolidColorBrush>
-                                                    </lvc:Separator.Stroke>
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </ScrollViewer>
-
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock>
-                                    <Run Text="Level: " FontWeight="Bold"/>
-                                    <Run Text="{Binding LevelName1}"/>
-                                </TextBlock>
-                                <TextBlock>
-                                    <Run Text="Mean: " FontWeight="Bold"/>
-                                    <Run Text="{Binding Mean1}"/>
-                                </TextBlock>
-                                <TextBlock>
-                                    <Run Text="SD: " FontWeight="Bold"/>
-                                    <Run Text="{Binding SD1}"/>
-                                </TextBlock>
-                            </StackPanel>
-
+                                                        <lvc:Separator.Stroke>
+                                                            <SolidColorBrush Color="#FF151F23">
+                                                            </SolidColorBrush>
+                                                        </lvc:Separator.Stroke>
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </ScrollViewer>
+                            </materialDesign:Card>
+                            <materialDesign:Card Margin="5" Grid.Column="1">
+                                <StackPanel  Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock>
+                                        <Run Text="N: " FontWeight="Bold"/>
+                                        <Run Text="{Binding TotalPoints1}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Run Text="Level: " FontWeight="Bold"/>
+                                        <Run Text="{Binding LevelName1}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Run Text="Mean: " FontWeight="Bold"/>
+                                        <Run Text="{Binding Mean1}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Run Text="SD: " FontWeight="Bold"/>
+                                        <Run Text="{Binding SD1}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                                        <Run Text="Range: " FontWeight="Bold"/>
+                                         <LineBreak/>
+                                        <Run Text="{Binding Range1}"/>
+                                    </TextBlock>
+                                </StackPanel>
+                            </materialDesign:Card>
                         </Grid>
                         <Grid Grid.Row="1"   Visibility="{Binding Visibility2}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="130"/>
                             </Grid.ColumnDefinitions>
-                            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto">
-                                <lvc:CartesianChart
+                            <materialDesign:Card Margin="5" Grid.Column="0">
+                                <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                    <lvc:CartesianChart
                                Height="{Binding ChartHeight}"
                                x:Name="chart2" Width="{Binding totalWidth2}"
                                HorizontalAlignment="Left">
-                                    <lvc:CartesianChart.Series>
-                                        <lvc:LineSeries 
+                                        <lvc:CartesianChart.Series>
+                                            <lvc:LineSeries 
     
                                        DataLabels="False"
                                        PointGeometry="{x:Null}"
@@ -298,7 +306,7 @@ Fill="Transparent"/>
                                        Stroke="Red"
                                        Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
                                        DataLabels="False"
                                        PointGeometry="{x:Null}"
                                        StrokeThickness="3"
@@ -308,7 +316,7 @@ Fill="Transparent"/>
                                        Fill="Transparent"
                                        IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
                                        DataLabels="False"
                                        PointGeometry="{x:Null}" 
                                        StrokeThickness="3"
@@ -318,7 +326,7 @@ Fill="Transparent"/>
                                        Fill="#FFC4EEB4"
                                        IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
       Title="Mean" 
       StrokeThickness="3"
       Values="{Binding MeanValues2}"
@@ -328,7 +336,7 @@ Fill="Transparent"/>
       Fill="Transparent"
       IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
       DataLabels="False"
       PointGeometry="{x:Null}"
       StrokeThickness="3"
@@ -338,7 +346,7 @@ Fill="Transparent"/>
       Fill="White"
       IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
       DataLabels="False"
       PointGeometry="{x:Null}"
       Title="-2SD" 
@@ -347,7 +355,7 @@ Fill="Transparent"/>
       Stroke="Orange"
       Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
       DataLabels="False"
       PointGeometry="{x:Null}"
       Title="-3SD" 
@@ -356,7 +364,7 @@ Fill="Transparent"/>
       Stroke="Red"
       Fill="Transparent"/>
 
-                                        <lvc:LineSeries
+                                            <lvc:LineSeries
       Title="result"
       StrokeThickness="4" 
       Stroke="#1C8FC5" 
@@ -365,53 +373,66 @@ Fill="Transparent"/>
       PointGeometrySize="15" 
       PointForeground="#222E31"
       Values="{Binding ChartValues2}">
-                                        </lvc:LineSeries>
-                                    </lvc:CartesianChart.Series>
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding Dates2}">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator Step="1">
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisX>
+                                            </lvc:LineSeries>
+                                        </lvc:CartesianChart.Series>
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Labels="{Binding Dates2}">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator Step="1">
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisX>
 
-                                    <lvc:CartesianChart.DataTooltip>
-                                        <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
-                                    </lvc:CartesianChart.DataTooltip>
+                                        <lvc:CartesianChart.DataTooltip>
+                                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
+                                        </lvc:CartesianChart.DataTooltip>
 
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator 
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator 
 StrokeThickness="0.5" 
  Step="1">
-                                                    <lvc:Separator.Stroke>
-                                                        <SolidColorBrush Color="#FF151F23">
-                                                        </SolidColorBrush>
-                                                    </lvc:Separator.Stroke>
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </ScrollViewer>
+                                                        <lvc:Separator.Stroke>
+                                                            <SolidColorBrush Color="#FF151F23">
+                                                            </SolidColorBrush>
+                                                        </lvc:Separator.Stroke>
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </ScrollViewer>
 
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock>
-                           <Run Text="Level: " FontWeight="Bold"/>
-                           <Run Text="{Binding LevelName2}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="Mean: " FontWeight="Bold"/>
-                           <Run Text="{Binding Mean2}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="SD: " FontWeight="Bold"/>
-                           <Run Text="{Binding SD2}"/>
-                                </TextBlock>
-                            </StackPanel>
+                            </materialDesign:Card>
+                            <materialDesign:Card Margin="5" Grid.Column="1">
+                                <StackPanel Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock>
+         <Run Text="N: " FontWeight="Bold"/>
+         <Run Text="{Binding TotalPoints2}"/>
+                                    </TextBlock>
 
+                                    <TextBlock>
+         <Run Text="Level: " FontWeight="Bold"/>
+         <Run Text="{Binding LevelName2}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+         <Run Text="Mean: " FontWeight="Bold"/>
+         <Run Text="{Binding Mean2}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+         <Run Text="SD: " FontWeight="Bold"/>
+         <Run Text="{Binding SD2}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+         <Run Text="Range: " FontWeight="Bold"/>
+          <LineBreak/>
+         <Run Text="{Binding Range2}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                            </materialDesign:Card>
                         </Grid>
 
                         <Grid Grid.Row="2" Visibility="{Binding Visibility3}">
@@ -419,14 +440,15 @@ StrokeThickness="0.5"
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="130"/>
                             </Grid.ColumnDefinitions>
-                            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto">
-                                <lvc:CartesianChart
+                            <materialDesign:Card Margin="5" Grid.Column="0">
+                                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto">
+                                    <lvc:CartesianChart
                                 Height="{Binding ChartHeight}"
 x:Name="chart3" Width="{Binding totalWidth3}"
 HorizontalAlignment="Left"
 >
-                                    <lvc:CartesianChart.Series>
-                                        <lvc:LineSeries 
+                                        <lvc:CartesianChart.Series>
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="3SD" 
@@ -435,7 +457,7 @@ HorizontalAlignment="Left"
         Stroke="Red"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         StrokeThickness="3"
@@ -445,7 +467,7 @@ HorizontalAlignment="Left"
         Fill="Transparent"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}" 
         StrokeThickness="3"
@@ -455,7 +477,7 @@ HorizontalAlignment="Left"
         Fill="#FFC4EEB4"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         Title="Mean" 
         StrokeThickness="3"
         Values="{Binding MeanValues3}"
@@ -465,7 +487,7 @@ HorizontalAlignment="Left"
         Fill="Transparent"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         StrokeThickness="3"
@@ -475,7 +497,7 @@ HorizontalAlignment="Left"
         Fill="White"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="-2SD" 
@@ -484,7 +506,7 @@ HorizontalAlignment="Left"
         Stroke="Orange"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="-3SD" 
@@ -493,7 +515,7 @@ HorizontalAlignment="Left"
         Stroke="Red"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries
+                                            <lvc:LineSeries
         Title="result"
         StrokeThickness="4" 
         Stroke="#1C8FC5" 
@@ -502,54 +524,66 @@ HorizontalAlignment="Left"
         PointGeometrySize="15" 
         PointForeground="#222E31"
         Values="{Binding ChartValues3}">
-                                        </lvc:LineSeries>
-                                    </lvc:CartesianChart.Series>
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding Dates3}">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator Step="1">
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisX>
+                                            </lvc:LineSeries>
+                                        </lvc:CartesianChart.Series>
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Labels="{Binding Dates3}">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator Step="1">
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisX>
 
-                                    <lvc:CartesianChart.DataTooltip>
-                                        <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
-                                    </lvc:CartesianChart.DataTooltip>
+                                        <lvc:CartesianChart.DataTooltip>
+                                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
+                                        </lvc:CartesianChart.DataTooltip>
 
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator 
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator 
                 StrokeThickness="0.5" 
                 Step="1">
-                                                    <lvc:Separator.Stroke>
-                                                        <SolidColorBrush Color="#FF151F23">
-                                                        </SolidColorBrush>
-                                                    </lvc:Separator.Stroke>
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </ScrollViewer>
+                                                        <lvc:Separator.Stroke>
+                                                            <SolidColorBrush Color="#FF151F23">
+                                                            </SolidColorBrush>
+                                                        </lvc:Separator.Stroke>
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </ScrollViewer>
 
+                            </materialDesign:Card>
+                            <materialDesign:Card Grid.Column="1" Margin="5">
+                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
+                                    <TextBlock>
+<Run Text="N: " FontWeight="Bold"/>
+<Run Text="{Binding TotalPoints3}"/>
+                                    </TextBlock>
 
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock>
-                           <Run Text="Level: " FontWeight="Bold"/>
-                           <Run Text="{Binding LevelName3}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="Mean: " FontWeight="Bold"/>
-                           <Run Text="{Binding Mean3}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="SD: " FontWeight="Bold"/>
-                           <Run Text="{Binding SD3}"/>
-                                </TextBlock>
-                            </StackPanel>
+                                    <TextBlock>
+                   <Run Text="Level: " FontWeight="Bold"/>
+                   <Run Text="{Binding LevelName3}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                   <Run Text="Mean: " FontWeight="Bold"/>
+                   <Run Text="{Binding Mean3}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                   <Run Text="SD: " FontWeight="Bold"/>
+                   <Run Text="{Binding SD3}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+<Run Text="Range: " FontWeight="Bold"/>
+                             <LineBreak/>
+<Run Text="{Binding Range3}"/>
+                                    </TextBlock>
+                                </StackPanel>
 
+                            </materialDesign:Card>
                         </Grid>
 
                         <Grid Grid.Row="3" Visibility="{Binding Visibility4}">
@@ -557,15 +591,15 @@ HorizontalAlignment="Left"
                                 <ColumnDefinition Width="*"/>
                                 <ColumnDefinition Width="130"/>
                             </Grid.ColumnDefinitions>
-
-                            <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto">
-                                <lvc:CartesianChart
+                            <materialDesign:Card Margin="5" Grid.Column="0">
+                                <ScrollViewer Grid.Column="0" HorizontalScrollBarVisibility="Auto">
+                                    <lvc:CartesianChart
                                 Height="{Binding ChartHeight}"
 x:Name="chart4" Width="{Binding totalWidth4}"
 HorizontalAlignment="Left"
 >
-                                    <lvc:CartesianChart.Series>
-                                        <lvc:LineSeries 
+                                        <lvc:CartesianChart.Series>
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="3SD" 
@@ -574,7 +608,7 @@ HorizontalAlignment="Left"
         Stroke="Red"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         StrokeThickness="3"
@@ -584,7 +618,7 @@ HorizontalAlignment="Left"
         Fill="Transparent"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}" 
         StrokeThickness="3"
@@ -594,7 +628,7 @@ HorizontalAlignment="Left"
         Fill="#FFC4EEB4"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         Title="Mean" 
         StrokeThickness="3"
         Values="{Binding MeanValues4}"
@@ -604,7 +638,7 @@ HorizontalAlignment="Left"
         Fill="Transparent"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         StrokeThickness="3"
@@ -614,7 +648,7 @@ HorizontalAlignment="Left"
         Fill="White"
         IsHitTestVisible="False"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="-2SD" 
@@ -623,7 +657,7 @@ HorizontalAlignment="Left"
         Stroke="Orange"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries 
+                                            <lvc:LineSeries 
         DataLabels="False"
         PointGeometry="{x:Null}"
         Title="-3SD" 
@@ -632,7 +666,7 @@ HorizontalAlignment="Left"
         Stroke="Red"
         Fill="Transparent"/>
 
-                                        <lvc:LineSeries
+                                            <lvc:LineSeries
         Title="result"
         StrokeThickness="4" 
         Stroke="#1C8FC5" 
@@ -641,53 +675,66 @@ HorizontalAlignment="Left"
         PointGeometrySize="15" 
         PointForeground="#222E31"
         Values="{Binding ChartValues4}">
-                                        </lvc:LineSeries>
-                                    </lvc:CartesianChart.Series>
-                                    <lvc:CartesianChart.AxisX>
-                                        <lvc:Axis Labels="{Binding Dates4}">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator Step="1">
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisX>
+                                            </lvc:LineSeries>
+                                        </lvc:CartesianChart.Series>
+                                        <lvc:CartesianChart.AxisX>
+                                            <lvc:Axis Labels="{Binding Dates4}">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator Step="1">
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisX>
 
-                                    <lvc:CartesianChart.DataTooltip>
-                                        <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
-                                    </lvc:CartesianChart.DataTooltip>
+                                        <lvc:CartesianChart.DataTooltip>
+                                            <local:CustomersTooltip SelectedFilter="{Binding SelectedFilterOptions}" />
+                                        </lvc:CartesianChart.DataTooltip>
 
-                                    <lvc:CartesianChart.AxisY>
-                                        <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
-                                            <lvc:Axis.Separator>
-                                                <lvc:Separator 
+                                        <lvc:CartesianChart.AxisY>
+                                            <lvc:Axis LabelFormatter="{Binding YAxisLabelFormatter}" MaxValue="4" MinValue="-4">
+                                                <lvc:Axis.Separator>
+                                                    <lvc:Separator 
                 StrokeThickness="0.5" 
                 Step="1">
-                                                    <lvc:Separator.Stroke>
-                                                        <SolidColorBrush Color="#FF151F23">
-                                                        </SolidColorBrush>
-                                                    </lvc:Separator.Stroke>
-                                                </lvc:Separator>
-                                            </lvc:Axis.Separator>
-                                        </lvc:Axis>
-                                    </lvc:CartesianChart.AxisY>
-                                </lvc:CartesianChart>
-                            </ScrollViewer>
+                                                        <lvc:Separator.Stroke>
+                                                            <SolidColorBrush Color="#FF151F23">
+                                                            </SolidColorBrush>
+                                                        </lvc:Separator.Stroke>
+                                                    </lvc:Separator>
+                                                </lvc:Axis.Separator>
+                                            </lvc:Axis>
+                                        </lvc:CartesianChart.AxisY>
+                                    </lvc:CartesianChart>
+                                </ScrollViewer>
 
-                            <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
-                                <TextBlock>
-                           <Run Text="Level: " FontWeight="Bold"/>
-                           <Run Text="{Binding LevelName4}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="Mean: " FontWeight="Bold"/>
-                           <Run Text="{Binding Mean4}"/>
-                                </TextBlock>
-                                <TextBlock>
-                           <Run Text="SD: " FontWeight="Bold"/>
-                           <Run Text="{Binding SD4}"/>
-                                </TextBlock>
-                            </StackPanel>
+                            </materialDesign:Card>
+                            <materialDesign:Card Margin="5" Grid.Column="1">
+                                <StackPanel Grid.Column="1" Margin="10,0,0,0" VerticalAlignment="Center">
 
+                                    <TextBlock>
+<Run Text="N: " FontWeight="Bold"/>
+<Run Text="{Binding TotalPoints4}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                   <Run Text="Level: " FontWeight="Bold"/>
+                   <Run Text="{Binding LevelName4}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                   <Run Text="Mean: " FontWeight="Bold"/>
+                   <Run Text="{Binding Mean4}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+                   <Run Text="SD: " FontWeight="Bold"/>
+                   <Run Text="{Binding SD4}"/>
+                                    </TextBlock>
+                                    <TextBlock>
+<Run Text="Range: " FontWeight="Bold"/>
+                             <LineBreak/>
+<Run Text="{Binding Range4}"/>
+                                    </TextBlock>
+                                </StackPanel>
+
+                            </materialDesign:Card>
                         </Grid>
                     </Grid>
                 </ScrollViewer>
