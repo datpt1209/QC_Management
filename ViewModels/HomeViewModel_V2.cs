@@ -383,7 +383,7 @@ namespace QC_Management.ViewModels
 
             });
 
-            DeviceSelectionChangedCommand = new RelayCommand<ControlInfo>((p) =>
+            DeviceSelectionChangedCommand = new RelayCommand<ControlInfo>((p) => true, async (p) =>
             {
                 return true;
 
