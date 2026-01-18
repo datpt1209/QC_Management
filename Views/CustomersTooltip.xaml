@@ -27,6 +27,7 @@
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
                                 <RowDefinition Height="Auto"/>
+                                <RowDefinition Height="Auto"/>
                             </Grid.RowDefinitions>
                             <TextBlock Grid.Row="0">
                                 <Run Text="LOT: "/>
@@ -41,10 +42,14 @@
                                 <Run Text="{Binding Time, StringFormat=hh\\:mm\\:ss}"/>
                             </TextBlock>
                             <TextBlock Grid.Row="3">
-                                <Run Text="Result: " FontWeight="Bold"/>
+                                <Run Text="Kết quả: " FontWeight="Bold"/>
                                 <Run Text="{Binding Result1}" FontWeight="Bold"/>
                             </TextBlock>
-                            
+                            <TextBlock Grid.Row="4">
+                                <Run Text="Lỗi: " FontWeight="Bold"/>
+                                <Run Text="{Binding WestgardErrors}" FontWeight="Bold"/>
+                            </TextBlock>
+
                         </Grid>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>

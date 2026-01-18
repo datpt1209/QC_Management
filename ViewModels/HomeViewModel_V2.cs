@@ -301,9 +301,14 @@ namespace QC_Management.ViewModels
 
             }, async (p) =>
             {
+                // load UI lists and preserve selected device/test when possible
                 await LoadNew();
-                if (SelectedDevice != null)
+
+                // If a device and test are already selected (e.g. navigating back), ensure List is repopulated
+                // before drawing charts to avoid the "No data" message.
+                if (SelectedDevice != null && SelectedTest != null)
                 {
+                    await UpdateLissResultAsync();
                     await ViewChart(List);
                 }
             });
@@ -368,7 +373,7 @@ namespace QC_Management.ViewModels
 
             PrintChartCommand = new RelayCommand<object>((p) =>
             {
-                if (SelectedTest == null || SelectedDevice == null|| SelectedTest.TestType == 1)
+                if (SelectedTest == null || SelectedDevice == null || List.Count == 0 || SelectedTest.TestType == 1)
                     return false;
  
                 else
@@ -383,7 +388,7 @@ namespace QC_Management.ViewModels
 
             });
 
-            DeviceSelectionChangedCommand = new RelayCommand<ControlInfo>((p) => true, async (p) =>
+            DeviceSelectionChangedCommand = new RelayCommand<ControlInfo>((p) => 
             {
                 return true;
 
@@ -490,8 +495,8 @@ namespace QC_Management.ViewModels
             .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
             .Where(s => s.IdDevice == SelectedDevice.Id
                        && s.IdTest == SelectedTest.Id
-                       && s.DateRun >= StartDate
-                       && s.DateRun <= EndDate)
+                       && s.DateRun.Date >= StartDate.Date
+                       && s.DateRun.Date <= EndDate.Date)
             .OrderBy(s => s.DateRun.Year)
             .ThenBy(s => s.DateRun.Month)
             .ThenBy(s => s.DateRun.Day)
@@ -564,7 +569,8 @@ namespace QC_Management.ViewModels
             {
                 _dbContext = await Task.Run(() =>  DataProvider.Ins.DB);
                 DeviceList = new ObservableCollection<Device>(_dbContext.Devices);
-                if(SelectedDevice != null)
+                List = new ObservableCollection<Result>();
+                if (SelectedDevice != null)
                 {
                     TestList = new ObservableCollection<Test>(_dbContext.DeviceTests
                         .Where(s => s.IdDevice == SelectedDevice.Id)
@@ -797,7 +803,19 @@ namespace QC_Management.ViewModels
             if (value.ZScore <= -4) return -4;
             return value.ZScore.Value;
         })
-        .Fill((value, index) => (value.ZScore.HasValue && (value.ZScore > 2 || value.ZScore < -2)) ? Brushes.Red : null)
+//.Fill((value, index) => (value.ZScore.HasValue && (value.ZScore > 2 || value.ZScore < -2)) ? Brushes.Red : null)
+// replace this line:
+// .Fill((value, index) => (bool)(value.IsOutRange) ? Brushes.Red : null)
+// with either of these:
+
+// Option A — null -> true using null-coalescing
+        .Fill((value, index) => (value.IsOutRange ?? true) ? Brushes.Red : null)
+
+// Option B — null -> true using GetValueOrDefault
+        .Fill((value, index) => value.IsOutRange.GetValueOrDefault(true) ? Brushes.Red : null)
+
+// Option C — equivalent using explicit null check
+        .Fill((value, index) => (value.IsOutRange == null || value.IsOutRange == true) ? Brushes.Red : null)
         .Stroke(item => Brushes.Transparent);
 
             await Task.Run(() =>

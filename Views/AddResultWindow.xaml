@@ -176,6 +176,27 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+
+                    <!-- New Westgard error column -->
+                    <DataGridTextColumn Header="Lỗi Westgard" Binding="{Binding WestgardRule}" IsReadOnly="True" Width="200">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <!-- default: highlight when a rule exists -->
+                                <Setter Property="Foreground" Value="Red"/>
+                                <Setter Property="ToolTip" Value="{Binding WestgardRule}"/>
+                                <Style.Triggers>
+                                    <!-- don't highlight when null or empty -->
+                                    <DataTrigger Binding="{Binding WestgardRule}" Value="{x:Null}">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding WestgardRule}" Value="">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
                 </DataGrid.Columns>
             </DataGrid>
         </materialDesign:Card>

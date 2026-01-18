@@ -14,4 +14,8 @@ public partial class DeviceTest : BaseViewModel
     public virtual Device IdDeviceNavigation { get; set; } = null!;
 
     public virtual Test IdTestNavigation { get; set; } = null!;
+
+    // New: JSON-serialized selected Westgard rule keys for this device-test mapping.
+    // Example: '["1_2S","1_3S","R-4s"]'
+    public string? WestgardRulesJson { get; set; }
 }

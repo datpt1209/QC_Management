@@ -34,6 +34,9 @@ namespace QC_Management.ViewModels
         public ICommand LoadCALViewCommand { get; set; }
         public ICommand LoadCALDetailViewCommand { get; set; }
 
+        // New command to open Incident / CorrectiveAction management
+        public ICommand LoadIncidentManagementViewCommand { get; set; }
+
         public BaseViewModel CurrentView
         {
             get { return _currentView; }
@@ -72,6 +75,9 @@ namespace QC_Management.ViewModels
             LoadTestViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new TestViewModel()));
             LoadDeviceViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new DeviceViewModel()));
             LoadCALViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new CAL_InforViewModel()));
+
+            // Initialize new incident management command
+            LoadIncidentManagementViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new IncidentManagementViewModel()));
         }
 
         private void LoadWindow(Window window)

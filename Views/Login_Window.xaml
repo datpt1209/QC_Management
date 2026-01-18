@@ -8,164 +8,225 @@
         xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
         xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
         TextElement.Foreground="{DynamicResource MaterialDesignBody}"
-        TextElement.FontWeight="Regular"
-        TextElement.FontSize="13"
-        TextOptions.TextFormattingMode="Ideal"
-        TextOptions.TextRenderingMode="Auto"
-        Background="{DynamicResource MaterialDesignPaper}"
         FontFamily="{DynamicResource MaterialDesignFont}"
+        Background="#FFF0F4F8"
         ResizeMode="NoResize"
+        SizeToContent="Height"
+        Width="430"
         WindowStartupLocation="CenterScreen"
         DataContext="{StaticResource LoginVM}"
         Name="login_Window"
-        Title="Đăng nhập" Height="300" Width="400"
+        Title="Đăng nhập"
         FocusManager.FocusedElement="{Binding ElementName=UserNameTextBox}">
+
+    <Window.Resources>
+        <!-- Tight input spacing like CorrectActionWindow -->
+        <Style TargetType="TextBox" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinHeight" Value="34"/>
+        </Style>
+        <Style TargetType="PasswordBox" BasedOn="{StaticResource MaterialDesignFloatingHintPasswordBox}">
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="MinHeight" Value="34"/>
+        </Style>
+
+        <!-- small circular icon button (for footer icons) -->
+        <Style x:Key="IconOnlyButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Width" Value="44"/>
+            <Setter Property="Height" Value="44"/>
+            <Setter Property="Padding" Value="6"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="bd" Background="{TemplateBinding Background}" CornerRadius="22">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#E3F2FD"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="bd" Property="Background" Value="#BBDEFB"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- primary button with icon + text -->
+        <Style x:Key="IconTextButtonStyle" TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+            <Setter Property="Padding" Value="8,6"/>
+        </Style>
+
+        <!-- Reusable link-button style (kept for older text links if needed) -->
+        <Style x:Key="LinkButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Foreground" Value="Blue" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <TextBlock TextDecorations="Underline">
+                            <ContentPresenter />
+                        </TextBlock>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Foreground" Value="#D32F2F"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction 
                 CommandParameter="{Binding ElementName=login_Window}"
-                Command="{Binding Window_Loaded}">
-            </i:InvokeCommandAction>
+                Command="{Binding Window_Loaded}" />
         </i:EventTrigger>
     </i:Interaction.Triggers>
 
-    <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
-        </Grid.RowDefinitions>
-
-        <TextBlock Grid.Row ="0" 
-             Style="{StaticResource MaterialDesignHeadline4TextBlock}"
-             Text="Đăng nhập" Height="45" VerticalAlignment="Top" />
-
-        <materialDesign:Card Grid.Row="1" Width="357" Height="200" HorizontalAlignment="Center" VerticalAlignment="Center">
+    <Grid Margin="12">
+        <!-- Single-column white card (no left info column) -->
+        <Border CornerRadius="10" Background="White" Padding="18"
+                Effect="{DynamicResource MaterialDesignElevationShadow8}">
             <Grid>
-                <Grid.Resources>
-                    <Style TargetType="Grid">
-                        <Setter Property="Margin" Value="15 0 15 0"></Setter>
-                    </Style>
-                </Grid.Resources>
                 <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
-                <Grid Grid.Row="0">
-                    <TextBox x:Name="UserNameTextBox"
-                             materialDesign:HintAssist.Hint="Tên đăng nhập"
-                             Text="{Binding UserName}"
-                             Style="{StaticResource MaterialDesignFloatingHintTextBox}" />
-                </Grid>
-                <Grid Grid.Row="1">
-                    <PasswordBox x:Name="FloatingPasswordBox"
-                                 materialDesign:HintAssist.Hint="Mật khẩu"
-                                 Style="{StaticResource MaterialDesignFloatingHintPasswordBox}" >
-                        <i:Interaction.Triggers>
-                            <i:EventTrigger EventName="PasswordChanged">
-                                <i:InvokeCommandAction Command="{Binding PasswordChangedCommand}" 
-                                   CommandParameter="{Binding ElementName=FloatingPasswordBox}"/>
-                            </i:EventTrigger>
-                        </i:Interaction.Triggers>
-                    </PasswordBox>
-                </Grid>
-                <Grid Grid.Row="2">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Margin="2,0"
-                                Width="110"
+
+                <!-- Title -->
+                <TextBlock Grid.Row="0" Text="Đăng nhập" FontSize="18" FontWeight="Bold" Foreground="#222" Margin="2" HorizontalAlignment="Center"/>
+
+                <!-- Inputs: outlined box wrappers with icons, using MaterialDesign styles inside (text controls borderless) -->
+                <StackPanel Grid.Row="1" Orientation="Vertical" Margin="10,12,10,0" HorizontalAlignment="Center" Width="330" >
+                    <!-- Username outlined input with icon -->
+                    <Border Height="46" CornerRadius="6" BorderThickness="1" BorderBrush="#90CAF9" Background="White" Margin="0,6" Padding="6">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="21*"/>
+                                <RowDefinition Height="11*"/>
+                            </Grid.RowDefinitions>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <materialDesign:PackIcon Kind="Account" Width="20" Height="20" HorizontalAlignment="Center" Foreground="#616161" Margin="0,6,0,0" Grid.RowSpan="2"/>
+
+                            <!-- keep MaterialDesign floating hint behaviour but remove its own border so outline is from surrounding Border -->
+                            <TextBox x:Name="UserNameTextBox" Grid.Column="1"
+                                     Style="{StaticResource MaterialDesignFloatingHintTextBox}"
+                                     BorderThickness="0"
+                                     Background="Transparent"
+                                     materialDesign:HintAssist.Hint="Tên đăng nhập"
+                                     Text="{Binding UserName}"
+                                     VerticalContentAlignment="Center" Grid.RowSpan="2" />
+                        </Grid>
+                    </Border>
+
+                    <!-- Password outlined input with icon -->
+                    <Border Height="46" CornerRadius="6" BorderThickness="1" BorderBrush="#90CAF9" Background="White" Margin="0,6" Padding="6">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <materialDesign:PackIcon Grid.Column="0" Kind="Lock" Width="20" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#616161"/>
+
+                            <!-- PasswordBox uses floating hint style but borderless so outer Border provides the outline -->
+                            <PasswordBox x:Name="FloatingPasswordBox" Grid.Column="1"
+                                         Style="{StaticResource MaterialDesignRevealPasswordBox}"
+                                         BorderThickness="0"
+                                         Background="Transparent"
+                                         materialDesign:HintAssist.Hint="Mật khẩu"
+                                         PasswordChar="●">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="PasswordChanged">
+                                        <i:InvokeCommandAction Command="{Binding PasswordChangedCommand}"
+                                 CommandParameter="{Binding ElementName=FloatingPasswordBox}"/>
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                            </PasswordBox>
+                        </Grid>
+                    </Border>
+                </StackPanel>
+
+                <!-- Remember + actions -->
+                <DockPanel Grid.Row="2"
+                           LastChildFill="False"
+                           Margin="10,12,10,0">
+                    <CheckBox Content="Ghi nhớ đăng nhập"
+                              IsChecked="{Binding RememberMe}" VerticalAlignment="Center" DockPanel.Dock="Left" />
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right">
+                        <!-- Login: icon + text for clarity -->
+                        <Button Width="110" Margin="6,0,0,0"
                                 Command="{Binding LoginCommand}"
                                 CommandParameter="{Binding ElementName=login_Window}"
                                 materialDesign:ButtonProgressAssist.IsIndeterminate="{Binding IsIndeterminate}"
                                 materialDesign:ButtonProgressAssist.IsIndicatorVisible="True"
                                 materialDesign:ButtonProgressAssist.Value="-1"
-                                Content="Đăng nhập"
-                            IsDefault="True"
-                                IsEnabled="True"
-                                Style="{StaticResource MaterialDesignRaisedButton}" />
-                  
-                    <Button Grid.Column="1"    
-                            Style="{StaticResource MaterialDesignRaisedButton}"    
-                            Width="110"   
-                            Command="{Binding CloseCommand}"   
-                            CommandParameter="{Binding ElementName=login_Window}"
-                            Background="OrangeRed"
-                            ToolTip="Resource name: MaterialDesignRaisedButton" Content="Thoát"></Button>
-                </Grid>
-                <Grid Grid.Row="3">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition ></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                        <ColumnDefinition></ColumnDefinition>
-                    </Grid.ColumnDefinitions>
-                    <Button Grid.Column="0" Content="Đăng ký tài khoản" Cursor="Hand" Canvas.Left="102"
-                                       Command="{Binding RegisterCommand}" Margin="0,10,0,18">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <TextBlock TextDecorations="Underline">
-                                    <ContentPresenter />
-                                </TextBlock>
-                            </ControlTemplate>
-                        </Button.Template>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Foreground" Value="Blue" />
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter Property="Foreground" Value="Red" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                                IsDefault="True"
+                                Style="{StaticResource IconTextButtonStyle}">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Check" Width="18" Height="18" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <TextBlock Text="Đăng nhập" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
 
-                    <Button Grid.Column="1" Content="Quên mật khẩu" Cursor="Hand" 
-                                       Command="{Binding ForgotPasswordCommand}" Margin="10">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <TextBlock TextDecorations="Underline">
-                                    <ContentPresenter />
-                                </TextBlock>
-                            </ControlTemplate>
-                        </Button.Template>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Foreground" Value="Blue" />
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter Property="Foreground" Value="Red" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
+                        <!-- Close: icon + text, colored -->
+                        <Button Width="90" Margin="6,0,0,0"
+                                Command="{Binding CloseCommand}"
+                                CommandParameter="{Binding ElementName=login_Window}"
+                                Style="{StaticResource IconTextButtonStyle}"
+                                Background="OrangeRed"
+                                Foreground="White">
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <materialDesign:PackIcon Kind="Close" Width="16" Height="16" VerticalAlignment="Center" Margin="0,0,6,0" />
+                                <TextBlock Text="Thoát" VerticalAlignment="Center"/>
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </DockPanel>
 
-                    <Button Grid.Column="2" Content="Config" Cursor="Hand" Canvas.Left="102"
-                                       Command="{Binding ConfigCommand}" Margin="10">
-                        <Button.Template>
-                            <ControlTemplate TargetType="Button">
-                                <TextBlock TextDecorations="Underline">
-                                    <ContentPresenter />
-                                </TextBlock>
-                            </ControlTemplate>
-                        </Button.Template>
-                        <Button.Style>
-                            <Style TargetType="Button">
-                                <Setter Property="Foreground" Value="Blue" />
-                                <Style.Triggers>
-                                    <Trigger Property="IsMouseOver" Value="true">
-                                        <Setter Property="Foreground" Value="Red" />
-                                    </Trigger>
-                                </Style.Triggers>
-                            </Style>
-                        </Button.Style>
-                    </Button>
-                </Grid>
+                <!-- Footer: icon-only circular buttons with tooltip + small label under each icon for accessibility -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,12,0">
+                        <Button Style="{StaticResource IconOnlyButtonStyle}" Command="{Binding RegisterCommand}" ToolTip="Đăng ký tài khoản" AutomationProperties.Name="Đăng ký">
+                            <materialDesign:PackIcon Kind="AccountPlus" Width="20" Height="20" Foreground="#1976D2"/>
+                        </Button>
+                        <TextBlock Text="Đăng ký" FontSize="11" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignSecondaryBody}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="0,0,12,0">
+                        <Button Style="{StaticResource IconOnlyButtonStyle}" Command="{Binding ForgotPasswordCommand}" ToolTip="Quên mật khẩu" AutomationProperties.Name="Quên mật khẩu">
+                            <materialDesign:PackIcon Kind="HelpCircle" Width="20" Height="20" Foreground="#1976D2"/>
+                        </Button>
+                        <TextBlock Text="Quên mật khẩu" FontSize="11" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignSecondaryBody}" />
+                    </StackPanel>
+
+                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center">
+                        <Button Style="{StaticResource IconOnlyButtonStyle}" Command="{Binding ConfigCommand}" ToolTip="Cấu hình" AutomationProperties.Name="Cấu hình">
+                            <materialDesign:PackIcon Kind="Cog" Width="20" Height="20" Foreground="#1976D2"/>
+                        </Button>
+                        <TextBlock Text="Cấu hình" FontSize="11" HorizontalAlignment="Center" Foreground="{DynamicResource MaterialDesignSecondaryBody}" />
+                    </StackPanel>
+                </StackPanel>
             </Grid>
-        </materialDesign:Card>
+        </Border>
     </Grid>
 </Window>

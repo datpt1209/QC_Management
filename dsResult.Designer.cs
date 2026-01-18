@@ -28,6 +28,8 @@ namespace QC_Management {
         
         private dtCalResultDataTable tabledtCalResult;
         
+        private dtCorrectActionDataTable tabledtCorrectAction;
+        
         private global::System.Data.SchemaSerializationMode _schemaSerializationMode = global::System.Data.SchemaSerializationMode.IncludeSchema;
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -61,6 +63,9 @@ namespace QC_Management {
                 }
                 if ((ds.Tables["dtCalResult"] != null)) {
                     base.Tables.Add(new dtCalResultDataTable(ds.Tables["dtCalResult"]));
+                }
+                if ((ds.Tables["dtCorrectAction"] != null)) {
+                    base.Tables.Add(new dtCorrectActionDataTable(ds.Tables["dtCorrectAction"]));
                 }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
@@ -97,6 +102,16 @@ namespace QC_Management {
         public dtCalResultDataTable dtCalResult {
             get {
                 return this.tabledtCalResult;
+            }
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        [global::System.ComponentModel.Browsable(false)]
+        [global::System.ComponentModel.DesignerSerializationVisibility(global::System.ComponentModel.DesignerSerializationVisibility.Content)]
+        public dtCorrectActionDataTable dtCorrectAction {
+            get {
+                return this.tabledtCorrectAction;
             }
         }
         
@@ -173,6 +188,9 @@ namespace QC_Management {
                 if ((ds.Tables["dtCalResult"] != null)) {
                     base.Tables.Add(new dtCalResultDataTable(ds.Tables["dtCalResult"]));
                 }
+                if ((ds.Tables["dtCorrectAction"] != null)) {
+                    base.Tables.Add(new dtCorrectActionDataTable(ds.Tables["dtCorrectAction"]));
+                }
                 this.DataSetName = ds.DataSetName;
                 this.Prefix = ds.Prefix;
                 this.Namespace = ds.Namespace;
@@ -218,6 +236,12 @@ namespace QC_Management {
                     this.tabledtCalResult.InitVars();
                 }
             }
+            this.tabledtCorrectAction = ((dtCorrectActionDataTable)(base.Tables["dtCorrectAction"]));
+            if ((initTable == true)) {
+                if ((this.tabledtCorrectAction != null)) {
+                    this.tabledtCorrectAction.InitVars();
+                }
+            }
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -232,6 +256,8 @@ namespace QC_Management {
             base.Tables.Add(this.tabledtResult);
             this.tabledtCalResult = new dtCalResultDataTable();
             base.Tables.Add(this.tabledtCalResult);
+            this.tabledtCorrectAction = new dtCorrectActionDataTable();
+            base.Tables.Add(this.tabledtCorrectAction);
         }
         
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -243,6 +269,12 @@ namespace QC_Management {
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         private bool ShouldSerializedtCalResult() {
+            return false;
+        }
+        
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        private bool ShouldSerializedtCorrectAction() {
             return false;
         }
         
@@ -307,6 +339,9 @@ namespace QC_Management {
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
         public delegate void dtCalResultRowChangeEventHandler(object sender, dtCalResultRowChangeEvent e);
         
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        public delegate void dtCorrectActionRowChangeEventHandler(object sender, dtCorrectActionRowChangeEvent e);
+        
         /// <summary>
         ///Represents the strongly named DataTable class.
         ///</summary>
@@ -367,6 +402,8 @@ namespace QC_Management {
             private global::System.Data.DataColumn columnIsOutRange;
             
             private global::System.Data.DataColumn columnId;
+            
+            private global::System.Data.DataColumn columnIsCorrected;
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -619,6 +656,14 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsCorrectedColumn {
+                get {
+                    return this.columnIsCorrected;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -681,7 +726,8 @@ namespace QC_Management {
                         string ResultType, 
                         string QualitativeRange, 
                         string IsOutRange, 
-                        string Id) {
+                        string Id, 
+                        string IsCorrected) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -710,7 +756,8 @@ namespace QC_Management {
                         ResultType,
                         QualitativeRange,
                         IsOutRange,
-                        Id};
+                        Id,
+                        IsCorrected};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -760,6 +807,7 @@ namespace QC_Management {
                 this.columnQualitativeRange = base.Columns["QualitativeRange"];
                 this.columnIsOutRange = base.Columns["IsOutRange"];
                 this.columnId = base.Columns["Id"];
+                this.columnIsCorrected = base.Columns["IsCorrected"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -819,6 +867,8 @@ namespace QC_Management {
                 base.Columns.Add(this.columnIsOutRange);
                 this.columnId = new global::System.Data.DataColumn("Id", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnId);
+                this.columnIsCorrected = new global::System.Data.DataColumn("IsCorrected", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsCorrected);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -1375,6 +1425,524 @@ namespace QC_Management {
         }
         
         /// <summary>
+        ///Represents the strongly named DataTable class.
+        ///</summary>
+        [global::System.Serializable()]
+        [global::System.Xml.Serialization.XmlSchemaProviderAttribute("GetTypedTableSchema")]
+        public partial class dtCorrectActionDataTable : global::System.Data.TypedTableBase<dtCorrectActionRow> {
+            
+            private global::System.Data.DataColumn columnInternalErrorId;
+            
+            private global::System.Data.DataColumn columnResolvingResultId;
+            
+            private global::System.Data.DataColumn columnActionDescription;
+            
+            private global::System.Data.DataColumn columnActionOwner;
+            
+            private global::System.Data.DataColumn columnActionCompleteAt;
+            
+            private global::System.Data.DataColumn columnOutcome;
+            
+            private global::System.Data.DataColumn columnCause;
+            
+            private global::System.Data.DataColumn columnCreatedAt;
+            
+            private global::System.Data.DataColumn columnCreatedBy;
+            
+            private global::System.Data.DataColumn columnDevice;
+            
+            private global::System.Data.DataColumn columnErrorDescription;
+            
+            private global::System.Data.DataColumn columnLevel;
+            
+            private global::System.Data.DataColumn columnTestName;
+            
+            private global::System.Data.DataColumn columnReferenceRangeBefore;
+            
+            private global::System.Data.DataColumn columnPreCorrectResult;
+            
+            private global::System.Data.DataColumn columnPostCorrectResult;
+            
+            private global::System.Data.DataColumn columnReferenceRangeAfter;
+            
+            private global::System.Data.DataColumn columnPreventiveAction;
+            
+            private global::System.Data.DataColumn columnUnit;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionDataTable() {
+                this.TableName = "dtCorrectAction";
+                this.BeginInit();
+                this.InitClass();
+                this.EndInit();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            internal dtCorrectActionDataTable(global::System.Data.DataTable table) {
+                this.TableName = table.TableName;
+                if ((table.CaseSensitive != table.DataSet.CaseSensitive)) {
+                    this.CaseSensitive = table.CaseSensitive;
+                }
+                if ((table.Locale.ToString() != table.DataSet.Locale.ToString())) {
+                    this.Locale = table.Locale;
+                }
+                if ((table.Namespace != table.DataSet.Namespace)) {
+                    this.Namespace = table.Namespace;
+                }
+                this.Prefix = table.Prefix;
+                this.MinimumCapacity = table.MinimumCapacity;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected dtCorrectActionDataTable(global::System.Runtime.Serialization.SerializationInfo info, global::System.Runtime.Serialization.StreamingContext context) : 
+                    base(info, context) {
+                this.InitVars();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn InternalErrorIdColumn {
+                get {
+                    return this.columnInternalErrorId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ResolvingResultIdColumn {
+                get {
+                    return this.columnResolvingResultId;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ActionDescriptionColumn {
+                get {
+                    return this.columnActionDescription;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ActionOwnerColumn {
+                get {
+                    return this.columnActionOwner;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ActionCompleteAtColumn {
+                get {
+                    return this.columnActionCompleteAt;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn OutcomeColumn {
+                get {
+                    return this.columnOutcome;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn CauseColumn {
+                get {
+                    return this.columnCause;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn CreatedAtColumn {
+                get {
+                    return this.columnCreatedAt;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn CreatedByColumn {
+                get {
+                    return this.columnCreatedBy;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn DeviceColumn {
+                get {
+                    return this.columnDevice;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ErrorDescriptionColumn {
+                get {
+                    return this.columnErrorDescription;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn LevelColumn {
+                get {
+                    return this.columnLevel;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn TestNameColumn {
+                get {
+                    return this.columnTestName;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ReferenceRangeBeforeColumn {
+                get {
+                    return this.columnReferenceRangeBefore;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PreCorrectResultColumn {
+                get {
+                    return this.columnPreCorrectResult;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PostCorrectResultColumn {
+                get {
+                    return this.columnPostCorrectResult;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn ReferenceRangeAfterColumn {
+                get {
+                    return this.columnReferenceRangeAfter;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn PreventiveActionColumn {
+                get {
+                    return this.columnPreventiveAction;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn UnitColumn {
+                get {
+                    return this.columnUnit;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            [global::System.ComponentModel.Browsable(false)]
+            public int Count {
+                get {
+                    return this.Rows.Count;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionRow this[int index] {
+                get {
+                    return ((dtCorrectActionRow)(this.Rows[index]));
+                }
+            }
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event dtCorrectActionRowChangeEventHandler dtCorrectActionRowChanging;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event dtCorrectActionRowChangeEventHandler dtCorrectActionRowChanged;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event dtCorrectActionRowChangeEventHandler dtCorrectActionRowDeleting;
+            
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public event dtCorrectActionRowChangeEventHandler dtCorrectActionRowDeleted;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void AdddtCorrectActionRow(dtCorrectActionRow row) {
+                this.Rows.Add(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionRow AdddtCorrectActionRow(
+                        string InternalErrorId, 
+                        string ResolvingResultId, 
+                        string ActionDescription, 
+                        string ActionOwner, 
+                        System.DateTime ActionCompleteAt, 
+                        string Outcome, 
+                        string Cause, 
+                        System.DateTime CreatedAt, 
+                        string CreatedBy, 
+                        string Device, 
+                        string ErrorDescription, 
+                        string Level, 
+                        string TestName, 
+                        string ReferenceRangeBefore, 
+                        string PreCorrectResult, 
+                        string PostCorrectResult, 
+                        string ReferenceRangeAfter, 
+                        string PreventiveAction, 
+                        string Unit) {
+                dtCorrectActionRow rowdtCorrectActionRow = ((dtCorrectActionRow)(this.NewRow()));
+                object[] columnValuesArray = new object[] {
+                        InternalErrorId,
+                        ResolvingResultId,
+                        ActionDescription,
+                        ActionOwner,
+                        ActionCompleteAt,
+                        Outcome,
+                        Cause,
+                        CreatedAt,
+                        CreatedBy,
+                        Device,
+                        ErrorDescription,
+                        Level,
+                        TestName,
+                        ReferenceRangeBefore,
+                        PreCorrectResult,
+                        PostCorrectResult,
+                        ReferenceRangeAfter,
+                        PreventiveAction,
+                        Unit};
+                rowdtCorrectActionRow.ItemArray = columnValuesArray;
+                this.Rows.Add(rowdtCorrectActionRow);
+                return rowdtCorrectActionRow;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public override global::System.Data.DataTable Clone() {
+                dtCorrectActionDataTable cln = ((dtCorrectActionDataTable)(base.Clone()));
+                cln.InitVars();
+                return cln;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Data.DataTable CreateInstance() {
+                return new dtCorrectActionDataTable();
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            internal void InitVars() {
+                this.columnInternalErrorId = base.Columns["InternalErrorId"];
+                this.columnResolvingResultId = base.Columns["ResolvingResultId"];
+                this.columnActionDescription = base.Columns["ActionDescription"];
+                this.columnActionOwner = base.Columns["ActionOwner"];
+                this.columnActionCompleteAt = base.Columns["ActionCompleteAt"];
+                this.columnOutcome = base.Columns["Outcome"];
+                this.columnCause = base.Columns["Cause"];
+                this.columnCreatedAt = base.Columns["CreatedAt"];
+                this.columnCreatedBy = base.Columns["CreatedBy"];
+                this.columnDevice = base.Columns["Device"];
+                this.columnErrorDescription = base.Columns["ErrorDescription"];
+                this.columnLevel = base.Columns["Level"];
+                this.columnTestName = base.Columns["TestName"];
+                this.columnReferenceRangeBefore = base.Columns["ReferenceRangeBefore"];
+                this.columnPreCorrectResult = base.Columns["PreCorrectResult"];
+                this.columnPostCorrectResult = base.Columns["PostCorrectResult"];
+                this.columnReferenceRangeAfter = base.Columns["ReferenceRangeAfter"];
+                this.columnPreventiveAction = base.Columns["PreventiveAction"];
+                this.columnUnit = base.Columns["Unit"];
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            private void InitClass() {
+                this.columnInternalErrorId = new global::System.Data.DataColumn("InternalErrorId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnInternalErrorId);
+                this.columnResolvingResultId = new global::System.Data.DataColumn("ResolvingResultId", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnResolvingResultId);
+                this.columnActionDescription = new global::System.Data.DataColumn("ActionDescription", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnActionDescription);
+                this.columnActionOwner = new global::System.Data.DataColumn("ActionOwner", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnActionOwner);
+                this.columnActionCompleteAt = new global::System.Data.DataColumn("ActionCompleteAt", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnActionCompleteAt);
+                this.columnOutcome = new global::System.Data.DataColumn("Outcome", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnOutcome);
+                this.columnCause = new global::System.Data.DataColumn("Cause", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCause);
+                this.columnCreatedAt = new global::System.Data.DataColumn("CreatedAt", typeof(global::System.DateTime), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCreatedAt);
+                this.columnCreatedBy = new global::System.Data.DataColumn("CreatedBy", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnCreatedBy);
+                this.columnDevice = new global::System.Data.DataColumn("Device", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnDevice);
+                this.columnErrorDescription = new global::System.Data.DataColumn("ErrorDescription", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnErrorDescription);
+                this.columnLevel = new global::System.Data.DataColumn("Level", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnLevel);
+                this.columnTestName = new global::System.Data.DataColumn("TestName", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnTestName);
+                this.columnReferenceRangeBefore = new global::System.Data.DataColumn("ReferenceRangeBefore", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnReferenceRangeBefore);
+                this.columnPreCorrectResult = new global::System.Data.DataColumn("PreCorrectResult", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPreCorrectResult);
+                this.columnPostCorrectResult = new global::System.Data.DataColumn("PostCorrectResult", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPostCorrectResult);
+                this.columnReferenceRangeAfter = new global::System.Data.DataColumn("ReferenceRangeAfter", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnReferenceRangeAfter);
+                this.columnPreventiveAction = new global::System.Data.DataColumn("PreventiveAction", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnPreventiveAction);
+                this.columnUnit = new global::System.Data.DataColumn("Unit", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnUnit);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionRow NewdtCorrectActionRow() {
+                return ((dtCorrectActionRow)(this.NewRow()));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Data.DataRow NewRowFromBuilder(global::System.Data.DataRowBuilder builder) {
+                return new dtCorrectActionRow(builder);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override global::System.Type GetRowType() {
+                return typeof(dtCorrectActionRow);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowChanged(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanged(e);
+                if ((this.dtCorrectActionRowChanged != null)) {
+                    this.dtCorrectActionRowChanged(this, new dtCorrectActionRowChangeEvent(((dtCorrectActionRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowChanging(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowChanging(e);
+                if ((this.dtCorrectActionRowChanging != null)) {
+                    this.dtCorrectActionRowChanging(this, new dtCorrectActionRowChangeEvent(((dtCorrectActionRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowDeleted(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleted(e);
+                if ((this.dtCorrectActionRowDeleted != null)) {
+                    this.dtCorrectActionRowDeleted(this, new dtCorrectActionRowChangeEvent(((dtCorrectActionRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            protected override void OnRowDeleting(global::System.Data.DataRowChangeEventArgs e) {
+                base.OnRowDeleting(e);
+                if ((this.dtCorrectActionRowDeleting != null)) {
+                    this.dtCorrectActionRowDeleting(this, new dtCorrectActionRowChangeEvent(((dtCorrectActionRow)(e.Row)), e.Action));
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void RemovedtCorrectActionRow(dtCorrectActionRow row) {
+                this.Rows.Remove(row);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public static global::System.Xml.Schema.XmlSchemaComplexType GetTypedTableSchema(global::System.Xml.Schema.XmlSchemaSet xs) {
+                global::System.Xml.Schema.XmlSchemaComplexType type = new global::System.Xml.Schema.XmlSchemaComplexType();
+                global::System.Xml.Schema.XmlSchemaSequence sequence = new global::System.Xml.Schema.XmlSchemaSequence();
+                dsResult ds = new dsResult();
+                global::System.Xml.Schema.XmlSchemaAny any1 = new global::System.Xml.Schema.XmlSchemaAny();
+                any1.Namespace = "http://www.w3.org/2001/XMLSchema";
+                any1.MinOccurs = new decimal(0);
+                any1.MaxOccurs = decimal.MaxValue;
+                any1.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any1);
+                global::System.Xml.Schema.XmlSchemaAny any2 = new global::System.Xml.Schema.XmlSchemaAny();
+                any2.Namespace = "urn:schemas-microsoft-com:xml-diffgram-v1";
+                any2.MinOccurs = new decimal(1);
+                any2.ProcessContents = global::System.Xml.Schema.XmlSchemaContentProcessing.Lax;
+                sequence.Items.Add(any2);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute1 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute1.Name = "namespace";
+                attribute1.FixedValue = ds.Namespace;
+                type.Attributes.Add(attribute1);
+                global::System.Xml.Schema.XmlSchemaAttribute attribute2 = new global::System.Xml.Schema.XmlSchemaAttribute();
+                attribute2.Name = "tableTypeName";
+                attribute2.FixedValue = "dtCorrectActionDataTable";
+                type.Attributes.Add(attribute2);
+                type.Particle = sequence;
+                global::System.Xml.Schema.XmlSchema dsSchema = ds.GetSchemaSerializable();
+                if (xs.Contains(dsSchema.TargetNamespace)) {
+                    global::System.IO.MemoryStream s1 = new global::System.IO.MemoryStream();
+                    global::System.IO.MemoryStream s2 = new global::System.IO.MemoryStream();
+                    try {
+                        global::System.Xml.Schema.XmlSchema schema = null;
+                        dsSchema.Write(s1);
+                        for (global::System.Collections.IEnumerator schemas = xs.Schemas(dsSchema.TargetNamespace).GetEnumerator(); schemas.MoveNext(); ) {
+                            schema = ((global::System.Xml.Schema.XmlSchema)(schemas.Current));
+                            s2.SetLength(0);
+                            schema.Write(s2);
+                            if ((s1.Length == s2.Length)) {
+                                s1.Position = 0;
+                                s2.Position = 0;
+                                for (; ((s1.Position != s1.Length) 
+                                            && (s1.ReadByte() == s2.ReadByte())); ) {
+                                    ;
+                                }
+                                if ((s1.Position == s1.Length)) {
+                                    return type;
+                                }
+                            }
+                        }
+                    }
+                    finally {
+                        if ((s1 != null)) {
+                            s1.Close();
+                        }
+                        if ((s2 != null)) {
+                            s2.Close();
+                        }
+                    }
+                }
+                xs.Add(dsSchema);
+                return type;
+            }
+        }
+        
+        /// <summary>
         ///Represents strongly named DataRow class.
         ///</summary>
         public partial class dtResultRow : global::System.Data.DataRow {
@@ -1822,6 +2390,22 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsCorrected {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsCorrectedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsCorrected\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsCorrectedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -2142,6 +2726,18 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetIdNull() {
                 this[this.tabledtResult.IdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsCorrectedNull() {
+                return this.IsNull(this.tabledtResult.IsCorrectedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsCorrectedNull() {
+                this[this.tabledtResult.IsCorrectedColumn] = global::System.Convert.DBNull;
             }
         }
         
@@ -2553,6 +3149,554 @@ namespace QC_Management {
         }
         
         /// <summary>
+        ///Represents strongly named DataRow class.
+        ///</summary>
+        public partial class dtCorrectActionRow : global::System.Data.DataRow {
+            
+            private dtCorrectActionDataTable tabledtCorrectAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            internal dtCorrectActionRow(global::System.Data.DataRowBuilder rb) : 
+                    base(rb) {
+                this.tabledtCorrectAction = ((dtCorrectActionDataTable)(this.Table));
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string InternalErrorId {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.InternalErrorIdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'InternalErrorId\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.InternalErrorIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ResolvingResultId {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ResolvingResultIdColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ResolvingResultId\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ResolvingResultIdColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ActionDescription {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ActionDescriptionColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ActionDescription\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ActionDescriptionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ActionOwner {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ActionOwnerColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ActionOwner\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ActionOwnerColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public System.DateTime ActionCompleteAt {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tabledtCorrectAction.ActionCompleteAtColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ActionCompleteAt\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ActionCompleteAtColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Outcome {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.OutcomeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Outcome\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.OutcomeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Cause {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.CauseColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Cause\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.CauseColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public System.DateTime CreatedAt {
+                get {
+                    try {
+                        return ((global::System.DateTime)(this[this.tabledtCorrectAction.CreatedAtColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'CreatedAt\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.CreatedAtColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string CreatedBy {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.CreatedByColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'CreatedBy\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.CreatedByColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Device {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.DeviceColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Device\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.DeviceColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ErrorDescription {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ErrorDescriptionColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ErrorDescription\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ErrorDescriptionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Level {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.LevelColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Level\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.LevelColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string TestName {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.TestNameColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'TestName\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.TestNameColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ReferenceRangeBefore {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ReferenceRangeBeforeColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ReferenceRangeBefore\' in table \'dtCorrectAction\' is DBNull." +
+                                "", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ReferenceRangeBeforeColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string PreCorrectResult {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.PreCorrectResultColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'PreCorrectResult\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.PreCorrectResultColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string PostCorrectResult {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.PostCorrectResultColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'PostCorrectResult\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.PostCorrectResultColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string ReferenceRangeAfter {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.ReferenceRangeAfterColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'ReferenceRangeAfter\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.ReferenceRangeAfterColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string PreventiveAction {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.PreventiveActionColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'PreventiveAction\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.PreventiveActionColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string Unit {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtCorrectAction.UnitColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'Unit\' in table \'dtCorrectAction\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtCorrectAction.UnitColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsInternalErrorIdNull() {
+                return this.IsNull(this.tabledtCorrectAction.InternalErrorIdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetInternalErrorIdNull() {
+                this[this.tabledtCorrectAction.InternalErrorIdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsResolvingResultIdNull() {
+                return this.IsNull(this.tabledtCorrectAction.ResolvingResultIdColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetResolvingResultIdNull() {
+                this[this.tabledtCorrectAction.ResolvingResultIdColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsActionDescriptionNull() {
+                return this.IsNull(this.tabledtCorrectAction.ActionDescriptionColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetActionDescriptionNull() {
+                this[this.tabledtCorrectAction.ActionDescriptionColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsActionOwnerNull() {
+                return this.IsNull(this.tabledtCorrectAction.ActionOwnerColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetActionOwnerNull() {
+                this[this.tabledtCorrectAction.ActionOwnerColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsActionCompleteAtNull() {
+                return this.IsNull(this.tabledtCorrectAction.ActionCompleteAtColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetActionCompleteAtNull() {
+                this[this.tabledtCorrectAction.ActionCompleteAtColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsOutcomeNull() {
+                return this.IsNull(this.tabledtCorrectAction.OutcomeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetOutcomeNull() {
+                this[this.tabledtCorrectAction.OutcomeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsCauseNull() {
+                return this.IsNull(this.tabledtCorrectAction.CauseColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetCauseNull() {
+                this[this.tabledtCorrectAction.CauseColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsCreatedAtNull() {
+                return this.IsNull(this.tabledtCorrectAction.CreatedAtColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetCreatedAtNull() {
+                this[this.tabledtCorrectAction.CreatedAtColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsCreatedByNull() {
+                return this.IsNull(this.tabledtCorrectAction.CreatedByColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetCreatedByNull() {
+                this[this.tabledtCorrectAction.CreatedByColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsDeviceNull() {
+                return this.IsNull(this.tabledtCorrectAction.DeviceColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetDeviceNull() {
+                this[this.tabledtCorrectAction.DeviceColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsErrorDescriptionNull() {
+                return this.IsNull(this.tabledtCorrectAction.ErrorDescriptionColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetErrorDescriptionNull() {
+                this[this.tabledtCorrectAction.ErrorDescriptionColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsLevelNull() {
+                return this.IsNull(this.tabledtCorrectAction.LevelColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetLevelNull() {
+                this[this.tabledtCorrectAction.LevelColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsTestNameNull() {
+                return this.IsNull(this.tabledtCorrectAction.TestNameColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetTestNameNull() {
+                this[this.tabledtCorrectAction.TestNameColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsReferenceRangeBeforeNull() {
+                return this.IsNull(this.tabledtCorrectAction.ReferenceRangeBeforeColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetReferenceRangeBeforeNull() {
+                this[this.tabledtCorrectAction.ReferenceRangeBeforeColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPreCorrectResultNull() {
+                return this.IsNull(this.tabledtCorrectAction.PreCorrectResultColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPreCorrectResultNull() {
+                this[this.tabledtCorrectAction.PreCorrectResultColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPostCorrectResultNull() {
+                return this.IsNull(this.tabledtCorrectAction.PostCorrectResultColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPostCorrectResultNull() {
+                this[this.tabledtCorrectAction.PostCorrectResultColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsReferenceRangeAfterNull() {
+                return this.IsNull(this.tabledtCorrectAction.ReferenceRangeAfterColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetReferenceRangeAfterNull() {
+                this[this.tabledtCorrectAction.ReferenceRangeAfterColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsPreventiveActionNull() {
+                return this.IsNull(this.tabledtCorrectAction.PreventiveActionColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetPreventiveActionNull() {
+                this[this.tabledtCorrectAction.PreventiveActionColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsUnitNull() {
+                return this.IsNull(this.tabledtCorrectAction.UnitColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetUnitNull() {
+                this[this.tabledtCorrectAction.UnitColumn] = global::System.Convert.DBNull;
+            }
+        }
+        
+        /// <summary>
         ///Row event argument class
         ///</summary>
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
@@ -2606,6 +3750,40 @@ namespace QC_Management {
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtCalResultRow Row {
+                get {
+                    return this.eventRow;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataRowAction Action {
+                get {
+                    return this.eventAction;
+                }
+            }
+        }
+        
+        /// <summary>
+        ///Row event argument class
+        ///</summary>
+        [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+        public class dtCorrectActionRowChangeEvent : global::System.EventArgs {
+            
+            private dtCorrectActionRow eventRow;
+            
+            private global::System.Data.DataRowAction eventAction;
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionRowChangeEvent(dtCorrectActionRow row, global::System.Data.DataRowAction action) {
+                this.eventRow = row;
+                this.eventAction = action;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public dtCorrectActionRow Row {
                 get {
                     return this.eventRow;
                 }

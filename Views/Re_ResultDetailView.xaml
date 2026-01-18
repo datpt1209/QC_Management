@@ -61,7 +61,7 @@
                         <materialDesign:TimePicker  
                             Width="140"
                             Margin="5"
-                            SelectedTime="{Binding Time}"
+                            SelectedTime="{Binding TimeAsDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                             materialDesign:HintAssist.HelperText="Helper text"
                             materialDesign:HintAssist.Hint="Pick Time"
                             Is24Hours="True"
@@ -86,17 +86,23 @@
         </Grid>
 
         <Grid Grid.Row="1">
-            <DataGrid Name="input" ItemsSource="{Binding ResutlViewList}" AutoGenerateColumns="False"
-                        SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
-                        CanUserAddRows="False">
+            <DataGrid Name="input"
+                      ItemsSource="{Binding ResutlViewList}"
+                      AutoGenerateColumns="False"
+                      SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
+                      CanUserAddRows="False"
+                      PreviewKeyDown="InputDataGrid_PreviewKeyDown"> <!-- wired handler -->
                 <DataGrid.Columns >
-                    
-                    <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False"
+                    <!-- columns unchanged -->
+                    <DataGridTextColumn Header="Xét nghiệm" 
+                                        CanUserSort="False"
                                         Binding="{Binding TestName}" IsReadOnly="True" />
-                    <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }"
+                    <DataGridTextColumn Header="LOT QC"
+                                        Binding="{Binding LOT }"
                                         CanUserSort="False" IsReadOnly="True" />
 
-                    <DataGridTemplateColumn Header="Qualitative" CanUserSort="False">
+                    <DataGridTemplateColumn Header="Qualitative"
+                                            CanUserSort="False">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
                                 <TextBox Text="{Binding QualitativeMean}">
@@ -157,7 +163,8 @@
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
 
-                    <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding TempResult}">
+                    <DataGridTextColumn Header="Kết quả"
+                                        CanUserSort="False" IsReadOnly="False" Binding="{Binding TempResult}">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="Foreground" Value="Green" />
@@ -187,7 +194,28 @@
                         </DataGridTextColumn.EditingElementStyle>
                     </DataGridTextColumn>
 
-                    <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                    <!-- New Westgard column -->
+                    <DataGridTextColumn Header="Westgard" CanUserSort="False" Binding="{Binding WestgardRule}" Width="*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                                <Setter Property="VerticalAlignment" Value="Center"/>
+                                <!-- default color when rule exists -->
+                                <Setter Property="Foreground" Value="Red"/>
+                                <Setter Property="ToolTip" Value="{Binding WestgardRule}"/>
+                                <Style.Triggers>
+                                    <!-- treat null/empty as no-rule -> show normal color (black) -->
+                                    <DataTrigger Binding="{Binding WestgardRule, TargetNullValue=''}" Value="">
+                                        <Setter Property="Foreground" Value="Black"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+                    <DataGridTextColumn Header="Ghi chú" 
+                                        Width="*" 
+                                        IsReadOnly="False"
+                                        Binding="{Binding Comment}"></DataGridTextColumn>
                 </DataGrid.Columns>
             </DataGrid>
         </Grid>

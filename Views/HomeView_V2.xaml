@@ -7,7 +7,9 @@
              mc:Ignorable="d"          
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
-             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" xmlns:viewmodels="clr-namespace:QC_Management.ViewModels" d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel_V2}"
+             xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
+             xmlns:viewmodels="clr-namespace:QC_Management.ViewModels"
+             d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel_V2}"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
@@ -117,7 +119,8 @@
                         ItemsSource="{Binding TestList}" 
                         DisplayMemberPath="Name" 
                         SelectedItem="{Binding SelectedTest, Mode=TwoWay}" 
-                        d:ItemsSource="{d:SampleData ItemCount=5}">
+                        d:ItemsSource="{d:SampleData ItemCount=5}"
+                        PreviewMouseWheel="ListView_PreviewMouseWheel">
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
                                 <i:InvokeCommandAction Command="{Binding TestSelectionChangedCommand}" />

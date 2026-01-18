@@ -85,7 +85,9 @@ namespace QC_Management.Views
                         Lot = detail?.Lot,
                         DateRun = result.DateRun,
                         Result1 = result.Result1,
-                        Time = result.Time
+                        Time = result.Time,
+                        WestgardErrors = result.WestgardRule
+
                     };
                 }
             }
@@ -102,5 +104,6 @@ namespace QC_Management.Views
         public DateTime DateRun { get; set; }
         public double? Result1 { get; set; }
         public TimeSpan? Time { get; set; }
+        public string WestgardErrors { get; set; }
     }
 }

@@ -1,0 +1,316 @@
+﻿<UserControl x:Class="QC_Management.Views.IncidentManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             mc:Ignorable="d"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             xmlns:conv="clr-namespace:QC_Management.Converters"
+             DataContext="{StaticResource IncidentManagementVM}"
+             d:DesignHeight="600" d:DesignWidth="1200">
+    <UserControl.Resources>
+        <conv:AlternationIndexToNumberConverter x:Key="AlternationIndexToNumberConverter"/>
+        <conv:CorrectiveActionsToSummaryConverter x:Key="ActionsSummaryConverter"/>
+
+        <!-- Replace existing StatusBadge style with this (ContentControl-based) -->
+        <Style x:Key="StatusBadge" TargetType="ContentControl">
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="6,2"/>
+            <Setter Property="HorizontalAlignment" Value="Center"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+            <Setter Property="Background" Value="#FF9E9E9E"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ContentControl">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="12"
+                                Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="Hoàn thành">
+                    <Setter Property="Background" Value="#2E7D32"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="Đang chờ">
+                    <Setter Property="Background" Value="#F9A825"/>
+                </DataTrigger>
+                <DataTrigger Binding="{Binding RelativeSource={RelativeSource Self}, Path=Content}" Value="Lỗi">
+                    <Setter Property="Background" Value="#D32F2F"/>
+                </DataTrigger>
+            </Style.Triggers>
+        </Style>
+        <!-- Row alternation colors -->
+        <SolidColorBrush x:Key="RowEvenBrush" Color="#FFF7F7F8"/>
+        <SolidColorBrush x:Key="RowOddBrush" Color="White"/>
+
+    </UserControl.Resources>
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding LoadedCommand}"/>
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <Grid >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>  <!-- Header -->
+            <RowDefinition Height="Auto"/>  <!-- Filters -->
+            <RowDefinition Height="*"/>     <!-- DataGrid -->
+        </Grid.RowDefinitions>
+
+        <!-- Header -->
+        <Border Grid.Row="0" Height="70" CornerRadius="10" Background="#FF1F2937" Padding="10" Margin="5">
+            <DockPanel>
+                <TextBlock Text="Quản lý lỗi" Foreground="White" FontSize="20" FontWeight="Bold" VerticalAlignment="Center" DockPanel.Dock="Left" />
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" DockPanel.Dock="Right" >
+                    <!-- Status badges must be ContentControl because StatusBadge targets ContentControl -->
+                    <ContentControl Style="{StaticResource StatusBadge}" Content="{Binding SelectedInternalError.Status}" Margin="5,0,5,0"/>
+                    <Button Margin="5,0,5,0" Content="Tải lại" Width="90" Command="{Binding ReloadInternalErrorsCommand}" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
+                    <Button Margin="5,0,5,0" Content="Sửa" Width="90" Command="{Binding EditInternalErrorCommand}" />
+                    <!-- Delete button added -->
+                    <Button Margin="5,0,5,0" Content="Xóa" Width="90" Command="{Binding DeleteInternalErrorCommand}" Background="#D32F2F" Foreground="White" />
+                    <Button Margin="5,0,5,0" Content="Thêm" Width="110" Command="{Binding AddInternalErrorCommand}"
+                            Background="#6B46C1" Foreground="White" FontWeight="SemiBold" />
+                    <Button Margin="5,0,5,0" Content="In" Width="90" Command="{Binding PrintInternalErrorsCommand}" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Filters -->
+        <Border Grid.Row="1" CornerRadius="8" Background="#FFFFFFFF" Padding="10" Margin="5" BorderBrush="#FFDDE6F2" BorderThickness="1" >
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="3*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="2*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="0" >
+                    <TextBlock Text="Thiết bị:" VerticalAlignment="Center" Margin="5"/>
+                    <ComboBox Width="300" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" DisplayMemberPath="Name"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="1" >
+                    <TextBlock Text="Từ ngày" VerticalAlignment="Center" Margin="5"/>
+                    <DatePicker SelectedDate="{Binding SelectedStartDate}" Width="160"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="2" >
+                    <TextBlock Text="Đến ngày" VerticalAlignment="Center" Margin="5"/>
+                    <DatePicker SelectedDate="{Binding SelectedEndDate}" Width="160"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Grid.Column="3" >
+                    <Button Margin="5" Content="Lọc" Width="100" Background="#1976D2" Foreground="White" Command="{Binding FilterInternalErrorsCommand}" />
+                    <Button Margin="5" Content="Bỏ lọc" Width="100" Background="#D32F2F" Foreground="White" Command="{Binding ClearFiltersCommand}" />
+                </StackPanel>
+
+                <!-- corrective action button moved to filters area for visibility -->
+                <StackPanel Orientation="Horizontal" Grid.Column="4" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <Button Margin="5" Content="Khắc phục" Width="120" Command="{Binding OpenCorrectiveActionCommand}">
+                        <Button.Style>
+                            <Style TargetType="Button">
+                                <Setter Property="Background" Value="#FFEFEFEF"/>
+                                <Setter Property="Foreground" Value="Black"/>
+                                <Setter Property="FontWeight" Value="Normal"/>
+                                <Setter Property="Opacity" Value="0.9"/>
+                                <Setter Property="BorderBrush" Value="#FFBDBDBD"/>
+                                <Setter Property="BorderThickness" Value="1"/>
+                                <Setter Property="Padding" Value="8,4"/>
+                                <!-- More rounded corner template (increased CornerRadius) -->
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate TargetType="Button">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    BorderBrush="{TemplateBinding BorderBrush}"
+                                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                                    CornerRadius="20"
+                                                    Padding="{TemplateBinding Padding}">
+                                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                                <Setter Property="IsEnabled" Value="False"/>
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding SelectedInternalError.IsResolved}" Value="False">
+                                        <Setter Property="Background" Value="Gold"/>
+                                        <Setter Property="Foreground" Value="Black"/>
+                                        <Setter Property="FontWeight" Value="SemiBold"/>
+                                        <Setter Property="Opacity" Value="1"/>
+                                        <Setter Property="IsEnabled" Value="True"/>
+                                        <Setter Property="BorderBrush" Value="#FFB8860B"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Data grid in card -->
+        <Border Grid.Row="2" CornerRadius="12" Margin="5" Background="#FFF" Padding="6" BorderBrush="#FFE0E6EE" BorderThickness="1" >
+            <Border.Effect>
+                <DropShadowEffect ShadowDepth="4" Opacity="0.25" BlurRadius="10"/>
+            </Border.Effect>
+
+            <DataGrid ItemsSource="{Binding InternalErrors}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      SelectedItem="{Binding SelectedInternalError}"
+                      RowDetailsVisibilityMode="VisibleWhenSelected"
+                      AlternationCount="2"
+                      GridLinesVisibility="None"
+                      HeadersVisibility="Column"
+                      CanUserResizeRows="False"
+                      CanUserResizeColumns="True"
+                      Background="Transparent"
+                      RowBackground="{StaticResource RowOddBrush}"
+                      AlternatingRowBackground="{StaticResource RowEvenBrush}">
+                <DataGrid.Resources>
+                    <Style TargetType="DataGridColumnHeader">
+                        <Setter Property="Background" Value="#FFF3F6F9"/>
+                        <Setter Property="FontWeight" Value="SemiBold"/>
+                        <Setter Property="Padding" Value="8"/>
+                    </Style>
+                </DataGrid.Resources>
+
+                <DataGrid.Columns>
+                    <DataGridTemplateColumn Header="STT" Width="60">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock HorizontalAlignment="Center">
+                                    <TextBlock.Text>
+                                        <MultiBinding Converter="{StaticResource AlternationIndexToNumberConverter}">
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGridRow}}"/>
+                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}"/>
+                                        </MultiBinding>
+                                    </TextBlock.Text>
+                                </TextBlock>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="150"/>
+                    <DataGridTextColumn Header="CreatedBy" Binding="{Binding CreatedBy}" Width="150"/>
+                    <DataGridTextColumn Header="Test" Binding="{Binding Test.Name}" Width="*"/>
+                    <DataGridTextColumn Header="Device" Binding="{Binding Device.Name}" Width="*"/>
+                    <!-- Added Level column (shows ErroneousResult's level name when available) -->
+                    <DataGridTextColumn Header="Level" Binding="{Binding ErroneousResult.IdLevelNavigation.Name}" Width="150"/>
+                    <DataGridTextColumn Header="Westgard" Binding="{Binding WestgardDescription}" Width="2*" >
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Cause" Binding="{Binding Cause}" Width="2*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <DataGridTextColumn Header="Hành động (tóm tắt)" Binding="{Binding CorrectiveActions, Converter={StaticResource ActionsSummaryConverter}}" Width="2*">
+                        <DataGridTextColumn.ElementStyle>
+                            <Style TargetType="TextBlock">
+                                <Setter Property="TextWrapping" Value="Wrap"/>
+                            </Style>
+                        </DataGridTextColumn.ElementStyle>
+                    </DataGridTextColumn>
+
+                    <!-- Status badge -->
+                    <DataGridTemplateColumn Header="Status" Width="110">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <ContentControl Style="{StaticResource StatusBadge}" Content="{Binding Status}" />
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                </DataGrid.Columns>
+
+                <!-- Row details -->
+                <DataGrid.RowDetailsTemplate>
+                    <DataTemplate>
+                        <!-- darker background for corrective action list -->
+                        <Border Background="#FFEBF6FF" CornerRadius="6" Padding="10" Margin="6">
+                            <StackPanel>
+                                <DockPanel>
+                                    <TextBlock Text="Danh sách hành động khắc phục" FontWeight="SemiBold" Margin="0,0,0,8" Foreground="#FF1F4E79" DockPanel.Dock="Left"/>
+                                    <!-- Print button — sends the containing InternalError as CommandParameter -->
+                                </DockPanel>
+
+                                <ItemsControl ItemsSource="{Binding CorrectiveActions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Grid Margin="0,6">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="60"/>
+                                                    <ColumnDefinition Width="150"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="3*"/>
+                                                    <ColumnDefinition Width="2*"/>
+                                                    <ColumnDefinition Width="120"/>
+                                                    <ColumnDefinition Width="Auto"/> <!-- column for Print icon -->
+                                                    <ColumnDefinition Width="Auto"/> <!-- column for Edit icon -->
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Grid.Column="0" Text="{Binding Id}" />
+                                                <TextBlock Grid.Column="1" Text="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding CreatedBy}"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding ActionDescription}" TextWrapping="Wrap"/>
+                                                <TextBlock Grid.Column="4" Text="{Binding PreventiveAction}" TextWrapping="Wrap"/>
+                                                <TextBlock Grid.Column="5" Text="{Binding Outcome}"/>
+                                                <!-- Print icon button (uses MaterialDesign PackIcon) -->
+                                                <Button Grid.Column="6"
+                                                        Style="{StaticResource MaterialDesignToolButton}"
+                                                        MinWidth="0"
+                                                        Width="34" Height="28"
+                                                        Padding="6"
+                                                        Margin="6,0,0,0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Command="{Binding DataContext.PrintCorrectiveActionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="In phiếu"
+                                                        VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <materialDesign:PackIcon Kind="Printer" Width="18" Height="18" Foreground="#6B46C1" />
+                                                </Button>
+                                                <!-- Edit icon button (opens CorrectActionWindow for this corrective action) -->
+                                                <Button Grid.Column="7"
+                                                        Style="{StaticResource MaterialDesignToolButton}"
+                                                        MinWidth="0"
+                                                        Width="34" Height="28"
+                                                        Padding="6"
+                                                        Margin="6,0,0,0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Command="{Binding DataContext.EditCorrectiveActionItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Sửa phiếu"
+                                                        VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" Foreground="#1976D2" />
+                                                </Button>
+                                            </Grid>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </DataGrid.RowDetailsTemplate>
+            </DataGrid>
+        </Border>
+    </Grid>
+</UserControl>

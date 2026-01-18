@@ -9,6 +9,11 @@
     <ApplicationIcon>Logo.ico</ApplicationIcon>
      </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Report\CorrectiveActionReport.rdlc" />
+    <None Remove="Report\InternalErrorsReportrt1.rdlc" />
+  </ItemGroup>
+
 
   <ItemGroup>
     <Content Include="Logo.ico" />
@@ -16,6 +21,12 @@
 
   <ItemGroup>
     <EmbeddedResource Include="Report\CALResultsReport.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\CorrectiveActionReport.rdlc">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Report\InternalErrorsReportrt1.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
     <EmbeddedResource Include="Report\ReviewResultReport.rdlc">
@@ -61,9 +72,6 @@
       <DependentUpon>dsResult.xsd</DependentUpon>
     </Compile>
     <Compile Update="Views\HomeView_V2.xaml.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Update="Views\ChartReportView.xaml.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Update="Views\CalibReportView.xaml.cs">

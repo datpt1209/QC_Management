@@ -28,4 +28,6 @@ public partial class ReResult:BaseViewModel
     public virtual LevelQc IdLevelNavigation { get; set; } = null!;
 
     public virtual Test IdTestNavigation { get; set; } = null!;
+
+
 }

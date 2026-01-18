@@ -12,12 +12,13 @@ using System.Windows.Input;
 using System.Windows.Markup;
 using XAct.Library.Settings;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TaskbarClock;
+using System.Text.Json;
+using QC_Management.Services;
 
 namespace QC_Management.ViewModels
 {
     public class ResultViewModel : BaseViewModel
-    {     
-
+    {
         private ObservableCollection<Result> _List;
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
 
@@ -89,6 +90,7 @@ namespace QC_Management.ViewModels
         public ICommand LoadedCommand { get; set; }
         public ICommand CheckRangeCommand { get; set; }
         public ICommand DeviceSelectionChanged { get; set; }
+        public ICommand OpenIncidentCommand { get; set; }
 
         private ResultReView _SelectedItem;
         public ResultReView SelectedItem
@@ -102,7 +104,7 @@ namespace QC_Management.ViewModels
         }
 
         private bool _isOutOfRange;
-        public  bool isOutOfRange
+        public bool isOutOfRange
         {
             get => _isOutOfRange;
             set
@@ -120,7 +122,6 @@ namespace QC_Management.ViewModels
             set { _CalibInputList = value; OnPropertyChanged(); }
         }
 
-
         private int? _SelectedIndex;
         public int? SelectedIndex
         {
@@ -129,8 +130,12 @@ namespace QC_Management.ViewModels
             {
                 _SelectedIndex = value;
                 OnPropertyChanged();
+                OnPropertyChanged(nameof(SelectedIndexDisplay));
             }
         }
+
+        // Display-only index text for UI (bind TextBox to this, non-editable)
+        public string SelectedIndexDisplay => SelectedIndex?.ToString() ?? string.Empty;
 
         private CalibInputViewModel _SelectedCalibInput;
         public CalibInputViewModel SelectedCalibInput
@@ -151,6 +156,19 @@ namespace QC_Management.ViewModels
             {
                 _SelectedDevice = value;
                 OnPropertyChanged();
+
+                // Set visibility for Qualitative column.
+                // Current rule: visible only when device name equals "UC" (case-insensitive).
+                // If you prefer "contains" or "starts with" (e.g. "UC-01"), change Equals to Contains/StartsWith.
+                if (_SelectedDevice != null && !string.IsNullOrWhiteSpace(_SelectedDevice.Name)
+                    && _SelectedDevice.Id==21)
+                {
+                    ShowQualitative = Visibility.Visible;
+                }
+                else
+                {
+                    ShowQualitative = Visibility.Collapsed;
+                }
             }
         }
 
@@ -171,7 +189,52 @@ namespace QC_Management.ViewModels
             get => _SelectedDate;
             set
             {
-                _SelectedDate = value;
+                _SelectedDate = value.Date;
+                OnPropertyChanged();
+
+                // keep SelectedDateTime in sync (preserve time)
+                if (!_suppressSync)
+                {
+                    _suppressSync = true;
+                    SelectedDateTime = _selectedDateTime.Date == default ? DateTime.Now.Date.Add(SelectedTime) : new DateTime(_SelectedDate.Year, _SelectedDate.Month, _SelectedDate.Day, SelectedDateTime.Hour, SelectedDateTime.Minute, 0);
+                    _suppressSync = false;
+                }
+            }
+        }
+
+        private bool _suppressSync = false;
+
+        // Combined selected date+time (used by TimePicker). Defaults to now.
+        private DateTime _selectedDateTime = DateTime.Now;
+        public DateTime SelectedDateTime
+        {
+            get => _selectedDateTime;
+            set
+            {
+                if (_selectedDateTime == value) return;
+                _selectedDateTime = value;
+                OnPropertyChanged();
+
+                if (!_suppressSync)
+                {
+                    _suppressSync = true;
+                    // update SelectedDate and SelectedTime when SelectedDateTime changes
+                    SelectedDate = _selectedDateTime.Date;
+                    SelectedTime = _selectedDateTime.TimeOfDay;
+                    _suppressSync = false;
+                }
+            }
+        }
+
+        // Expose SelectedTime (TimeSpan) for TimePicker binding if control expects TimeSpan
+        private TimeSpan _selectedTime = DateTime.Now.TimeOfDay;
+        public TimeSpan SelectedTime
+        {
+            get => _selectedTime;
+            set
+            {
+                if (_selectedTime == value) return;
+                _selectedTime = value;
                 OnPropertyChanged();
             }
         }
@@ -199,6 +262,30 @@ namespace QC_Management.ViewModels
         private Visibility _Visibility2;
         public Visibility Visibility2 { get => _Visibility2; set { _Visibility2 = value; OnPropertyChanged(); } }
 
+        // new property to control whether Qualitative column is visible
+        private Visibility _showQualitative;
+        public Visibility ShowQualitative
+        {
+            get => _showQualitative;
+            set
+            {
+                if (_showQualitative == value) return;
+                _showQualitative = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // --- Inserted fields and helper types ---
+        private readonly object _historyCacheLock = new();
+        private readonly Dictionary<(int testId, int deviceId), CacheEntry> _historyCache = new();
+        private readonly TimeSpan _historyCacheTtl = TimeSpan.FromSeconds(30); // adjust TTL as needed
+
+        private class CacheEntry
+        {
+            public DateTimeOffset FetchedAt { get; set; }
+            public List<Result> CrossLevelRecent { get; set; } = new();
+        }
+
         public ResultViewModel()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
@@ -216,7 +303,7 @@ namespace QC_Management.ViewModels
 
             ShowCalDetailCommand = new RelayCommand<object>((p) =>
             {
-                if(SelectedCalGroup == null) return false;
+                if (SelectedCalGroup == null) return false;
                 else return true;
             }, (p) =>
             {
@@ -259,20 +346,20 @@ namespace QC_Management.ViewModels
 
             InputCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
+                // Adjusted: allow Load with only SelectedDevice for QC (SelectedLevel optional).
                 if (SelectedResultType == "CALIB")
                 {
-                if (SelectedDevice == null || SelectedCalType == null) return false;
+                    if (SelectedDevice == null || SelectedCalType == null) return false;
                     else
                         return true;
                 }
                 else
                 {
-                    if (SelectedDevice == null || SelectedLevel == null) return false;
-                    else
-                        return true;
+                    // only require device selected; date is always present
+                    return SelectedDevice != null;
                 }
 
-            }, (p) =>
+            }, async (p) =>
             {
                 if (SelectedResultType == "CALIB")
                 {
@@ -287,7 +374,7 @@ namespace QC_Management.ViewModels
                                   && cd.Status == true)
                         .ToList();
 
-                    if(calDetails == null || calDetails.Count() == 0)
+                    if (calDetails == null || calDetails.Count() == 0)
                     {
                         MessageBox.Show($"Không tìm thấy giá trị {SelectedCalType.CalTypeName} cho {SelectedDevice.Name}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                         ReLoad();
@@ -311,16 +398,44 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
+                    // QC path: SelectedDevice required; SelectedLevel optional.
+                    if (SelectedDevice == null) return;
+
+                    // If level not chosen, try to auto-select first available level for device/date
+                    if (SelectedLevel == null)
+                    {
+                        var levels = await GetLevelsByDeviceAsync(SelectedDevice.Id);
+                        if (levels != null && levels.Any())
+                        {
+                            SelectedLevel = levels.First();
+                            LevelList = levels;
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Không tìm thấy Level hợp lệ cho thiết bị {SelectedDevice.Name} vào ngày {SelectedDate:d}.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                            return;
+                        }
+                    }
+
                     IndexList = new List<int?>();
+
+                    // Use a date range so we match any Result.DateRun on the selected day (time included)
+                    var start = SelectedDate.Date;
+                    var end = start.AddDays(1);
+
                     var results = new ObservableCollection<Result>(DB.Results
                             .Where(s => s.IdDevice == SelectedDevice.Id
-                                       && s.DateRun == SelectedDate.Date
+                                       && s.DateRun >= start && s.DateRun < end
                                        && s.IdLevel == SelectedLevel.Id
                                        ));
+
                     List = results;
 
-                    var indexList = List.Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate && s.IdLevel == SelectedLevel.Id)
-                    .GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
+                    // Build index list from the already-filtered results (no direct DateRun equality)
+                    var indexList = results
+                        .GroupBy(s => s.IndexQc)
+                        .Select(s => s.Key).ToList();
+
                     if (indexList == null || indexList.Count() == 0)
                     {
                         IndexList.Add(1);
@@ -363,18 +478,13 @@ namespace QC_Management.ViewModels
                                 SdApp = qcInfor.CurSd,
                                 MeanNSX = qcInfor.MeanNsx,
                                 SdNSX = qcInfor.SdNsx,
-                                Max = qcInfor.MeanApp + 3 * qcInfor.SdApp,
-                                Min = qcInfor.MeanApp - 3 * qcInfor.SdApp,
+                                Max = qcInfor.CurMean + 2 * qcInfor.SdApp,
+                                Min = qcInfor.CurMean - 2 * qcInfor.SdApp,
                                 IdControlDetailNavigation = qcInfor
                             });
                         }
-                        //else
-                        //{
-                        //   MessageBox.Show($"Không tìm thấy giá trị {item.Name} cho {SelectedDevice.Name}", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        //   return;
-                        //}
                     }
-                    
+
                 }
             });
 
@@ -400,7 +510,7 @@ namespace QC_Management.ViewModels
                     {
                         MessageBox.Show("Lưu dữ liệu Calib thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-                }
+                }       
                 else
                 {
                     isSaved = await SaveQC();
@@ -415,6 +525,21 @@ namespace QC_Management.ViewModels
                     }
                 }
             });
+
+            //OpenIncidentCommand = new RelayCommand<ResultReView>((p) =>
+            //{
+            //    return p != null;
+            //}, (p) =>
+            //{
+            //    OpenIncidentWindow(p);
+            //});
+
+            SelectedDateTime = DateTime.Now;               // default to now (date+time)
+            SelectedDate = SelectedDateTime.Date;          // keep date in sync
+            SelectedTime = SelectedDateTime.TimeOfDay;     // if you also use SelectedTime (TimeSpan)
+
+            // default qualitative column hidden until a device selected
+            ShowQualitative = Visibility.Collapsed;
         }
 
         private void UpdateDataGridSource()
@@ -484,7 +609,7 @@ namespace QC_Management.ViewModels
                 })
                 .ToList();
 
-           CalGroupResult = new ObservableCollection<CalGroup>(groupedCalResults);
+            CalGroupResult = new ObservableCollection<CalGroup>(groupedCalResults);
         }
 
         private async Task<bool> SaveQC()
@@ -495,35 +620,132 @@ namespace QC_Management.ViewModels
                 return false;
             }
 
+            if (SelectedDevice == null || SelectedLevel == null)
+            {
+                MessageBox.Show("Thiết bị hoặc level chưa được chọn", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
             var DB = DataProvider.Ins.DB;
             var results = new ObservableCollection<Result>();
+            var mapping = new List<(Result result, ResultReView view)>();
+
             foreach (var item in ResutlViewList)
             {
-                if (!string.IsNullOrEmpty(item.TempResult))
+                if (string.IsNullOrEmpty(item.TempResult)) continue;
+
+                var now = DateTime.Now;
+                var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+
+                var result = new Result
                 {
-                    Result result = new Result()
+                    IdTest = item.idTest,
+                    ResultType = item.ResultType,
+                    IdTestNavigation = item.Test,
+                    IdDevice = SelectedDevice.Id,
+                    IdLevel = SelectedLevel.Id,
+                    DateRun = combinedDateTime,
+                    Time = combinedDateTime.TimeOfDay,
+                    IdUser = UserManager.Instance.CurrentUser.Id,
+                    IndexQc = SelectedIndex,
+                    IdControlDetail = item.IdControlDetailNavigation.Id,
+                    IdControlDetailNavigation = item.IdControlDetailNavigation,
+                    Comment = item.Comment,
+                    TempResult = item.TempResult,
+                };
+
+                var ctrl = item.IdControlDetailNavigation;
+                if (result.ResultType == 2)
+                {
+                    if (double.TryParse(item.TempResult, out var parsed))
                     {
-                        IdTest = item.idTest,
-                        ResultType = item.ResultType,
-                        IdTestNavigation = item.Test,
-                        IdDevice = SelectedDevice.Id,
-                        IdLevel = SelectedLevel.Id,
-                        DateRun = SelectedDate,
-                        Time = DateTime.Now.TimeOfDay,
-                        IdUser = UserManager.Instance.CurrentUser.Id,
-                        IndexQc = SelectedIndex,
-                        IdControlDetail = item.IdControlDetailNavigation.Id,
-                        IdControlDetailNavigation = item.IdControlDetailNavigation,
-                        Comment = item.Comment,
-                        IsOutRange = item.isOutOfRange,
-                        TempResult = item.TempResult,
-                    };
-                    results.Add(result);
+                        try { result.Result1 = parsed; } catch { }
+                        if (ctrl != null && ctrl.CurMean.HasValue && ctrl.CurSd.HasValue && ctrl.CurSd.Value != 0)
+                        {
+                            result.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 2);
+                        }
+                        else
+                        {
+                            result.ZScore = null;
+                        }
+                    }
+                    else
+                    {
+                        result.ZScore = null;
+                    }
+                }
+                else
+                {
+                    if (ctrl != null && !string.IsNullOrEmpty(result.TempResult))
+                    {
+                        try
+                        {
+                            result.IsOutRange = !ctrl.IsQualitativeResultAcceptable(result.TempResult);
+                        }
+                        catch
+                        {
+                            result.IsOutRange = null;
+                        }
+                    }
+                    else
+                    {
+                        result.IsOutRange = null;
+                    }
+
+                    result.ZScore = null;
+                }
+
+                // copy UI-detected Westgard state into entity prior to save
+                result.WestgardRule = string.IsNullOrWhiteSpace(item.WestgardRule) ? null : item.WestgardRule;
+                result.IsOutRange = item.isOutOfRange;
+
+                // try to propagate 2SD flag into Result.IsOutRangeNSX if property exists
+                try
+                {
+                    var prop = result.GetType().GetProperty("IsOutRangeNSX");
+                    if (prop != null && prop.CanWrite)
+                    {
+                        prop.SetValue(result, item.isOut2SD);
+                    }
+                }
+                catch { /* ignore reflection failures */ }
+
+                result.IsCorrected = (!string.IsNullOrWhiteSpace(result.WestgardRule) || result.IsOutRange == true)
+                    ? (bool?)false
+                    : null;
+                results.Add(result);
+                mapping.Add((result, item));
+            }
+
+            if (!results.Any())
+            {
+                MessageBox.Show("Chưa có kết quả để lưu", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return false;
+            }
+
+            // Persist results first so they have IDs for InternalError linking
+            bool isSaved = await SaveDataAsync(DB, results);
+            if (!isSaved)
+            {
+                return false;
+            }
+
+            // mark UI items as not-corrected for problematic ones so user sees status immediately
+            foreach (var (r, view) in mapping)
+            {
+                if (r.IsOutRange == true || !string.IsNullOrEmpty(r.WestgardRule))
+                {
+                    view.isOutOfRange = (bool)r.IsOutRange;
+                    view.isOut2SD = false;
+                    // if Levey result had 2SD flag earlier it would have been copied — keep UI consistent
+                    view.WestgardRule = r.WestgardRule;
                 }
             }
 
-            bool isSaved = await SaveDataAsync(DB, results);
-            return isSaved;
+            // Invalidate history cache so subsequent checks use fresh data
+            ClearHistoryCache();
+
+            return true;
         }
 
         private async Task<bool> SaveCal()
@@ -541,13 +763,17 @@ namespace QC_Management.ViewModels
             {
                 if (item.Result != null)
                 {
+                    // combine date + time so DateRun stores full date+time
+                    var now = DateTime.Now;
+                    var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+
                     var calResult = new CalResult
                     {
                         IdDevice = SelectedDevice.Id,
                         IdCalDetail = item.CalDetailId,
                         IdTest = item.IdTest,
-                        DateRun = SelectedDate,
-                        Time = DateTime.Now.TimeOfDay,
+                        DateRun = combinedDateTime,
+                        Time = combinedDateTime.TimeOfDay,
                         Result = item.Result,
                         Comment = item.Comment,
                         IdUser = UserManager.Instance.CurrentUser.Id,
@@ -562,19 +788,74 @@ namespace QC_Management.ViewModels
             return isSaved;
         }
 
-        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
+        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results, bool createInternalErrors = true)
         {
             try
             {
+                // Persist results
                 DB.AddRange(results);
                 await DB.SaveChangesAsync();
-                return true; // Trả về true nếu lưu thành công
+
+                if (createInternalErrors)
+                {
+                    // After saving, create InternalErrors for problematic results (if not already created).
+                    try
+                    {
+                        var problematic = results.Where(r => (r.IsOutRange == true) || !string.IsNullOrEmpty(r.WestgardRule)).ToList();
+                        if (problematic.Any())
+                        {
+                            var newErrors = new List<InternalError>();
+
+                            foreach (var r in problematic)
+                            {
+                                // Avoid duplicate InternalError for same Result
+                                var exists = await DB.InternalErrors
+                                    .AsNoTracking()
+                                    .AnyAsync(i => i.ErroneousResultId == r.Id);
+
+                                if (exists) continue;
+
+                                var cid = r.IdControlDetailNavigation;
+
+                                var error = new InternalError
+                                {
+                                    ErroneousResultId = r.Id,
+                                    TestId = r.IdTest,
+                                    DeviceId = r.IdDevice,
+                                    ControlInfoDetailId = r.IdControlDetail,
+                                    Lot = cid?.Lot,
+                                    WestgardDescription = !string.IsNullOrEmpty(r.WestgardRule) ? r.WestgardRule : (r.IsOutRange == true ? "Out-of-range" : null),
+                                    RelatedResultsJson = JsonSerializer.Serialize(new { r.Id, r.IdTest, r.TempResult }),
+                                    IsResolved = false,
+                                    // Vietnamese status
+                                    Status = "Đang chờ",
+                                    CreatedAt = DateTime.Now,
+                                    CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance.CurrentUser?.Id.ToString()
+                                };
+
+                                newErrors.Add(error);
+                            }
+
+                            if (newErrors.Any())
+                            {
+                                DB.InternalErrors.AddRange(newErrors);
+                                await DB.SaveChangesAsync();
+                            }
+                        }
+                    }
+                    catch (Exception exErr)
+                    {
+                        // Don't block main flow — just warn
+                        MessageBox.Show($"Tạo bản ghi lỗi nội kiểm thất bại: {exErr.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi nếu có
                 MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false; // Trả về false nếu lưu thất bại
+                return false;
             }
         }
 
@@ -598,7 +879,6 @@ namespace QC_Management.ViewModels
         {
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             CalTypeList = new ObservableCollection<CalType>(DB.CalTypes);
-            
         }
 
         private void OpenResultDetailWindow()
@@ -634,6 +914,215 @@ namespace QC_Management.ViewModels
             LoadReResults(DB);
             LoadCalGroup(DB);
         }
+        // Add this method into the ResultViewModel class
+        public async Task CheckWestgardForItemAsync(ResultReView item)
+        {
+            if (item == null) return;
+            if (SelectedDevice == null) return;
+            if (SelectedLevel == null) return;
 
+            int testId = item.idTest;
+            int deviceId = SelectedDevice.Id;
+            int levelId = SelectedLevel.Id;
+
+            // Load history (existing code)
+            var (sameLevelPrev, crossLevelPrev) = await GetRecentHistoryAsync(testId, deviceId, levelId, take: 10);
+
+            // Build temporary current Result (existing code)
+            var now = DateTime.Now;
+            var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+
+            var current = new Result
+            {
+                IdTest = item.idTest,
+                ResultType = item.ResultType,
+                IdTestNavigation = item.Test,
+                IdDevice = deviceId,
+                IdLevel = levelId,
+                DateRun = combinedDateTime,
+                Time = combinedDateTime.TimeOfDay,
+                IdUser = UserManager.Instance.CurrentUser.Id,
+                IndexQc = SelectedIndex,
+                IdControlDetail = item.IdControlDetailNavigation?.Id,
+                IdControlDetailNavigation = item.IdControlDetailNavigation,
+                TempResult = item.TempResult
+            };
+
+            // compute ZScore if quantitative and numeric (existing logic)
+            if (current.ResultType == 2)
+            {
+                if (double.TryParse(item.TempResult, out var parsed))
+                {
+                    current.Result1 = parsed;
+                    var ctrl = item.IdControlDetailNavigation;
+                    if (ctrl != null && ctrl.CurMean.HasValue && ctrl.CurSd.HasValue && ctrl.CurSd.Value != 0)
+                    {
+                        current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 2);
+                    }
+                    else current.ZScore = null;
+                }
+                else current.ZScore = null;
+            }
+            else current.ZScore = null;
+
+            // Load per-device/test enabled rules from DeviceTest.WestgardRulesJson (if any)
+            IEnumerable<string>? enabledRules = null;
+            try
+            {
+                using var db = new QcManagmentContext();
+                var dt = await db.DeviceTests
+                                 .AsNoTracking()
+                                 .Where(d => d.IdDevice == deviceId && d.IdTest == testId)
+                                 .Select(d => new { d.WestgardRulesJson })
+                                 .FirstOrDefaultAsync();
+
+                if (dt != null && !string.IsNullOrWhiteSpace(dt.WestgardRulesJson))
+                {
+                    try
+                    {
+                        var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(dt.WestgardRulesJson);
+                        if (parsed != null && parsed.Count > 0)
+                        {
+                            // use main keys as-is (LeveyJenningsChecker will expand 4_1S/10X/2_2S)
+                            enabledRules = parsed.Select(s => s?.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
+                        }
+                        else
+                        {
+                            enabledRules = null; // treat empty as "all rules" (preserve previous behaviour)
+                        }
+                    }
+                    catch
+                    {
+                        enabledRules = null; // parsing failed -> fall back to all rules
+                    }
+                }
+            }
+            catch
+            {
+                // DB load failed -> fall back to previous behaviour (all rules)
+                enabledRules = null;
+            }
+
+            // Instead of calling Evaluate(...) with the whole list, call EvaluateSingleRule per enabled/main rule
+            var keysToEvaluate = (enabledRules != null)
+                ? enabledRules.ToList()
+                : new List<string> { "1_3S", "1_2S", "2_2S", "R-4s", "4_1S", "10X" };
+
+            var aggViolations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            bool aggIsOut2SD = false;
+            bool aggIsOutRange = false;
+
+            foreach (var rk in keysToEvaluate)
+            {
+                try
+                {
+                    var part = LeveyJenningsChecker.EvaluateSingleRule(current, sameLevelPrev, crossLevelPrev, rk);
+                    if (part?.ViolatedRules != null)
+                    {
+                        foreach (var v in part.ViolatedRules)
+                            aggViolations.Add(v);
+                    }
+                    aggIsOut2SD = aggIsOut2SD || part.IsOut2SD;
+                    aggIsOutRange = aggIsOutRange || part.IsOutRange;
+                }
+                catch
+                {
+                    // ignore individual rule failures
+                }
+            }
+
+            var ordered = aggViolations.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+            if (ordered.Contains("1_2S") && ordered.Contains("1_3S"))
+            {
+                ordered.Remove("1_2S");
+                ordered.Insert(ordered.IndexOf("1_3S") + 1, "1_2S");
+            }
+
+            var levey = new LeveyResult();
+            levey.ViolatedRules.AddRange(ordered);
+            levey.IsOut2SD = aggIsOut2SD;
+            levey.IsOutRange = aggIsOutRange;
+
+            // Update UI item
+            item.isOutOfRange = levey.IsOutRange;
+            item.isOut2SD = levey.IsOut2SD;
+            item.WestgardRule = levey.ViolatedRules.Count > 0 ? string.Join(", ", levey.ViolatedRules) : null;
+        }
+
+        // Clears the whole cache (call after saving new results or when device/level changes)
+        public void ClearHistoryCache()
+        {
+            lock (_historyCacheLock)
+            {
+                _historyCache.Clear();
+            }
+        }
+
+        // Get recent history (uses cache). Returns (sameLevelList, crossLevelList) newest-first.
+        private async Task<(List<Result> sameLevel, List<Result> crossLevel)> GetRecentHistoryAsync(int testId, int deviceId, int levelId, int take = 10)
+        {
+            var key = (testId, deviceId);
+            CacheEntry? entry = null;
+
+            lock (_historyCacheLock)
+            {
+                if (_historyCache.TryGetValue(key, out var e))
+                {
+                    // check TTL
+                    if (DateTimeOffset.UtcNow - e.FetchedAt < _historyCacheTtl)
+                    {
+                        entry = e;
+                    }
+                    else
+                    {
+                        // expired: remove so we will reload
+                        _historyCache.Remove(key);
+                    }
+                }
+            }
+
+            if (entry == null)
+            {
+                try
+                {
+                    var DB = DataProvider.Ins.DB;
+                    var recent = await DB.Results
+                        .AsNoTracking()
+                        .Include(r => r.IdControlDetailNavigation)
+                        .Where(r => r.IdTest == testId && r.IdDevice == deviceId && r.IsExclude != true)
+                        .OrderByDescending(r => r.DateRun)
+                        .ThenByDescending(r => r.IndexQc ?? 0)
+                        .ThenByDescending(r => r.Time ?? TimeSpan.Zero)
+                        .Take(take)
+                        .ToListAsync();
+
+                    entry = new CacheEntry
+                    {
+                        FetchedAt = DateTimeOffset.UtcNow,
+                        CrossLevelRecent = recent
+                    };
+
+                    lock (_historyCacheLock)
+                    {
+                        _historyCache[key] = entry;
+                    }
+                }
+                catch
+                {
+                    // non-fatal: return empty lists
+                    return (new List<Result>(), new List<Result>());
+                }
+            }
+
+            var cross = entry.CrossLevelRecent ?? new List<Result>();
+            var sameLevel = cross.Where(r => r.IdLevel == levelId).ToList();
+            return (sameLevel, cross);
+        }
+
+        // helper to combine date + timespan safely
+        private DateTime CombineDateAndTime(DateTime date, TimeSpan time)
+        {
+            return date.Date.Add(time);
+        }
     }
 }

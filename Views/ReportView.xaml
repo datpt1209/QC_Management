@@ -7,14 +7,17 @@
         xmlns:winforms="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.ReportViewer.WinForms"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen"
-          WindowState="Maximized"
+        WindowState="Maximized"
         Title="ReportView" Height="450" Width="800" Loaded="Window_Loaded">
-    <Grid>
-        <WindowsFormsHost
-                          Name="windowsFormsHost1"
-                          Grid.Row="1">
-            <winforms:ReportViewer x:Name="reportViewer">
-            </winforms:ReportViewer>
+    <DockPanel>
+        <!-- Toolbar: Export PDF + Close -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" HorizontalAlignment="Right" Margin="8">
+            <Button x:Name="BtnExportPdf" Content="Xuất PDF" Width="100" Margin="0,0,8,0" Click="BtnExportPdf_Click"/>
+            <Button x:Name="BtnClose" Content="Đóng" Width="80" Click="BtnClose_Click"/>
+        </StackPanel>
+
+        <WindowsFormsHost Name="windowsFormsHost1">
+            <winforms:ReportViewer x:Name="reportViewer"/>
         </WindowsFormsHost>
-    </Grid>
+    </DockPanel>
 </Window>

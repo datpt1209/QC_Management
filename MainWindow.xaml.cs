@@ -10,54 +10,73 @@ namespace QC_Management
     /// </summary>
     public partial class MainWindow : Window
     {
-       
         public MainWindow()
         {
-            
             InitializeComponent();
-            SidebarColumn.Width = new GridLength(55);
 
+            // Drawer closed by default
+            if (NavDrawer != null)
+                NavDrawer.IsLeftDrawerOpen = false;
+
+            if (MenuToggleButton != null)
+                MenuToggleButton.IsChecked = false;
         }
 
-        private void Tg_Btn_Checked(object sender, RoutedEventArgs e)
+        private void MenuClose_Click(object sender, RoutedEventArgs e)
         {
-            
-            SidebarColumn.Width = new GridLength(170);
+            if (NavDrawer != null) NavDrawer.IsLeftDrawerOpen = false;
+            if (MenuToggleButton != null) MenuToggleButton.IsChecked = false;
         }
-        private void Tg_Btn_Unchecked(object sender, RoutedEventArgs e)
+
+        // Close drawer when user selects a menu item.
+        // SelectionChanged fires when user selects (clicks) a ListViewItem.
+        private void LV_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
         {
-           
-            SidebarColumn.Width = new GridLength(55);
+            // If drawer is modal (small screens) or user wants it to auto-close, close it.
+            if (NavDrawer != null)
+            {
+                NavDrawer.IsLeftDrawerOpen = false;
+            }
+            if (MenuToggleButton != null)
+            {
+                MenuToggleButton.IsChecked = false;
+            }
+
+            // Clear the ListView selection so the same item can be selected again later.
+            // Use the sender where possible to avoid null reference to named LV.
+            try
+            {
+                if (sender is System.Windows.Controls.ListView lv)
+                {
+                    lv.SelectedItem = null;
+                    lv.SelectedIndex = -1;
+                }
+                else if (LV != null)
+                {
+                    LV.SelectedItem = null;
+                    LV.SelectedIndex = -1;
+                }
+            }
+            catch
+            {
+                // non-fatal - ignore clearing failures
+            }
         }
+
         private void ListViewItem_MouseEnter(object sender, MouseEventArgs e)
         {
-            // Set tooltip visibility
+            var drawerOpen = NavDrawer != null && NavDrawer.IsLeftDrawerOpen;
+            var setVisibility = drawerOpen ? Visibility.Collapsed : Visibility.Visible;
 
-            if (Tg_Btn.IsChecked == true)
-            {
-                tt_home.Visibility = Visibility.Collapsed;
-                tt_input.Visibility = Visibility.Collapsed;
-                tt_device.Visibility = Visibility.Collapsed;
-                tt_qcInfor.Visibility = Visibility.Collapsed;
-                tt_range.Visibility = Visibility.Collapsed;
-                tt_test.Visibility = Visibility.Collapsed;
-                tt_unit.Visibility = Visibility.Collapsed;
-                tt_user.Visibility = Visibility.Collapsed;
-                tt_user_role.Visibility = Visibility.Collapsed;
-
-            }
-            else
-            {
-                tt_home.Visibility = Visibility.Visible;
-                tt_input.Visibility = Visibility.Visible;
-                tt_device.Visibility = Visibility.Visible;
-                tt_qcInfor.Visibility = Visibility.Visible;
-                tt_range.Visibility = Visibility.Visible;
-                tt_test.Visibility = Visibility.Visible;
-                tt_unit.Visibility = Visibility.Visible;
-                tt_user.Visibility = Visibility.Visible;
-                tt_user_role.Visibility = Visibility.Visible;
-            }
+            if (tt_home != null) tt_home.Visibility = setVisibility;
+            if (tt_input != null) tt_input.Visibility = setVisibility;
+            if (tt_device != null) tt_device.Visibility = setVisibility;
+            if (tt_qcInfor != null) tt_qcInfor.Visibility = setVisibility;
+            if (tt_range != null) tt_range.Visibility = setVisibility;
+            if (tt_test != null) tt_test.Visibility = setVisibility;
+            if (tt_unit != null) tt_unit.Visibility = setVisibility;
+            if (tt_user != null) tt_user.Visibility = setVisibility;
+            if (tt_user_role != null) tt_user_role.Visibility = setVisibility;
         }
 
         protected override void OnClosing(System.ComponentModel.CancelEventArgs e)

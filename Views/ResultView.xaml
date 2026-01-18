@@ -15,6 +15,7 @@
              FontFamily="{DynamicResource MaterialDesignFont}"
              DataContext="{StaticResource ResultVM}"
              Name="Objectview" d:DesignHeight="600" d:DesignWidth="800">
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadedCommand}">
@@ -25,8 +26,15 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition Height="*"></RowDefinition>
         </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Height="70" CornerRadius="10" Background="#FF1F2937" Padding="12" Margin="5">
+            <DockPanel>
+                <TextBlock Text="Nhập kết quả" Foreground="White" FontSize="20" FontWeight="Bold" DockPanel.Dock="Left" VerticalAlignment="Center"/>
+            </DockPanel>
+        </Border>
+
         <Grid Grid.Row="1" Margin="5">
             <Grid.RowDefinitions>
                 <RowDefinition Height="auto"></RowDefinition>
@@ -59,8 +67,7 @@
 
                         <i:Interaction.Triggers>
                             <i:EventTrigger EventName="SelectionChanged">
-                                <i:InvokeCommandAction Command="{Binding DeviceSelectionChanged}">
-                                </i:InvokeCommandAction>
+                                <i:InvokeCommandAction Command="{Binding DeviceSelectionChanged}"/>
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </ComboBox>
@@ -92,8 +99,6 @@
                         materialDesign:HintAssist.IsFloating="True"
                         materialDesign:HintAssist.HintOpacity=".26"
                         IsEditable="True" VerticalAlignment="Top" Width="150" Height="50"/>
-
-
                     <DatePicker          
                         Margin="5"  
                         SelectedDate="{Binding SelectedDate, UpdateSourceTrigger=PropertyChanged}"
@@ -101,18 +106,37 @@
                         materialDesign:TextFieldAssist.HasClearButton="True"
                         Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="150" Height="50">
                     </DatePicker>
-                    <ComboBox 
-                        IsEnabled="True"
-                        Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}"
-                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+
+                    <!-- TimePicker: render visually identical to DatePicker by using an outlined frame (floating hint attached to the frame)
+                         - outer Border provides the outlined chrome and floating hint exactly like the DatePicker
+                         - inner TimePicker set borderless/transparent so chrome comes from outer Border -->
+                    <Border Margin="5" Width="150" Height="50" CornerRadius="4"
+                            Background="{DynamicResource MaterialDesignPaper}"
+                            BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1"
+                            materialDesign:HintAssist.Hint="Giờ thực hiện"
+                            materialDesign:HintAssist.IsFloating="True"
+                            materialDesign:TextFieldAssist.HasClearButton="True">
+                        <materialDesign:TimePicker
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Stretch"
+                            Margin="2,0"
+                            Background="Transparent"
+                            BorderThickness="0"
+                            SelectedTime="{Binding SelectedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            Style="{StaticResource MaterialDesignFloatingHintTimePicker}" />
+                    </Border>
+                    
+                    <!-- Index changed: display-only TextBox bound to SelectedIndexDisplay, non-editable and not focusable -->
+                    <TextBox
                         Margin="5"
-                        ItemsSource="{Binding IndexList}"
-                        SelectedItem="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                        materialDesign:ComboBoxAssist.MaxLength="2"
-                        materialDesign:HintAssist.Hint="Lần QC"
-                        materialDesign:HintAssist.IsFloating="True"
-                        materialDesign:HintAssist.HintOpacity=".26"
-                        IsEditable="True" VerticalAlignment="Top" Width="150" Height="50"/>
+                        Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        Width="150" Height="50"
+                        Text="{Binding SelectedIndexDisplay, Mode=OneWay}"
+                        IsReadOnly="True"
+                        IsHitTestVisible="False"
+                        Focusable="False"
+                        materialDesign:HintAssist.Hint="Lần QC" />
                      </WrapPanel>
             </materialDesign:Card>
             <Grid Grid.Row="1">
@@ -157,42 +181,63 @@
                         Background="White"
                         Name="input" 
                         ItemsSource="{Binding ResutlViewList}" 
-                        AutoGenerateColumns="False"
+                        AutoGenerateColumns="False" 
                         SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
-                        CanUserAddRows="False">
+                        CanUserAddRows="False"
+                        PreviewKeyDown="InputDataGrid_PreviewKeyDown">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
                             <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
-                            <DataGridTemplateColumn Header="Qualitative" CanUserSort="False">
-                                <DataGridTemplateColumn.CellTemplate>
+                            <DataGridTextColumn Header="Qualitative" CanUserSort="False" Binding="{Binding QualitativeMean, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+                                <!-- HeaderTemplate: hide header when ShowQualitative == Collapsed -->
+                                <DataGridTextColumn.HeaderTemplate>
                                     <DataTemplate>
-                                        <TextBox Text="{Binding QualitativeMean}">
-                                            <TextBox.Style>
-                                                <Style TargetType="TextBox">
-                                                    <Setter Property="Padding" Value="0"/>
-                                                    <Setter Property="IsEnabled" Value="False"/>
-                                                    <Setter Property="FontWeight" Value="Normal"/>
-                                                    <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding ResultType}" Value="1">
-                                                            <Setter Property="IsEnabled" Value="True"/>
-                                                            <Setter Property="FontWeight" Value="Bold"/>
-                                                        </DataTrigger>
-                                                    </Style.Triggers>
-                                                </Style>
-                                            </TextBox.Style>
-                                        </TextBox>
+                                        <TextBlock Text="Qualitative"
+                                                   Visibility="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                   HorizontalAlignment="Center" />
                                     </DataTemplate>
-                                </DataGridTemplateColumn.CellTemplate>
-                            </DataGridTemplateColumn>
+                                </DataGridTextColumn.HeaderTemplate>
 
-                            <DataGridTextColumn Header="Mean" CanUserSort="False" 
-                                                IsReadOnly="False" Binding="{Binding MeanApp}">
+                                <!-- Cell element: bind TextBlock.Visibility to VM.ShowQualitative -->
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                        <Setter Property="Visibility" Value="Visible"/>
+                                        <Setter Property="Text" Value="{Binding QualitativeMean}"/>
+                                        <Setter Property="Visibility" Value="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+
+                                        <Style.Triggers>
+                                            <!-- keep existing styling triggers -->
+                                            <DataTrigger Binding="{Binding ResultType}" Value="1">
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+
+                                <!-- Editing element (TextBox) visibility follows same VM flag -->
+                                <DataGridTextColumn.EditingElementStyle>
+                                    <Style TargetType="TextBox">
+                                        <Setter Property="Padding" Value="0"/>
+                                        <Setter Property="FontWeight" Value="Normal"/>
+                                        <Setter Property="IsReadOnly" Value="True"/>
+                                        <Setter Property="Visibility" Value="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding ResultType}" Value="1">
+                                                <Setter Property="IsReadOnly" Value="False"/>
+                                                <Setter Property="FontWeight" Value="Bold"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.EditingElementStyle>
+                            </DataGridTextColumn>
+                            <DataGridTextColumn Header="Mean" CanUserSort="False" IsReadOnly="True" Binding="{Binding MeanApp}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontSize" Value="14"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                         <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <!--Màu mặc định-->
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ResultType}" Value="2">
                                                 <Setter Property="IsEnabled" Value="True"/>
@@ -202,15 +247,12 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-
-                            <DataGridTextColumn Header="SD" CanUserSort="False" 
-                              IsReadOnly="False" Binding="{Binding SdApp}">
+                            <DataGridTextColumn Header="SD" CanUserSort="False" IsReadOnly="True" Binding="{Binding SdApp}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontSize" Value="14"/>
                                         <Setter Property="FontWeight" Value="Bold"/>
                                         <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <!--Màu mặc định-->
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ResultType}" Value="2">
                                                 <Setter Property="IsEnabled" Value="True"/>
@@ -221,33 +263,68 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
                             <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding TempResult}">
-                                <DataGridTextColumn.ElementStyle>
-                                    <Style TargetType="{x:Type TextBlock}">
-                                        <Setter Property="Foreground" Value="Green" />
-                                        <Setter Property="FontSize" Value="14"/>
-                                        <Setter Property="FontWeight" Value="Bold"/>
-                                        <Setter Property="HorizontalAlignment" Value="Center"/>
-                                        <!--Màu mặc định-->
+                                <DataGridTextColumn.CellStyle>
+                                    <Style TargetType="DataGridCell">
+                                        <Setter Property="Background" Value="LightGray"/>
+                                        <Setter Property="Foreground" Value="Green"/>
+                                        <Setter Property="Padding" Value="4,2"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Padding" Value="0"/>
                                         <Style.Triggers>
-                                            <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
-                                                <Setter Property="Foreground" Value="Red" />
-                                                <Setter Property="Background" Value="Yellow" />
-                                                <!--Thay đổi màu nền nếu ngoài 3 SD-->
+                                            <DataTrigger Binding="{Binding TempResult}" Value="">
+                                                <Setter Property="Background" Value="#FFDCDCDC"/>
+                                                <Setter Property="Foreground" Value="Gray"/>
                                             </DataTrigger>
                                             <DataTrigger Binding="{Binding isOut2SD}" Value="True">
-                                                <Setter Property="Foreground" Value="Red" />
-                                                <!--Thay đổi màu nền nếu ngoài 2 SD-->
+                                                <Setter Property="Background" Value="#FFFFC080"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                                <Setter Property="Background" Value="Yellow"/>
+                                                <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>
                                         </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.CellStyle>
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="FontSize" Value="14"/>
+                                        <Setter Property="FontWeight" Value="Bold"/>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
+                                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
                                         <EventSetter Event="PreviewTextInput" Handler="DataGridTextColumn_PreviewTextInput"/>
                                         <EventSetter Event="DataObject.Pasting" Handler="DataGridTextColumn_Pasting"/>
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
+
+                            <!-- Lỗi Westgard column -->
+                            <DataGridTextColumn Header="Lỗi Westgard"
+                                                CanUserSort="False"
+                                                IsReadOnly="True"
+                                                Binding="{Binding WestgardRule}" Width="150">
+                                <DataGridTextColumn.ElementStyle>
+                                    <Style TargetType="TextBlock">
+                                        <Setter Property="TextWrapping" Value="Wrap"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="Foreground" Value="Red"/>
+                                        <Setter Property="ToolTip" Value="{Binding WestgardRule}"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding WestgardRule}" Value="{x:Null}">
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding WestgardRule}" Value="">
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridTextColumn.ElementStyle>
+                            </DataGridTextColumn>
+
                             <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>

@@ -14,6 +14,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Windows.Threading;
 
 namespace QC_Management.Views
 {
@@ -25,10 +26,11 @@ namespace QC_Management.Views
         public Re_ResultDetailView()
         {
             InitializeComponent();
-            
         }
+
         private void DataGridTextColumn_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
+            // reuse same validation as other view (optional)
             if (sender is TextBox textBox)
             {
                 var viewModel = DataContext as Re_ResultDetailViewModel;
@@ -37,12 +39,10 @@ namespace QC_Management.Views
                     var testType = viewModel.SelectedItem.ResultType;
                     if (testType == 1)
                     {
-                        // Allow letters, numbers, and Vietnamese characters
                         e.Handled = !Regex.IsMatch(e.Text, @"^[a-zA-Z0-9\u00C0-\u017F]+$");
                     }
                     else if (testType == 2)
                     {
-                        // Allow only numbers and dot
                         e.Handled = !Regex.IsMatch(e.Text, @"^[0-9.]+$");
                     }
                 }
@@ -51,7 +51,7 @@ namespace QC_Management.Views
 
         private void DataGridTextColumn_Pasting(object sender, DataObjectPastingEventArgs e)
         {
-            if (sender is TextBox textBox)
+            if (sender is TextBox)
             {
                 var viewModel = DataContext as Re_ResultDetailViewModel;
                 if (viewModel?.SelectedItem != null)
@@ -66,7 +66,6 @@ namespace QC_Management.Views
 
                     if (testType == 1)
                     {
-                        // Allow letters, numbers, and Vietnamese characters
                         if (!Regex.IsMatch(clipboardText, @"^[a-zA-Z0-9\u00C0-\u017F]+$"))
                         {
                             e.CancelCommand();
@@ -74,13 +73,77 @@ namespace QC_Management.Views
                     }
                     else if (testType == 2)
                     {
-                        // Allow only numbers and dot
                         if (!Regex.IsMatch(clipboardText, @"^[0-9.]+$"))
                         {
                             e.CancelCommand();
                         }
                     }
                 }
+            }
+        }
+
+        // Commit edit, trigger VM check and move to next row on Enter
+        private async void InputDataGrid_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key != Key.Enter) return;
+            if (sender is not DataGrid dg) return;
+
+            try
+            {
+                // remember current column so we can move to same column on next row
+                DataGridColumn currentColumn = dg.CurrentCell.Column;
+
+                // Commit edits so binding updates the ResultReView.TempResult
+                dg.CommitEdit(DataGridEditingUnit.Cell, true);
+                dg.CommitEdit(DataGridEditingUnit.Row, true);
+
+                // call VM check for the edited item
+                if (dg.SelectedItem is ResultReView item && DataContext is Re_ResultDetailViewModel vm)
+                {
+                    await vm.CheckWestgardForItemAsync(item);
+                }
+
+                // move selection to next row (if any)
+                var items = dg.Items;
+                int currentIndex = items.IndexOf(dg.SelectedItem);
+                int nextIndex = currentIndex + 1;
+
+                if (nextIndex >= 0 && nextIndex < items.Count)
+                {
+                    var nextItem = items[nextIndex];
+
+                    // select and scroll into view
+                    dg.SelectedItem = nextItem;
+                    dg.ScrollIntoView(nextItem);
+
+                    // set current cell to same column on next row (fallback to first editable column)
+                    DataGridColumn targetColumn = currentColumn;
+                    if (targetColumn == null)
+                    {
+                        foreach (var c in dg.Columns)
+                        {
+                            if (!c.IsReadOnly) { targetColumn = c; break; }
+                        }
+                    }
+
+                    if (targetColumn != null)
+                    {
+                        dg.CurrentCell = new DataGridCellInfo(nextItem, targetColumn);
+                        // Begin edit asynchronously to avoid timing issues
+                        dg.Dispatcher.BeginInvoke((Action)(() =>
+                        {
+                            dg.Focus();
+                            dg.BeginEdit();
+                        }), DispatcherPriority.Background);
+                    }
+                }
+
+                // swallow key so WPF doesn't produce system ding; navigation already handled
+                e.Handled = true;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error while checking Westgard or moving to next row: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
     }

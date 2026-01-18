@@ -52,6 +52,10 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<UserRole> UserRoles { get; set; }
 
+    public virtual DbSet<InternalError> InternalErrors { get; set; }
+
+    public virtual DbSet<CorrectiveAction> CorrectiveActions { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connectionString = AppConfig.BuildConnectionString();
@@ -81,6 +85,7 @@ public partial class QcManagmentContext : DbContext
                 .HasForeignKey(d => d.IdTest)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__CalDetail__IdTes__5CA1C101");
+
         });
 
         modelBuilder.Entity<CalInfor>(entity =>
@@ -101,6 +106,75 @@ public partial class QcManagmentContext : DbContext
                 .HasConstraintName("FK_CalInfor_CalType");
         });
 
+        modelBuilder.Entity<InternalError>(entity =>
+        {
+            entity.ToTable("InternalErrors");
+            entity.HasKey(e => e.Id).HasName("PK_InternalErrors");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime2");
+            entity.Property(e => e.Status).HasMaxLength(50);
+            entity.Property(e => e.Lot).HasMaxLength(200);
+
+            // New mapping for Cause (root reason) on InternalErrors
+            entity.Property(e => e.Cause)
+                .HasMaxLength(1000);
+
+            // NOTE: columns RangeMin, RangeMax, MeanApp, SdApp were removed from the InternalErrors model
+            // and should be dropped from the database. Use the provided SQL migration script to drop them.
+            // The canonical source for mean/sd and computed ranges is ControlInfoDetail (linked by ControlInfoDetailId).
+
+            entity.HasOne(d => d.ErroneousResult)
+                .WithMany()
+                .HasForeignKey(d => d.ErroneousResultId)
+                .HasConstraintName("FK_InternalErrors_Results_ErroneousResultId")
+                .OnDelete(DeleteBehavior.Restrict);
+
+            // use the navigation property explicitly
+            entity.HasOne(d => d.Test)
+                .WithMany()
+                .HasForeignKey(d => d.TestId)
+                .HasConstraintName("FK_InternalErrors_Test")
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(d => d.Device)
+                .WithMany()
+                .HasForeignKey(d => d.DeviceId)
+                .HasConstraintName("FK_InternalErrors_Device")
+                .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasOne(d => d.ControlInfoDetail)
+                .WithMany()
+                .HasForeignKey(d => d.ControlInfoDetailId)
+                .HasConstraintName("FK_InternalErrors_ControlInfoDetail")
+                .OnDelete(DeleteBehavior.SetNull);
+        });
+
+        modelBuilder.Entity<CorrectiveAction>(entity =>
+        {
+            entity.ToTable("CorrectiveActions");
+            entity.HasKey(e => e.Id).HasName("PK_CorrectiveActions");
+
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime2");
+            entity.Property(e => e.ActionOwner).HasMaxLength(200);
+            entity.Property(e => e.Outcome).HasMaxLength(50);
+
+            // Map PreventiveAction column
+            entity.Property(e => e.PreventiveAction)
+                .HasMaxLength(1000);
+
+            // map to the existing collection navigation on InternalError to avoid EF creating a shadow FK
+            entity.HasOne(d => d.InternalError)
+                .WithMany(p => p.CorrectiveActions)
+                .HasForeignKey(d => d.InternalErrorId)
+                .HasConstraintName("FK_CorrectiveActions_InternalErrors_InternalErrorId")
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(d => d.ResolvingResult)
+                .WithMany()
+                .HasForeignKey(d => d.ResolvingResultId)
+                .HasConstraintName("FK_CorrectiveActions_Results_ResolvingResultId")
+                .OnDelete(DeleteBehavior.Restrict);
+        });
 
         modelBuilder.Entity<CalResult>(entity =>
         {
@@ -236,6 +310,11 @@ public partial class QcManagmentContext : DbContext
                 .HasForeignKey(d => d.IdTest)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Device_Test_Test");
+
+            // Map new WestgardRulesJson column (stores JSON array of enabled rule keys)
+            entity.Property(e => e.WestgardRulesJson)
+                .HasColumnName("WestgardRulesJson")
+                .HasColumnType("nvarchar(max)");
         });
 
         modelBuilder.Entity<LevelQc>(entity =>
@@ -277,7 +356,7 @@ public partial class QcManagmentContext : DbContext
 
             entity.ToTable("ReCalResult");
 
-            entity.Property(e => e.DateRun).HasColumnType("date");
+            entity.Property(e => e.DateRun).HasColumnType("datetime");
 
             entity.HasOne(d => d.IdDeviceNavigation).WithMany(p => p.ReCalResults)
                 .HasForeignKey(d => d.IdDevice)
@@ -294,12 +373,15 @@ public partial class QcManagmentContext : DbContext
 
             entity.ToTable("Result");
 
-            entity.Property(e => e.DateRun).HasColumnType("date");
+            entity.Property(e => e.DateRun).HasColumnType("datetime");
             entity.Property(e => e.IdUser).HasColumnName("idUser");
             entity.Property(e => e.IndexQc).HasColumnName("index_QC");
             entity.Property(e => e.IsOutRange).HasColumnName("isOutRange");
-            //entity.Property(e => e.QuantitativeResultTemp).HasMaxLength(50);
             entity.Property(e => e.Result1).HasColumnName("Result");
+
+            // map IsCorrected to a bit column (nullable)
+            entity.Property(e => e.IsCorrected).HasColumnName("IsCorrected").HasColumnType("bit");
+
 
             entity.HasOne(d => d.IdControlDetailNavigation).WithMany(p => p.Results)
                 .HasForeignKey(d => d.IdControlDetail)

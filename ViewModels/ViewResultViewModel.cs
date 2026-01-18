@@ -6,10 +6,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Security.AccessControl;
+using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
 using XAct.Library.Settings;
+using System.ComponentModel;
+using System.Windows.Data;
 
 namespace QC_Management.ViewModels
 {
@@ -21,7 +24,11 @@ namespace QC_Management.ViewModels
         public ObservableCollection<CalResult>? CalList { get => _CalList; set { _CalList = value; OnPropertyChanged(); } }
 
         private ObservableCollection<Result> _ResultViewList;
-        public ObservableCollection<Result> ResultViewList { get => _ResultViewList; set { _ResultViewList = value; OnPropertyChanged(); } }
+        public ObservableCollection<Result> ResultViewList { get => _ResultViewList; set { _ResultViewList = value; OnPropertyChanged(); RefreshCollectionView(); } }
+
+        // Expose an ICollectionView so XAML can show grouping and the UI uses the sorted/grouped view
+        private ICollectionView _ResultViewCollection;
+        public ICollectionView ResultViewCollection { get => _ResultViewCollection; set { _ResultViewCollection = value; OnPropertyChanged(); } }
 
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
@@ -76,6 +83,25 @@ namespace QC_Management.ViewModels
         public ICommand ResultTypeChangedCommand { get; set; }
         public ICommand AddCommand { get; set; }
         public ICommand DeviceSelectionChangedCommand { get; set; }
+        public ICommand OpenIncidentCommand { get; set; }
+
+        // New commands/properties for edit-mode
+        public ICommand EnableEditCommand { get; set; }
+        public ICommand CancelEditCommand { get; set; }
+
+        private bool _isEditing;
+        public bool IsEditing
+        {
+            get => _isEditing;
+            set
+            {
+                _isEditing = value;
+                OnPropertyChanged();
+                OnPropertyChanged(nameof(IsGridReadOnly));
+            }
+        }
+
+        public bool IsGridReadOnly => !IsEditing;
 
         private int? _SelectedIndex;
         public int? SelectedIndex
@@ -118,6 +144,20 @@ namespace QC_Management.ViewModels
             {
                 _SelectedDevice = value;
                 OnPropertyChanged();
+
+                // When device changes, reload levels for the current SelectedDate and clear dependent selections.
+                if (_SelectedDevice != null)
+                {
+                    SelectedLevel = null;
+                    IndexList = new List<int?>();
+                    _ = UpdateLevelsByDeviceAsync(_SelectedDevice.Id);
+                }
+                else
+                {
+                    // clear lists if device unset
+                    LevelList = new List<LevelQc>();
+                    IndexList = new List<int?>();
+                }
             }
         }
 
@@ -140,13 +180,50 @@ namespace QC_Management.ViewModels
             {
                 _SelectedDate = value;
                 OnPropertyChanged();
+
+                // When date changes, reload levels for the current SelectedDevice and clear dependent selections.
+                if (SelectedDevice != null)
+                {
+                    SelectedLevel = null;
+                    IndexList = new List<int?>();
+                    _ = UpdateLevelsByDeviceAsync(SelectedDevice.Id);
+                }
             }
         }
         public ViewResultViewModel()
         {
+            ResultViewList = new ObservableCollection<Result>();
             ResultTypes = new ObservableCollection<string> { "CALIB", "QC" };
             SelectedResultType = "QC";
             _dbContext = new QcManagmentContext();
+
+            // initialize empty view
+            ResultViewCollection = CollectionViewSource.GetDefaultView(ResultViewList ?? new ObservableCollection<Result>());
+
+            // default: not in edit mode
+            IsEditing = false;
+
+            // command to enable edit mode
+            EnableEditCommand = new RelayCommand<object>((p) =>
+            {
+                // only allow enabling edit when QC list present
+                return ResultViewList != null && ResultViewList.Count > 0;
+            }, (p) =>
+            {
+                IsEditing = true;
+            });
+
+            // command to cancel edit mode (revert view)
+            CancelEditCommand = new RelayCommand<object>((p) =>
+            {
+                return true;
+            }, (p) =>
+            {
+                IsEditing = false;
+                // reload to discard edits in UI (re-fetch from DB)
+                Reload();
+            });
+
             LoadedCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
                 return true;
@@ -158,23 +235,26 @@ namespace QC_Management.ViewModels
 
             ViewCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                if(SelectedResultType == "CALIB")
+                // Allow viewing when:
+                // - CALIB: SelectedDevice required
+                // - QC: SelectedDevice and SelectedLevel required; SelectedIndex is optional
+                if (SelectedResultType == "CALIB")
                 {
-                    if(SelectedDevice == null ) return false;
-                    else
-                        return true;
+                    return SelectedDevice != null;
                 }
                 else
                 {
-                    if (SelectedDevice == null || SelectedLevel == null || SelectedIndex == null) return false;
-                    else
-                        return true;
+                    return SelectedDevice != null && SelectedLevel != null;
                 }
             }, (p) =>
             {
+                // Always use a fresh DbContext to avoid stale tracked entities.
+                using var db = new QcManagmentContext();
+
                 if (SelectedResultType == "CALIB")
                 {
-                    CalList = new ObservableCollection<CalResult>(_dbContext.CalResults
+                    CalList = new ObservableCollection<CalResult>(db.CalResults
+                        .AsNoTracking()
                         .Include(s => s.IdDeviceNavigation)
                         .Include(s => s.IdTestNavigation)
                         .Include(s => s.IdUserNavigation)
@@ -182,34 +262,23 @@ namespace QC_Management.ViewModels
                         .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
                         .Include(s => s.IdCalDetailNavigation.IdCalInforNavigation.IdCalTypeNavigation)
                         .Include(s => s.IdCalDetailNavigation.IdCalInforNavigation)
-                        .Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate).ToList());
-                    if (CalList.Count() == 0 || CalList == null)
+                        .Where(s => s.IdDevice == SelectedDevice.Id && s.DateRun == SelectedDate)
+                        .ToList());
+                    if (CalList == null || CalList.Count == 0)
                     {
                         MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
                 else
                 {
-                    ResultViewList = new ObservableCollection<Result>(_dbContext.Results
-                               .Include(s => s.IdTestNavigation)
-                               .Include(s => s.IdUserNavigation)
-                               .Include(s => s.IdLevelNavigation)
-                               .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
-                               .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
-                               .Where(s => s.IdDevice == SelectedDevice.Id
-                    && s.IdLevel == SelectedLevel.Id
-                    && s.DateRun == SelectedDate && s.IndexQc == SelectedIndex).ToList());
-                    if (ResultViewList.Count() == 0 || ResultViewList == null)
-                    {
-                        MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
+                    // Use fresh context for FilterResults to get up-to-date data
+                    FilterResults(db);
                 }
-                
             });
 
             PrintCommand = new RelayCommand<object>((p) =>
             {
-                if(SelectedResultType == "CALIB")
+                if (SelectedResultType == "CALIB")
                 {
                     return false;
                 }
@@ -221,7 +290,7 @@ namespace QC_Management.ViewModels
                 }
             }, (p) =>
             {
-                if(SelectedResultType == "CALIB")
+                if (SelectedResultType == "CALIB")
                 {
                     CalibReportView rp = new CalibReportView(CalList.ToList());
                     rp.ShowDialog();
@@ -235,15 +304,14 @@ namespace QC_Management.ViewModels
 
             DeviceSelectionChangedCommand = new RelayCommand<object>((p) =>
             {
-                if(SelectedResultType == "CALIB")
+                if (SelectedResultType == "CALIB")
                 {
                     return false;
                 }
                 else
                 {
-                    if (SelectedDevice == null ) return false;
-                    else
-                        return true;
+                    // require a device to be selected; levels will be loaded for the selected date/device
+                    return SelectedDevice != null;
                 }
             }, async (p) =>
             {
@@ -257,19 +325,19 @@ namespace QC_Management.ViewModels
 
             ResultTypeChangedCommand = new RelayCommand<object>((p) =>
             {
-               if(SelectedDevice == null) return false;   
-               return true;
-               
+                if (SelectedDevice == null) return false;
+                return true;
+
             }, async (p) =>
             {
-                 await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
-                
-            });
+                await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
 
+            });
 
             EditCommand = new RelayCommand<object>((p) =>
             {
-                if(SelectedResultType == "CALIB")
+                // keep same can-execute as before but make SelectedIndex optional for QC
+                if (SelectedResultType == "CALIB")
                 {
                     if (SelectedDevice == null || SelectedCalResult == null) return false;
                     else
@@ -277,69 +345,89 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    if (SelectedDevice == null || SelectedLevel == null || SelectedIndex == null ) return false;
+                    if (SelectedDevice == null || SelectedLevel == null) return false;
                     else
                         return true;
                 }
             }, (p) =>
             {
+                bool saved = false;
+
                 if (SelectedResultType == "CALIB")
                 {
-                    foreach (var item in CalList)
-                    {
-                        var editResult = CalList.Where(s => s.Id == item.Id).FirstOrDefault();
-                        editResult = item;
-                    }
                     try
                     {
+                        foreach (var item in CalList)
+                        {
+                            var editResult = CalList.Where(s => s.Id == item.Id).FirstOrDefault();
+                            editResult = item;
+                        }
+
                         DataProvider.Ins.DB.SaveChanges();
+                        saved = true;
                         MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
                     }
-
-                }
-                if(SelectedResultType == "QC")
-                {
-                    foreach (var item in ResultViewList)
+                    finally
                     {
-                        var editResult = DataProvider.Ins.DB.Results.Where(s => s.Id == item.Id).FirstOrDefault();
-                        if (editResult != null)
+                        if (saved)
                         {
-                            editResult.TempResult = item.TempResult;
-                            editResult.Comment = item.Comment;
-                            editResult.WestgardRule = item.WestgardRule;
-                            editResult.IsExclude = item.IsExclude; // Cập nhật Exclude
-                            editResult.Result1 = item.Result1;
-                            editResult.IsOutRange = item.IsOutRange;
-                            editResult.IsOutRangeNSX = item.IsOutRangeNSX;
-                            editResult.QualitativeResult = item.QualitativeResult;
+                            IsEditing = false;
                         }
                     }
+                }
+                else if (SelectedResultType == "QC")
+                {
                     try
                     {
+                        foreach (var item in ResultViewList)
+                        {
+                            var editResult = DataProvider.Ins.DB.Results.Where(s => s.Id == item.Id).FirstOrDefault();
+                            if (editResult != null)
+                            {
+                                editResult.TempResult = item.TempResult;
+                                editResult.Comment = item.Comment;
+                                editResult.WestgardRule = item.WestgardRule;
+                                editResult.IsExclude = item.IsExclude; // Cập nhật Exclude
+                                editResult.Result1 = item.Result1;
+                                editResult.IsOutRange = item.IsOutRange;
+                                editResult.IsOutRangeNSX = item.IsOutRangeNSX;
+                                editResult.QualitativeResult = item.QualitativeResult;
+                                // Persist corrected status when editing
+                                editResult.IsCorrected = item.IsCorrected;
+                            }
+                        }
+
                         DataProvider.Ins.DB.SaveChanges();
+                        saved = true;
                         MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
                     }
+                    finally
+                    {
+                        if (saved)
+                        {
+                            IsEditing = false;
+                        }
+                    }
                 }
-                
             });
 
-            AddCommand = new RelayCommand<Result>((p) => 
+            AddCommand = new RelayCommand<Result>((p) =>
             {
                 if (ResultViewList.Count == 0 || ResultViewList == null) return false;
                 else
                     return true;
-            }, 
-            (p) => 
-            { 
-                OpenAddResultWindow(); 
+            },
+            (p) =>
+            {
+                OpenAddResultWindow();
             }
             );
 
@@ -358,12 +446,90 @@ namespace QC_Management.ViewModels
                 {
                     try
                     {
-                        _dbContext.RemoveRange(deleteItem);
-                        _dbContext.SaveChanges();
+                        var ids = deleteItem.Select(d => d.Id).ToList();
+
+                        using (var context = new QcManagmentContext())
+                        {
+                            // gather related entities
+                            var resolvingCAs = context.CorrectiveActions.Where(c => c.ResolvingResultId.HasValue && ids.Contains(c.ResolvingResultId.Value)).ToList();
+                            var internalErrors = context.InternalErrors.Where(i => i.ErroneousResultId.HasValue && ids.Contains(i.ErroneousResultId.Value)).ToList();
+                            var internalErrorIds = internalErrors.Select(i => i.Id).ToList();
+
+                            // Build one unified list of corrective actions that reference either the results (as resolving)
+                            // or reference the internal errors (as InternalErrorId). This avoids deleting the same CA twice.
+                            var correctiveActionsToDelete = context.CorrectiveActions
+                                .Where(c => (c.ResolvingResultId.HasValue && ids.Contains(c.ResolvingResultId.Value))
+                                            || internalErrorIds.Contains(c.InternalErrorId))
+                                .ToList();
+
+                            int totalCA = correctiveActionsToDelete.Count;
+                            int totalIE = internalErrors.Count;
+
+                            // If there are linked InternalErrors/CorrectiveActions prompt user with counts and confirm deletion of related items
+                            if (totalIE > 0 || totalCA > 0)
+                            {
+                                var msg = $"There are {ids.Count} result(s) to delete.\n" +
+                                    $"Linked InternalErrors: {totalIE}\n" +
+                                    $"Linked CorrectiveActions: {totalCA}\n\n" +
+                                    $"Do you want to delete these related InternalError/CorrectiveAction records as well? (Yes = delete related, No = cancel)";
+                                var confirmRelated = MessageBox.Show(msg, "Confirm related deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                                if (confirmRelated != MessageBoxResult.Yes)
+                                {
+                                    // user cancelled deletion of related items -> abort whole delete
+                                    MessageBox.Show("Deletion cancelled.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                    return;
+                                }
+
+                                using var tx = context.Database.BeginTransaction();
+                                try
+                                {
+                                    // Delete corrective actions first (they reference InternalErrors and Results)
+                                    if (correctiveActionsToDelete.Any())
+                                        context.CorrectiveActions.RemoveRange(correctiveActionsToDelete);
+
+                                    // Then delete internal errors
+                                    if (internalErrors.Any())
+                                        context.InternalErrors.RemoveRange(internalErrors);
+
+                                    // Finally delete the results
+                                    var entitiesToDelete = context.Results.Where(r => ids.Contains(r.Id)).ToList();
+                                    if (entitiesToDelete.Any())
+                                        context.Results.RemoveRange(entitiesToDelete);
+
+                                    context.SaveChanges();
+                                    tx.Commit();
+                                }
+                                catch
+                                {
+                                    try { tx.Rollback(); } catch { /* swallow */ }
+                                    throw;
+                                }
+                            }
+                            else
+                            {
+                                // No related entities; proceed with safe delete
+                                using var tx2 = context.Database.BeginTransaction();
+                                try
+                                {
+                                    var entitiesToDelete = context.Results.Where(r => ids.Contains(r.Id)).ToList();
+                                    if (entitiesToDelete.Any())
+                                        context.Results.RemoveRange(entitiesToDelete);
+
+                                    context.SaveChanges();
+                                    tx2.Commit();
+                                }
+                                catch
+                                {
+                                    try { tx2.Rollback(); } catch { /* swallow */ }
+                                    throw;
+                                }
+                            }
+                        }
+
                         MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         Reload();
-                        FilterResults(_dbContext);
-
+                        using var fresh = new QcManagmentContext();
+                        FilterResults(fresh);
                     }
                     catch (Exception ex)
                     {
@@ -374,13 +540,13 @@ namespace QC_Management.ViewModels
 
             });
 
-            DeleteOneQCResultCommand = new RelayCommand<Result>((p) => 
+            DeleteOneQCResultCommand = new RelayCommand<Result>((p) =>
             {
-            if (SelectedItem == null) return false;
+                if (SelectedItem == null) return false;
                 else return true;
-            }, (p) => 
+            }, (p) =>
             {
-                DeleteQCResult(SelectedItem); 
+                DeleteQCResult(SelectedItem);
             });
 
             DeleteOneCalResultCommand = new RelayCommand<CalResult>((p) =>
@@ -410,18 +576,26 @@ namespace QC_Management.ViewModels
             }, async (p) =>
             {
                 SelectedLevel = null;
-                if(SelectedDevice != null)
+                if (SelectedDevice != null)
                 {
-                   await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
+                    await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
                 }
             });
+
+            //OpenIncidentCommand = new RelayCommand<Result>((p) =>
+            //{
+            //    return p != null;
+            //}, (p) =>
+            //{
+            //    OpenIncidentWindow(p);
+            //});
 
         }
         private List<int?> LoadIndexList(QcManagmentContext DB)
         {
             var IndexList = new List<int?>();
-            var listTest =  DB.Results.Where(s => s.IdDevice == SelectedDevice.Id
-                            && s.DateRun == SelectedDate
+            var listTest = DB.Results.Where(s => s.IdDevice == SelectedDevice.Id
+                            && s.DateRun.Date == SelectedDate.Date
                             && s.IdLevel == SelectedLevel.Id)
             .GroupBy(s => s.IndexQc).Select(s => s.Key).ToList();
 
@@ -437,7 +611,7 @@ namespace QC_Management.ViewModels
             using (var dbContext = new QcManagmentContext())
             {
                 var levels = await dbContext.Results
-                                            .Where(c => c.IdDevice == deviceId && c.DateRun == SelectedDate.Date)
+                                            .Where(c => c.IdDevice == deviceId && c.DateRun.Date == SelectedDate.Date)
                                             .Select(c => new LevelQc
                                             {
                                                 Id = c.IdLevel,
@@ -448,20 +622,6 @@ namespace QC_Management.ViewModels
                 LevelList = levels;
             }
         }
-
-        private void AddNewResult()
-        {
-            var newResult = new Result
-            {
-                // Initialize with default values if needed
-                DateRun = DateTime.Now,
-                IdDevice = SelectedDevice?.Id ?? 0,
-                IdLevel = SelectedLevel?.Id ?? 0,
-                IndexQc = SelectedIndex
-            };
-            ResultViewList.Add(newResult);
-        }
-
         private void OpenAddResultWindow()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
@@ -474,26 +634,92 @@ namespace QC_Management.ViewModels
                 FilterResults(DB);
             }
         }
+
         private async void DeleteQCResult(Result result)
         {
             if (result == null) return;
 
+            // ask confirmation
             var messageBoxResult = MessageBox.Show("Are you sure you want to delete this item?", "Confirmation", MessageBoxButton.YesNo, MessageBoxImage.Question);
             if (messageBoxResult == MessageBoxResult.No) return;
-            // Remove from the database
+
             try
             {
                 using (var context = new QcManagmentContext())
                 {
-                    var entity = context.Results.Find(result.Id);
-                    if (entity != null)
+                    // find related entities
+                    var resolvingCAs = context.CorrectiveActions.Where(c => c.ResolvingResultId.HasValue && c.ResolvingResultId.Value == result.Id).ToList();
+                    var internalErrors = context.InternalErrors.Where(i => i.ErroneousResultId.HasValue && i.ErroneousResultId.Value == result.Id).ToList();
+                    var internalErrorIds = internalErrors.Select(i => i.Id).ToList();
+
+                    // Build one unified list of corrective actions that reference either the results (as resolving)
+                    // or reference the internal errors (as InternalErrorId). This avoids deleting the same CA twice.
+                    var correctiveActionsToDelete = context.CorrectiveActions
+                        .Where(c => (c.ResolvingResultId.HasValue && c.ResolvingResultId.Value == result.Id)
+                                    || internalErrorIds.Contains(c.InternalErrorId))
+                        .ToList();
+
+                    int totalCA = correctiveActionsToDelete.Count;
+                    int totalIE = internalErrors.Count;
+
+                    if (totalIE > 0 || totalCA > 0)
                     {
-                        context.Results.Remove(entity);
-                        await context.SaveChangesAsync();
+                        var msg = $"There is 1 result to delete.\nLinked InternalErrors: {totalIE}\nLinked CorrectiveActions: {totalCA}\n\nDo you want to delete these related records as well? (Yes = delete related, No = cancel)";
+                        var confirmRelated = MessageBox.Show(msg, "Confirm related deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                        if (confirmRelated != MessageBoxResult.Yes)
+                        {
+                            MessageBox.Show("Deletion cancelled.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                            return;
+                        }
+
+                        using var tx = context.Database.BeginTransaction();
+
+                        try
+                        {
+                            // delete corrective actions referencing internal errors
+                            if (correctiveActionsToDelete.Any())
+                                context.CorrectiveActions.RemoveRange(correctiveActionsToDelete);
+
+                            // delete internal errors
+                            if (internalErrors.Any())
+                                context.InternalErrors.RemoveRange(internalErrors);
+
+                            // delete the result
+                            var entity = context.Results.Find(result.Id);
+                            if (entity != null)
+                                context.Results.Remove(entity);
+
+                            context.SaveChanges();
+                            tx.Commit();
+                        }
+                        catch
+                        {
+                            try { tx.Rollback(); } catch { /* swallow */ }
+                            throw;
+                        }
+                    }
+                    else
+                    {
+                        // no related items; delete result directly
+                        using var tx2 = context.Database.BeginTransaction();
+                        try
+                        {
+                            var entity = context.Results.Find(result.Id);
+                            if (entity != null)
+                                context.Results.Remove(entity);
+
+                            context.SaveChanges();
+                            tx2.Commit();
+                        }
+                        catch
+                        {
+                            try { tx2.Rollback(); } catch { /* swallow */ }
+                            throw;
+                        }
                     }
                 }
 
-                // Remove from the ObservableCollection
+                // Remove from the ObservableCollection (UI)
                 ResultViewList.Remove(result);
             }
             catch (Exception ex)
@@ -513,7 +739,8 @@ namespace QC_Management.ViewModels
             {
                 using (var context = new QcManagmentContext())
                 {
-                    var entity = context.CalResults.Find(calResult.Id);
+                    // CalResult is not referenced by InternalError/CorrectiveAction - safe to delete directly
+                    var entity = await context.CalResults.FindAsync(calResult.Id);
                     if (entity != null)
                     {
                         context.CalResults.Remove(entity);
@@ -530,63 +757,97 @@ namespace QC_Management.ViewModels
         }
         private void FilterResults(QcManagmentContext DB)
         {
-            if (SelectedDevice == null || SelectedLevel == null ) return;
+            if (SelectedDevice == null || SelectedLevel == null) return;
+            // Build base query and include related navigation properties
+            var query = DB.Results
+                          .AsNoTracking()
+                          .Include(s => s.IdTestNavigation)
+                          .Include(s => s.IdDeviceNavigation)
+                          .Include(s => s.IdUserNavigation)
+                          .Include(s => s.IdLevelNavigation)
+                          .Include(s => s.IdTestNavigation.IdUnitTableNavigation)
+                          .Include(s => s.IdControlDetailNavigation.IdControlInfoNavigation)
+                          .Where(s => s.IdDevice == SelectedDevice.Id
+                                      && s.IdLevel == SelectedLevel.Id
+                                      && s.DateRun.Date == SelectedDate.Date);
 
-            if (SelectedIndex == 0)
+            // Apply index filter only when selected and non-zero (preserve existing semantics)
+            if (SelectedIndex != null && SelectedIndex != 0)
             {
-                ResultViewList = new ObservableCollection<Result>(DB.Results.Where(s => s.IdDevice == SelectedDevice.Id && s.IdLevel == SelectedLevel.Id && s.DateRun == SelectedDate).ToList());
-            }
-            else
-            {
-                ResultViewList = new ObservableCollection<Result>(DB.Results.Where(s => s.IdDevice == SelectedDevice.Id
-                && s.IdLevel == SelectedLevel.Id
-                && s.DateRun == SelectedDate && s.IndexQc == SelectedIndex).ToList());
+                query = query.Where(s => s.IndexQc == SelectedIndex);
             }
 
-            if (ResultViewList.Count() == 0 || ResultViewList == null)
+            // Order results primarily by IndexQc (ascending) then by Time so the DataGrid shows index rows in sequence.
+            var list = query.OrderBy(s => s.IndexQc ?? 0).ThenBy(s => s.Time ?? TimeSpan.Zero).ToList();
+
+            ResultViewList = new ObservableCollection<Result>(list);
+
+            // Update IndexList for UI selection
+            IndexList = LoadIndexList(DB);
+
+            // If no index selected, enable grouping by Index in the ICollectionView so the UI shows an index "row"
+            // (XAML DataGrid will display groups if configured).
+            RefreshCollectionView();
+
+            if (ResultViewList == null || ResultViewList.Count == 0)
             {
                 SelectedIndex = null;
                 IndexList = LoadIndexList(DB);
                 MessageBox.Show("No data", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Warning);
             }
         }
-        //public void LoadNew(QcManagmentContext DB)
-        //{
-        //    if(UserManager.Instance.CurrentUser.Role == 1)
-        //    {
-        //        IsVisibility = Visibility.Visible;
-        //    }
-        //    else
-        //    {
-        //        IsVisibility = Visibility.Hidden;
-        //    }
-        //    //List = new ObservableCollection<Result>();
-        //    //ResultViewList = new ObservableCollection<Result>();
-        //    //TestList = new ObservableCollection<DeviceTest>();
-        //    DeviceList = new ObservableCollection<Device>(DB.Devices);
-        //    //ControlInfolList = new ObservableCollection<ControlInfo>();
-           
-        //}
-
         private async Task LoadNew()
         {
             try
             {
                 _dbContext = await Task.Run(() => DataProvider.Ins.DB);
                 DeviceList = new ObservableCollection<Device>(_dbContext.Devices);
-          
+                ResultViewList = new ObservableCollection<Result>();
+                // ensure collection view initialized
+                RefreshCollectionView();
             }
             catch (Exception ex)
             {
                 // Handle exceptions
             }
         }
-
         public void Reload()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
             ResultViewList = new ObservableCollection<Result>();
             CalList = new ObservableCollection<CalResult>();
+            RefreshCollectionView();
         }
+
+        // RefreshCollectionView: apply sorting and optional grouping by IndexQc when SelectedIndex is not chosen.
+        private void RefreshCollectionView()
+        {
+            if (ResultViewList == null)
+            {
+                ResultViewCollection = CollectionViewSource.GetDefaultView(new ObservableCollection<Result>());
+                return;
+            }
+
+            var view = CollectionViewSource.GetDefaultView(ResultViewList);
+            if (view == null) return;
+
+            // Clear existing sort and group
+            view.SortDescriptions.Clear();
+            view.GroupDescriptions.Clear();
+
+            // Always sort by IndexQc then by Time for predictable ordering
+            view.SortDescriptions.Add(new SortDescription(nameof(Result.IndexQc), ListSortDirection.Ascending));
+            view.SortDescriptions.Add(new SortDescription(nameof(Result.Time), ListSortDirection.Ascending));
+
+            // If no specific index is selected, group by IndexQc so the DataGrid can show index "rows"
+            if (SelectedIndex == null)
+            {
+                // GroupDescription will use the raw IndexQc value (nulls will be shown as blank group)
+                view.GroupDescriptions.Add(new PropertyGroupDescription(nameof(Result.IndexQc)));
+            }
+
+            ResultViewCollection = view;
+        }
+
     }
 }

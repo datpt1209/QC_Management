@@ -1,7 +1,9 @@
 ﻿using QC_Management.Models;
 using QC_Management.Views;
 using System;
+using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
@@ -21,6 +23,9 @@ namespace QC_Management.ViewModels
         private string _Password;
         public string Password { get => _Password; set { _Password = value; OnPropertyChanged(); } }
 
+        private bool _RememberMe;
+        public bool RememberMe { get => _RememberMe; set { _RememberMe = value; OnPropertyChanged(); } }
+
         public ICommand CloseCommand { get; set; }
         public ICommand LoginCommand { get; set; }
         public ICommand PasswordChangedCommand { get; set; }
@@ -28,6 +33,10 @@ namespace QC_Management.ViewModels
         public ICommand Window_Loaded { get; set; }
         public ICommand ForgotPasswordCommand { get; set; }
         public ICommand ConfigCommand { get; set; }
+
+        // file used to store encrypted credentials
+        private static string CredentialFilePath =>
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "QC_Management", "credentials.dat");
 
         // mọi thứ xử lý sẽ nằm trong này
         public LoginViewModel()
@@ -39,8 +48,22 @@ namespace QC_Management.ViewModels
             RegisterCommand = new RelayCommand<Window>((p) => true, (p) => Regis(p));
             ForgotPasswordCommand = new RelayCommand<Window>((p) => true, (p) => ForgotPassword(p));
             CloseCommand = new RelayCommand<Window>((p) => true, (p) => p.Close());
-            PasswordChangedCommand = new RelayCommand<PasswordBox>((p) => true, (p) => Password = p.Password);
+
+            // Keep PasswordBox handler as before but robustly accept object cast
+            PasswordChangedCommand = new RelayCommand<object>(
+                (p) => true,
+                (p) =>
+                {
+                    if (p is PasswordBox pb)
+                    {
+                        Password = pb.Password ?? string.Empty;
+                    }
+                });
+
             ConfigCommand = new RelayCommand<Window>((p) => true, (p) => Config(p));
+
+            // try to restore saved credentials (if available)
+            TryLoadSavedCredentials();
         }
 
         private async void Login(Window p)
@@ -89,6 +112,20 @@ namespace QC_Management.ViewModels
                 if (currentUser != null)
                 {
                     UserManager.Instance.CurrentUser = currentUser;
+
+                    // Persist or clear credentials based on RememberMe
+                    try
+                    {
+                        if (RememberMe)
+                            SaveCredentials();
+                        else
+                            ClearSavedCredentials();
+                    }
+                    catch
+                    {
+                        // Fail silently — login should not be blocked by persistence errors
+                    }
+
                     MainWindow view = new MainWindow();
                     view.Show();
                     p.Close();
@@ -145,6 +182,67 @@ namespace QC_Management.ViewModels
                 }
             }
             return hash.ToString();
+        }
+
+        // --- Persistence helpers (uses DPAPI for encryption, stored under %APPDATA%\QC_Management\credentials.dat) ---
+
+        private void TryLoadSavedCredentials()
+        {
+            try
+            {
+                if (!File.Exists(CredentialFilePath)) return;
+
+                var encrypted = File.ReadAllBytes(CredentialFilePath);
+                var decrypted = ProtectedData.Unprotect(encrypted, null, DataProtectionScope.CurrentUser);
+                var text = Encoding.UTF8.GetString(decrypted);
+                // stored format: username\npassword
+                var parts = text.Split(new[] { '\n' }, 2);
+                if (parts.Length >= 1)
+                {
+                    UserName = parts[0];
+                }
+                if (parts.Length == 2)
+                {
+                    Password = parts[1];
+                }
+                RememberMe = true;
+            }
+            catch
+            {
+                // ignore failures — don't block startup
+            }
+        }
+
+        private void SaveCredentials()
+        {
+            try
+            {
+                var folder = Path.GetDirectoryName(CredentialFilePath);
+                if (!Directory.Exists(folder))
+                    Directory.CreateDirectory(folder!);
+
+                var text = $"{UserName}\n{Password}";
+                var bytes = Encoding.UTF8.GetBytes(text);
+                var encrypted = ProtectedData.Protect(bytes, null, DataProtectionScope.CurrentUser);
+                File.WriteAllBytes(CredentialFilePath, encrypted);
+            }
+            catch
+            {
+                // ignore persistence errors
+            }
+        }
+
+        private void ClearSavedCredentials()
+        {
+            try
+            {
+                if (File.Exists(CredentialFilePath))
+                    File.Delete(CredentialFilePath);
+            }
+            catch
+            {
+                // ignore
+            }
         }
     }
 }

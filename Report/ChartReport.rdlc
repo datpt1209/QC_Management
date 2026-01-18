@@ -182,17 +182,16 @@
                 <ChartMember>
                   <Group Name="Chart2_CategoryGroup">
                     <GroupExpressions>
-					  <GroupExpression>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
-				
-					</GroupExpressions>
-				  </Group>
+                      <GroupExpression>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</GroupExpression>
+                    </GroupExpressions>
+                  </Group>
                   <SortExpressions>
                     <SortExpression>
                       <Value>=Fields!DateRun.Value</Value>
                     </SortExpression>
                   </SortExpressions>
-					<Label>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
-				</ChartMember>
+                  <Label>=Fields!DateRunString.Value &amp; " - " &amp; Fields!Index.Value.ToString()</Label>
+                </ChartMember>
               </ChartMembers>
             </ChartCategoryHierarchy>
             <ChartSeriesHierarchy>
@@ -569,7 +568,7 @@
             <DataSetName>DataSet1</DataSetName>
             <Top>2.66318cm</Top>
             <Left>1.24566cm</Left>
-            <Height>8.38702cm</Height>
+            <Height>8.09069cm</Height>
             <Width>26.34891cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
@@ -659,6 +658,7 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
+                      <rd:Selected>true</rd:Selected>
                     </CellContents>
                   </TablixCornerCell>
                   <TablixCornerCell>
@@ -1909,7 +1909,7 @@
             </Style>
           </Textbox>
         </ReportItems>
-        <Height>14.74613cm</Height>
+        <Height>14.04763cm</Height>
         <Style />
       </Body>
       <Width>28.40126cm</Width>
@@ -2008,7 +2008,7 @@
               </Paragraphs>
               <rd:DefaultName>Textbox6</rd:DefaultName>
               <Top>0.50993cm</Top>
-              <Left>23.89338cm</Left>
+              <Left>23.65524cm</Left>
               <Height>1.13772cm</Height>
               <Width>3.93933cm</Width>
               <ZIndex>2</ZIndex>
@@ -2030,7 +2030,7 @@
           </Style>
         </PageHeader>
         <PageFooter>
-          <Height>1.70921cm</Height>
+          <Height>1.45521cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -2097,7 +2097,7 @@
               </Paragraphs>
               <rd:DefaultName>PageNumber</rd:DefaultName>
               <Top>0.14111cm</Top>
-              <Left>25.00889cm</Left>
+              <Left>24.85013cm</Left>
               <Height>0.89104cm</Height>
               <Width>2.82382cm</Width>
               <ZIndex>1</ZIndex>

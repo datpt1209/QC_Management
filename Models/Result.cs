@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using QC_Management.Services;
 
 namespace QC_Management.Models;
 
@@ -8,8 +9,14 @@ public partial class Result : BaseViewModel
 {
     public int Id { get; set; }
 
-    [NotMapped]
-    public double? ZScore { get; set; }
+    // Persisted ZScore (stored in DB)
+    private double? _zScore;
+    public double? ZScore
+    {
+        get => _zScore;
+        set { _zScore = value; OnPropertyChanged(nameof(ZScore)); }
+    }
+
     public int IdTest { get; set; }
     public int? ResultType { get; set; }
 
@@ -21,7 +28,7 @@ public partial class Result : BaseViewModel
         {
             _Result1 = value;
             OnPropertyChanged();
-            CheckIfOutOfRange();
+            // Do not evaluate here; call ApplyLeveyJennings(...) when history is available
         }
     }
 
@@ -35,9 +42,10 @@ public partial class Result : BaseViewModel
             OnPropertyChanged();
             if (ResultType == 2)
             {
-                if(double.TryParse(_TempResult, out double result))
+                if (double.TryParse(_TempResult, out double result))
                 {
                     Result1 = result;
+                    OnPropertyChanged();
                 }
                 else
                 {
@@ -65,7 +73,12 @@ public partial class Result : BaseViewModel
 
     public int? IndexQc { get; set; }
 
-    public string? WestgardRule { get; set; }
+    private string? _westgardRule;
+    public string? WestgardRule
+    {
+        get => _westgardRule;
+        set => SetProperty(ref _westgardRule, value);
+    }
 
     public string? Comment { get; set; }
 
@@ -91,6 +104,18 @@ public partial class Result : BaseViewModel
         }
     }
 
+    // New: flag indicating this Result has been resolved by a corrective action
+    private bool? _isCorrected;
+    public bool? IsCorrected
+    {
+        get => _isCorrected;
+        set
+        {
+            _isCorrected = value;
+            OnPropertyChanged();
+        }
+    }
+
     private string? _QualitativeResult;
     public string? QualitativeResult
     {
@@ -99,10 +124,9 @@ public partial class Result : BaseViewModel
         {
             _QualitativeResult = value;
             OnPropertyChanged();
-            CheckIfOutOfRange();
         }
     }
-    public bool? IsExclude { get; set; } = false; // Default value is false
+    public bool? IsExclude { get; set; } = false;
 
     public virtual ControlInfoDetail? IdControlDetailNavigation { get; set; }
 
@@ -113,19 +137,29 @@ public partial class Result : BaseViewModel
     public virtual Test IdTestNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
-    private void CheckIfOutOfRange()
-    {
-        if (IdTestNavigation.TestType == 1 && !string.IsNullOrEmpty(_QualitativeResult))
-        {
-            IsOutRange = IsOutRangeNSX = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_QualitativeResult);
-        }
-        if(IdTestNavigation.TestType == 2 && _Result1 != null)
-        {
-            IsOutRange = _Result1 > (IdControlDetailNavigation.CurMean + 2 * IdControlDetailNavigation.CurSd) 
-                || _Result1 < (IdControlDetailNavigation.CurMean - 2 * IdControlDetailNavigation.CurSd);
 
-            IsOutRangeNSX = _Result1 > (IdControlDetailNavigation.MeanNsx + 2 * IdControlDetailNavigation.SdNsx) 
-                || _Result1 < (IdControlDetailNavigation.MeanNsx - 2 * IdControlDetailNavigation.SdNsx);
-        }
-    }
+    /// <summary>
+    /// Apply Levey-Jennings using history. Returns LeveyResult containing ZScore/ViolatedRules and HistoryIdsToMark.
+    /// Caller must ensure IdControlDetailNavigation is set (Include) or else this will return empty result.
+    /// </summary>
+    //public LeveyResult ApplyLeveyJennings(IEnumerable<Result>? recentHistory)
+    //{
+    //    var control = IdControlDetailNavigation;
+    //    if (control == null)
+    //        return new LeveyResult();
+
+    //    var levey = LeveyJenningsChecker.Evaluate(
+    //        this,
+    //        recentHistory
+    //       );
+
+    //    ZScore = levey.ZScore;
+    //    WestgardRule = levey.ViolatedRules.Count > 0 ? string.Join(", ", levey.ViolatedRules) : null;
+    //    IsOutRange = levey.IsOutRange;
+    //    IsOutRangeNSX = levey.IsOutRangeNSX;
+
+    //    OnPropertyChanged(nameof(WestgardRule));
+    //    OnPropertyChanged(nameof(ZScore));
+    //    return levey;
+    //}
 }

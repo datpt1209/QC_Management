@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.Xaml.Behaviors.Core;
+﻿using Microsoft.Xaml.Behaviors.Core;
 using QC_Management.ViewModels;
 using System.Windows.Forms;
 
@@ -19,7 +17,7 @@ namespace QC_Management.Models
             {
                 _TempResult = value;
                 OnPropertyChanged();
-                CheckIfOutOfRange();
+                //CheckIfOutOfRange();
             }
         }
 
@@ -36,7 +34,7 @@ namespace QC_Management.Models
                 {
                     if (double.TryParse(MeanApp, out double meanApp))
                     {
-                        isOutOfRange = resultValue > meanApp + 2 * SdApp || resultValue < meanApp - 2 * SdApp;
+                        isOut2SD = resultValue > meanApp + 2 * SdApp || resultValue < meanApp - 2 * SdApp;
                     }
                     else
                     {
@@ -62,6 +60,18 @@ namespace QC_Management.Models
         public double? Min { get; set; }
         public double? Max { get; set; }
         public string? Comment { get; set; }
+
+        // New: store detected Westgard rule / error directly on the view item
+        private string? _WestgardRule;
+        public string? WestgardRule
+        {
+            get => _WestgardRule;
+            set
+            {
+                _WestgardRule = value;
+                OnPropertyChanged();
+            }
+        }
 
         private bool _isOutOfRange;
         public bool isOutOfRange

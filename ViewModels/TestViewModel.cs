@@ -107,7 +107,6 @@ namespace QC_Management.ViewModels
 
             }
         }
-
         public ICommand AddCommand { get; set; }
         public ICommand AddTestDeviceCommand { get; set; }
         public ICommand CategoryChangedCommand { get; set; }

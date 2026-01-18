@@ -24,12 +24,20 @@
     <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
+    <viewmodel:IncidentManagementViewModel x:Key="IncidentManagementVM"></viewmodel:IncidentManagementViewModel>
+    
+    <!--<viewmodel:CorrectiveActionViewModel x:Key="CorrectiveActionVM"></viewmodel:CorrectiveActionViewModel>-->
+    
     <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
     <DataTemplate DataType="{x:Type viewmodel:CategoryViewModel}">
         <views:CategoryWindow></views:CategoryWindow>
     </DataTemplate>
+    
+    <!--<DataTemplate DataType="{x:Type viewmodel:CorrectiveActionViewModel}">
+        <views:CorrectActionWindow></views:CorrectActionWindow>
+    </DataTemplate>-->
 
     <DataTemplate DataType="{x:Type viewmodel:AddResultViewModel}">
         <views:AddResultWindow></views:AddResultWindow>
@@ -90,7 +98,12 @@
     <DataTemplate DataType="{x:Type viewmodel:CAL_InforViewModel}">
         <views:CAL_InforView></views:CAL_InforView>
     </DataTemplate>
-    
+
+    <DataTemplate DataType="{x:Type viewmodel:IncidentManagementViewModel}">
+        <views:IncidentManagementView></views:IncidentManagementView>
+    </DataTemplate>
+
+
     <Style TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />
     </Style>
