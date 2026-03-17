@@ -95,6 +95,9 @@
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="{x:Type TextBlock}">
                                 <Setter Property="Foreground" Value="Green" />
+                                <Setter Property="HorizontalAlignment" Value="Center"/>
+                                <Setter Property="FontSize" Value="14"/>
+                                <Setter Property="FontWeight" Value="Bold"/>
                                 <!--Màu mặc định-->
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding isOutOfRange}" Value="True">

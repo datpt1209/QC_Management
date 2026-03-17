@@ -18,6 +18,8 @@ public partial class Test
     public int? OnlineNumber { get; set; }
 
     public int? TestType { get; set; }
+    // TEa in percent (e.g. 10 means 10%). Nullable for backward compatibility.
+    public double? TEaPercent { get; set; }
 
     public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
 

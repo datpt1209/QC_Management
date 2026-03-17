@@ -15,7 +15,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 namespace QC_Management.ViewModels
 {
 
-public class AddResultViewModel : BaseViewModel
+    public class AddResultViewModel : BaseViewModel
     {
         private DateTime _selectedDate;
         private Device _selectedDevice;
@@ -57,6 +57,20 @@ public class AddResultViewModel : BaseViewModel
                         Result = result;
                     }
                 }
+            }
+        }
+        private TimeSpan _selectedTime = DateTime.Now.TimeOfDay;
+
+        // SelectedTime bound in AddResultWindow.xaml (uses TimeSpan converter).
+        // Two-way so user can edit time before adding results.
+        public TimeSpan SelectedTime
+        {
+            get => _selectedTime;
+            set
+            {
+                if (_selectedTime == value) return;
+                _selectedTime = value;
+                OnPropertyChanged(nameof(SelectedTime));
             }
         }
 
@@ -194,22 +208,24 @@ public class AddResultViewModel : BaseViewModel
             }
             else
             {
-                using (var DB = new QcManagmentContext())
-                {
-                    // Gọi hàm lưu dữ liệu
-                    bool isSaved = await SaveDataAsync(DB, NewResults);
+                // Use shared DataProvider context so related navigation/entities and internal error checks are consistent
+                var DB = DataProvider.Ins.DB;
+                // Gọi hàm lưu dữ liệu (createInternalErrors true để tạo InternalError giống ResultViewModel)
+                bool isSaved = await SaveDataAsync(DB, NewResults, createInternalErrors: true);
 
-                    // Hiển thị thông báo thành công hoặc thất bại
-                    if (isSaved)
-                    {
-                        MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        _window.DialogResult = true;
-                        _window.Close();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                    }
+                // Hiển thị thông báo thành công hoặc thất bại
+                if (isSaved)
+                {
+                    // notify charts/history to refresh
+                    ResultChangeNotifier.Notify();
+
+                    MessageBox.Show("Lưu kết quả thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    _window.DialogResult = true;
+                    _window.Close();
+                }
+                else
+                {
+                    MessageBox.Show("Lưu dữ liệu thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
         }
@@ -313,7 +329,7 @@ public class AddResultViewModel : BaseViewModel
                             newResult.ZScore = null;
                         }
 
-                        // Evaluate Westgard rules using recent history (same as in ResultViewModel)
+                        // Evaluate Westgard rules using recent history (same as ResultViewModel)
                         try
                         {
                             var (sameLevelPrev, crossLevelPrev) = await GetRecentHistoryAsync(SelectedTest.Id, SelectedDevice.Id, SelectedLevel.Id, take: 10);
@@ -437,54 +453,123 @@ public class AddResultViewModel : BaseViewModel
             }
         }
 
-        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results)
+        // SaveDataAsync: persist results and create InternalError entries for problematic records (similar to ResultViewModel)
+        public async Task<bool> SaveDataAsync(QcManagmentContext DB, ObservableCollection<Result> results, bool createInternalErrors = true)
         {
             try
             {
-                foreach (var result in results)
+                // Ensure related navigation entities are attached and set AppliedMean/AppliedSd/AppliedAt for new results
+                var now = DateTime.UtcNow;
+                foreach (var r in results)
                 {
-                    // Kiểm tra và gắn thực thể ControlInfoDetail nếu chưa được theo dõi
-                    if (result.IdControlDetail.HasValue)
+                    ControlInfoDetail? ctrl = null;
+                    if (r.IdControlDetailNavigation != null)
                     {
-                        var existingControlDetail = await DB.ControlInfoDetails.FindAsync(result.IdControlDetail.Value);
-                        if (existingControlDetail != null)
+                        ctrl = r.IdControlDetailNavigation;
+                        DB.Entry(ctrl).State = EntityState.Unchanged;
+                    }
+                    else if (r.IdControlDetail.HasValue)
+                    {
+                        ctrl = await DB.ControlInfoDetails.FindAsync(r.IdControlDetail.Value);
+                        if (ctrl != null)
                         {
-                            DB.Entry(existingControlDetail).State = EntityState.Unchanged;
-                            result.IdControlDetailNavigation = existingControlDetail;
+                            r.IdControlDetailNavigation = ctrl;
+                            DB.Entry(ctrl).State = EntityState.Unchanged;
                         }
                     }
 
-                    // Kiểm tra và gắn thực thể Test nếu chưa được theo dõi
-                    if (result.IdTest != 0)
+                    if (r.IdTest != 0)
                     {
-                        var existingTest = await DB.Tests.FindAsync(result.IdTest);
+                        var existingTest = await DB.Tests.FindAsync(r.IdTest);
                         if (existingTest != null)
                         {
                             DB.Entry(existingTest).State = EntityState.Unchanged;
-                            result.IdTestNavigation = existingTest;
+                            r.IdTestNavigation = existingTest;
                         }
                     }
 
-                    // Thêm hoặc cập nhật thực thể Result
-                    var existingResult = await DB.Results.FindAsync(result.Id);
-                    if (existingResult == null)
+                    if (r.IdControlDetailNavigation != null)
+                        DB.Entry(r.IdControlDetailNavigation).State = EntityState.Unchanged;
+
+                    // set Applied fields if not present
+                    if (!r.AppliedAt.HasValue && ctrl != null)
                     {
-                        DB.Results.Add(result);
-                    }
-                    else
-                    {
-                        DB.Entry(existingResult).CurrentValues.SetValues(result);
+                        double? meanToApply = ctrl.CurMean ?? ctrl.MeanApp ?? ctrl.MeanNsx;
+                        double? sdToApply = ctrl.CurSd ?? ctrl.SdApp ?? ctrl.SdNsx;
+                        if (meanToApply.HasValue && sdToApply.HasValue)
+                        {
+                            r.AppliedMean = meanToApply;
+                            r.AppliedSd = sdToApply;
+                            r.AppliedAt = now;
+
+                            if (r.Result1.HasValue)
+                            {
+                                var sdVal = sdToApply.Value == 0 ? 0.001 : sdToApply.Value;
+                                r.ZScore = Math.Round((r.Result1.Value - meanToApply.Value) / sdVal, 2);
+                            }
+                        }
                     }
                 }
 
+                // Persist results
+                DB.AddRange(results);
                 await DB.SaveChangesAsync();
-                return true; // Trả về true nếu lưu thành công
+
+                // notify change so charts/history refresh
+                ResultChangeNotifier.Notify();
+
+                if (createInternalErrors)
+                {
+                    try
+                    {
+                        var problematic = results.Where(r => (r.IsOutRange == true) || !string.IsNullOrEmpty(r.WestgardRule)).ToList();
+                        if (problematic.Any())
+                        {
+                            var newErrors = new List<InternalError>();
+                            foreach (var r in problematic)
+                            {
+                                var exists = await DB.InternalErrors
+                                    .AsNoTracking()
+                                    .AnyAsync(i => i.ErroneousResultId == r.Id);
+                                if (exists) continue;
+
+                                var cid = r.IdControlDetailNavigation;
+                                var error = new InternalError
+                                {
+                                    ErroneousResultId = r.Id,
+                                    TestId = r.IdTest,
+                                    DeviceId = r.IdDevice,
+                                    ControlInfoDetailId = r.IdControlDetail,
+                                    Lot = cid?.Lot,
+                                    WestgardDescription = !string.IsNullOrEmpty(r.WestgardRule) ? r.WestgardRule : (r.IsOutRange == true ? "Out-of-range" : null),
+                                    RelatedResultsJson = JsonSerializer.Serialize(new { r.Id, r.IdTest, r.TempResult }),
+                                    IsResolved = false,
+                                    Status = "Đang chờ",
+                                    CreatedAt = r.DateRun,
+                                    CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance.CurrentUser?.Id.ToString()
+                                };
+                                newErrors.Add(error);
+                            }
+
+                            if (newErrors.Any())
+                            {
+                                DB.InternalErrors.AddRange(newErrors);
+                                await DB.SaveChangesAsync();
+                            }
+                        }
+                    }
+                    catch (Exception exErr)
+                    {
+                        MessageBox.Show($"Tạo bản ghi lỗi nội kiểm thất bại: {exErr.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
+
+                return true;
             }
             catch (Exception ex)
             {
-                // Xử lý lỗi nếu có
-                MessageBox.Show($"Có lỗi: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-                return false; // Trả về false nếu lưu thất bại
+                MessageBox.Show($"Có lỗi:{ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                return false;
             }
         }
 

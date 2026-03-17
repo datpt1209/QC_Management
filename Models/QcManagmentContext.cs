@@ -16,6 +16,7 @@ public partial class QcManagmentContext : DbContext
     {
     }
 
+
     public virtual DbSet<CalDetail> CalDetails { get; set; }
 
     public virtual DbSet<CalInfor> CalInfors { get; set; }
@@ -65,7 +66,8 @@ public partial class QcManagmentContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-        modelBuilder.Entity<CalDetail>(entity =>
+
+    modelBuilder.Entity<CalDetail>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__CalDetai__3214EC072D3A7912");
 
@@ -253,6 +255,11 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.SdApp).HasColumnName("SdAPP");
             entity.Property(e => e.SdNsx).HasColumnName("SdNSX");
 
+            // --- NEW mapping ---
+            entity.Property(e => e.MeanSdUpdatedAt)
+                .HasColumnName("MeanSdUpdatedAt")
+                .HasColumnType("datetime");
+
             entity.HasOne(d => d.IdControlInfoNavigation).WithMany(p => p.ControlInfoDetails)
                 .HasForeignKey(d => d.IdControlInfo)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -382,6 +389,16 @@ public partial class QcManagmentContext : DbContext
             // map IsCorrected to a bit column (nullable)
             entity.Property(e => e.IsCorrected).HasColumnName("IsCorrected").HasColumnType("bit");
 
+            // --- NEW: persisted applied mean/sd/at columns ---
+            entity.Property(e => e.AppliedMean)
+                .HasColumnName("AppliedMean")
+                .HasColumnType("float");
+            entity.Property(e => e.AppliedSd)
+                .HasColumnName("AppliedSd")
+                .HasColumnType("float");
+            entity.Property(e => e.AppliedAt)
+                .HasColumnName("AppliedAt")
+                .HasColumnType("datetime");
 
             entity.HasOne(d => d.IdControlDetailNavigation).WithMany(p => p.Results)
                 .HasForeignKey(d => d.IdControlDetail)

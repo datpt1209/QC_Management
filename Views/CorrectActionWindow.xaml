@@ -6,7 +6,7 @@
         Title="Phiếu khắc phục"
         SizeToContent="Height"
         Width="920"
-        WindowStartupLocation="CenterOwner"
+        WindowStartupLocation="CenterScreen"
         Background="#FFF0F4F8"
         ResizeMode="CanResize">
     <Window.Resources>
@@ -145,7 +145,7 @@
                                             <ColumnDefinition Width="Auto"/>
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
-                                        <TextBlock Text="Kết quả khắc phục:" FontWeight="SemiBold" Foreground="#0D47A1" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                        <TextBlock Text="Kết quả sau khắc phục:" FontWeight="SemiBold" Foreground="#0D47A1" VerticalAlignment="Center" Margin="0,0,8,0"/>
                                         <ComboBox Grid.Column="1" ItemsSource="{Binding ResolvingResults}" SelectedItem="{Binding SelectedResolvingResult}" Margin="0"
                                                   Background="Transparent" Height="28">
                                             <ComboBox.ItemTemplate>
@@ -153,7 +153,7 @@
                                                     <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                                         <TextBlock Text="{Binding DateRun, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Margin="4,0" Foreground="Gray"/>
                                                         <TextBlock Text=" • " Foreground="Gray"/>
-                                                        <TextBlock Text="{Binding IndexQc}" Width="80" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{Binding IndexQc}" Width="60" TextTrimming="CharacterEllipsis"/>
                                                         <TextBlock Text=" (" Foreground="Gray"/>
                                                         <TextBlock Text="{Binding TempResult}" FontWeight="Bold" Foreground="Gray"/>
                                                         <TextBlock Text=")" Foreground="Gray"/>

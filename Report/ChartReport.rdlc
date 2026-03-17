@@ -444,8 +444,8 @@
                     </ChartMinorTickMarks>
                     <CrossAt>NaN</CrossAt>
                     <InterlacedColor>DarkGreen</InterlacedColor>
-                    <Minimum>-3</Minimum>
-                    <Maximum>3</Maximum>
+                    <Minimum>-4</Minimum>
+                    <Maximum>4</Maximum>
                     <AllowLabelRotation>None</AllowLabelRotation>
                     <LabelsAutoFitDisabled>true</LabelsAutoFitDisabled>
                     <MaxFontSize>8pt</MaxFontSize>
@@ -568,7 +568,7 @@
             <DataSetName>DataSet1</DataSetName>
             <Top>2.66318cm</Top>
             <Left>1.24566cm</Left>
-            <Height>8.09069cm</Height>
+            <Height>8.13302cm</Height>
             <Width>26.34891cm</Width>
             <ZIndex>1</ZIndex>
             <Style>
@@ -658,7 +658,6 @@
                           <PaddingBottom>2pt</PaddingBottom>
                         </Style>
                       </Textbox>
-                      <rd:Selected>true</rd:Selected>
                     </CellContents>
                   </TablixCornerCell>
                   <TablixCornerCell>
@@ -1445,7 +1444,7 @@
                                   <Paragraph>
                                     <TextRuns>
                                       <TextRun>
-                                        <Value>=FormatDateTime(Fields!ExpirationDate.Value, Microsoft.VisualBasic.DateFormat.ShortDate)</Value>
+                                        <Value>=Format(Fields!ExpirationDate.Value, "dd/MM/yyyy")</Value>
                                         <Style />
                                       </TextRun>
                                     </TextRuns>
@@ -1856,8 +1855,8 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox2</rd:DefaultName>
-            <Top>11.35888cm</Top>
-            <Left>20.12828cm</Left>
+            <Top>10.83148cm</Top>
+            <Left>20.07108cm</Left>
             <Height>0.6cm</Height>
             <Width>5.96095cm</Width>
             <ZIndex>4</ZIndex>
@@ -1892,7 +1891,7 @@
               </Paragraph>
             </Paragraphs>
             <rd:DefaultName>Textbox1</rd:DefaultName>
-            <Top>12.1cm</Top>
+            <Top>11.46676cm</Top>
             <Left>21.76826cm</Left>
             <Height>0.6cm</Height>
             <Width>2.99213cm</Width>
@@ -1909,13 +1908,13 @@
             </Style>
           </Textbox>
         </ReportItems>
-        <Height>14.04763cm</Height>
+        <Height>12.62946cm</Height>
         <Style />
       </Body>
       <Width>28.40126cm</Width>
       <Page>
         <PageHeader>
-          <Height>2.92663cm</Height>
+          <Height>2.79963cm</Height>
           <PrintOnFirstPage>true</PrintOnFirstPage>
           <PrintOnLastPage>true</PrintOnLastPage>
           <ReportItems>
@@ -2057,8 +2056,8 @@
               <rd:DefaultName>Textbox11</rd:DefaultName>
               <Top>0.14111cm</Top>
               <Left>1.32504cm</Left>
-              <Height>0.89104cm</Height>
-              <Width>6.2465cm</Width>
+              <Height>0.61587cm</Height>
+              <Width>6.52167cm</Width>
               <Style>
                 <Border>
                   <Style>None</Style>
@@ -2097,9 +2096,9 @@
               </Paragraphs>
               <rd:DefaultName>PageNumber</rd:DefaultName>
               <Top>0.14111cm</Top>
-              <Left>24.85013cm</Left>
+              <Left>25.3158cm</Left>
               <Height>0.89104cm</Height>
-              <Width>2.82382cm</Width>
+              <Width>2.35815cm</Width>
               <ZIndex>1</ZIndex>
               <Style>
                 <Border>

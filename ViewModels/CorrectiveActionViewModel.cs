@@ -1184,16 +1184,17 @@ namespace QC_Management.ViewModels
                         // update fields
                         caEntity.InternalErrorId = internalError.Id;
                         caEntity.ResolvingResultId = SelectedResolvingResult?.Id ?? _resolvingResultId;
-                        // prefer resolving result's actor if selected; otherwise keep Reporter
                         caEntity.ActionDescription = !string.IsNullOrWhiteSpace(CorrectiveAction)
                                                     ? CorrectiveAction
                                                     : (SelectedAction != null && SelectedAction != "Khác" ? SelectedAction : caEntity.ActionDescription);
 
                         caEntity.ActionOwner = SelectedResolvingResult?.IdUserNavigation?.DisplayName ?? Reporter;
                         caEntity.ActionCompletedAt = SelectedResolvingResult?.DateRun ?? (MarkResolved ? (DateTime?)DateTime.Now : null);
-                        caEntity.Outcome = MarkResolved ? "Hoàn thành" : caEntity.Outcome;
+                        caEntity.Outcome = MarkResolved ? "Hoàn thành" : "Chưa hoàn thành";
                         caEntity.PreventiveAction = !string.IsNullOrWhiteSpace(PreventiveAction) ? PreventiveAction : caEntity.PreventiveAction;
-                        caEntity.CreatedAt = Date ?? DateTime.UtcNow;
+
+                        // Ensure CreatedAt reflects the internal error timestamp (per request)
+                        caEntity.CreatedAt = internalError.CreatedAt;
                         caEntity.CreatedBy = Reporter;
 
                         db.CorrectiveActions.Update(caEntity);
@@ -1215,9 +1216,9 @@ namespace QC_Management.ViewModels
                             ActionOwner = SelectedResolvingResult?.IdUserNavigation?.DisplayName ?? Reporter,
                             // Prefer resolving result's DateRun for ActionCompletedAt if provided; otherwise use MarkResolved flag/time
                             ActionCompletedAt = SelectedResolvingResult?.DateRun ?? (MarkResolved ? (DateTime?)DateTime.Now : null),
-                            Outcome = MarkResolved ? "Hoàn thành" : internalError.Status,
-                            // CreatedAt: prefer Date (user chosen) if provided, otherwise current time (UTC)
-                            CreatedAt = Date ?? DateTime.UtcNow,
+                            Outcome = MarkResolved ? "Hoàn thành" : "Chưa hoàn thành",
+                            // CreatedAt: use the internal error's CreatedAt so CA matches the error timestamp
+                            CreatedAt = internalError.CreatedAt,
                             CreatedBy = Reporter,
                             PreventiveAction = !string.IsNullOrWhiteSpace(PreventiveAction) ? PreventiveAction : null
                         };

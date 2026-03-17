@@ -32,6 +32,8 @@ public partial class ControlInfoDetail
 
     public double? CurSd { get; set; }
 
+    // New: timestamp when mean/sd were last updated on this control (for audit / boundary detection)
+    public DateTime? MeanSdUpdatedAt { get; set; }
 
     public virtual ControlInfo IdControlInfoNavigation { get; set; } = null!;
 

@@ -223,6 +223,7 @@
                                         <Setter Property="FontWeight" Value="Normal"/>
                                         <Setter Property="IsReadOnly" Value="True"/>
                                         <Setter Property="Visibility" Value="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+                                        <Setter Property="Width" Value="{Binding DataContext.WidthColum, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ResultType}" Value="1">
                                                 <Setter Property="IsReadOnly" Value="False"/>
@@ -275,11 +276,7 @@
                                                 <Setter Property="Background" Value="#FFDCDCDC"/>
                                                 <Setter Property="Foreground" Value="Gray"/>
                                             </DataTrigger>
-                                            <DataTrigger Binding="{Binding isOut2SD}" Value="True">
-                                                <Setter Property="Background" Value="#FFFFC080"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </DataTrigger>
-                                            <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                            <DataTrigger Binding="{Binding isOutRange}" Value="True">
                                                 <Setter Property="Background" Value="Yellow"/>
                                                 <Setter Property="Foreground" Value="Red"/>
                                             </DataTrigger>

@@ -25,6 +25,17 @@ namespace QC_Management.Views
         {
             InitializeComponent();
         }
+        private void DataGrid_LoadingRow(object sender, DataGridRowEventArgs e)
+        {
+            // Use GetIndex() so index stays correct with virtualization/sorting/filtering
+            e.Row.Header = (e.Row.GetIndex() + 1).ToString();
+        }
+
+        private void DataGrid_UnloadingRow(object sender, DataGridRowEventArgs e)
+        {
+            // optional cleanup
+            e.Row.Header = null;
+        }
 
     }
 }

@@ -10,8 +10,9 @@
              DataContext="{StaticResource IncidentManagementVM}"
              d:DesignHeight="600" d:DesignWidth="1200">
     <UserControl.Resources>
-        <conv:AlternationIndexToNumberConverter x:Key="AlternationIndexToNumberConverter"/>
-        <conv:CorrectiveActionsToSummaryConverter x:Key="ActionsSummaryConverter"/>
+       <conv:CorrectiveActionsToSummaryConverter x:Key="ActionsSummaryConverter"/>
+        <!-- BooleanToVisibility converter for role-based visibility -->
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
 
         <!-- Replace existing StatusBadge style with this (ContentControl-based) -->
         <Style x:Key="StatusBadge" TargetType="ContentControl">
@@ -72,11 +73,14 @@
                     <!-- Status badges must be ContentControl because StatusBadge targets ContentControl -->
                     <ContentControl Style="{StaticResource StatusBadge}" Content="{Binding SelectedInternalError.Status}" Margin="5,0,5,0"/>
                     <Button Margin="5,0,5,0" Content="Tải lại" Width="90" Command="{Binding ReloadInternalErrorsCommand}" Style="{StaticResource {x:Static ToolBar.ButtonStyleKey}}"/>
-                    <Button Margin="5,0,5,0" Content="Sửa" Width="90" Command="{Binding EditInternalErrorCommand}" />
+                    <Button Margin="5,0,5,0" Content="Sửa" Width="90" Command="{Binding EditInternalErrorCommand}"
+                            Visibility="{Binding IsManagement, Converter={StaticResource BoolToVis}}" />
                     <!-- Delete button added -->
-                    <Button Margin="5,0,5,0" Content="Xóa" Width="90" Command="{Binding DeleteInternalErrorCommand}" Background="#D32F2F" Foreground="White" />
+                    <Button Margin="5,0,5,0" Content="Xóa" Width="90" Command="{Binding DeleteInternalErrorCommand}" Background="#D32F2F" Foreground="White"
+                            Visibility="{Binding IsManagement, Converter={StaticResource BoolToVis}}" />
                     <Button Margin="5,0,5,0" Content="Thêm" Width="110" Command="{Binding AddInternalErrorCommand}"
-                            Background="#6B46C1" Foreground="White" FontWeight="SemiBold" />
+                            Background="#6B46C1" Foreground="White" FontWeight="SemiBold"
+                            Visibility="{Binding IsManagement, Converter={StaticResource BoolToVis}}" />
                     <Button Margin="5,0,5,0" Content="In" Width="90" Command="{Binding PrintInternalErrorsCommand}" />
                 </StackPanel>
             </DockPanel>
@@ -175,7 +179,9 @@
                       CanUserResizeColumns="True"
                       Background="Transparent"
                       RowBackground="{StaticResource RowOddBrush}"
-                      AlternatingRowBackground="{StaticResource RowEvenBrush}">
+                      AlternatingRowBackground="{StaticResource RowEvenBrush}"
+                      LoadingRow="DataGrid_LoadingRow"
+                      UnloadingRow="DataGrid_UnloadingRow">
                 <DataGrid.Resources>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="Background" Value="#FFF3F6F9"/>
@@ -185,20 +191,9 @@
                 </DataGrid.Resources>
 
                 <DataGrid.Columns>
-                    <DataGridTemplateColumn Header="STT" Width="60">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock HorizontalAlignment="Center">
-                                    <TextBlock.Text>
-                                        <MultiBinding Converter="{StaticResource AlternationIndexToNumberConverter}">
-                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGridRow}}"/>
-                                            <Binding RelativeSource="{RelativeSource AncestorType={x:Type DataGrid}}"/>
-                                        </MultiBinding>
-                                    </TextBlock.Text>
-                                </TextBlock>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                    <DataGridTextColumn Header="STT" Binding="{Binding RowNumber}" Width="60">
+                    
+                    </DataGridTextColumn>
 
                     <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}" Width="150"/>
                     <DataGridTextColumn Header="CreatedBy" Binding="{Binding CreatedBy}" Width="150"/>
@@ -257,23 +252,25 @@
                                         <DataTemplate>
                                             <Grid Margin="0,6">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="60"/>
                                                     <ColumnDefinition Width="150"/>
                                                     <ColumnDefinition Width="120"/>
                                                     <ColumnDefinition Width="3*"/>
                                                     <ColumnDefinition Width="2*"/>
                                                     <ColumnDefinition Width="120"/>
-                                                    <ColumnDefinition Width="Auto"/> <!-- column for Print icon -->
-                                                    <ColumnDefinition Width="Auto"/> <!-- column for Edit icon -->
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <!-- column for Print icon -->
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <!-- column for Edit icon -->
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <!-- column for Delete icon -->
                                                 </Grid.ColumnDefinitions>
-                                                <TextBlock Grid.Column="0" Text="{Binding Id}" />
-                                                <TextBlock Grid.Column="1" Text="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"/>
-                                                <TextBlock Grid.Column="2" Text="{Binding CreatedBy}"/>
-                                                <TextBlock Grid.Column="3" Text="{Binding ActionDescription}" TextWrapping="Wrap"/>
-                                                <TextBlock Grid.Column="4" Text="{Binding PreventiveAction}" TextWrapping="Wrap"/>
-                                                <TextBlock Grid.Column="5" Text="{Binding Outcome}"/>
+                                                <TextBlock Grid.Column="0" Text="{Binding CreatedAt, StringFormat={}{0:dd/MM/yyyy HH:mm}}"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding CreatedBy}"/>
+                                                <TextBlock Grid.Column="2" Text="{Binding ActionDescription}" TextWrapping="Wrap"/>
+                                                <TextBlock Grid.Column="3" Text="{Binding PreventiveAction}" TextWrapping="Wrap"/>
+                                                <TextBlock Grid.Column="4" Text="{Binding Outcome}"/>
                                                 <!-- Print icon button (uses MaterialDesign PackIcon) -->
-                                                <Button Grid.Column="6"
+                                                <Button Grid.Column="5"
                                                         Style="{StaticResource MaterialDesignToolButton}"
                                                         MinWidth="0"
                                                         Width="34" Height="28"
@@ -288,7 +285,7 @@
                                                     <materialDesign:PackIcon Kind="Printer" Width="18" Height="18" Foreground="#6B46C1" />
                                                 </Button>
                                                 <!-- Edit icon button (opens CorrectActionWindow for this corrective action) -->
-                                                <Button Grid.Column="7"
+                                                <Button Grid.Column="6"
                                                         Style="{StaticResource MaterialDesignToolButton}"
                                                         MinWidth="0"
                                                         Width="34" Height="28"
@@ -301,6 +298,21 @@
                                                         ToolTip="Sửa phiếu"
                                                         VerticalAlignment="Center" HorizontalAlignment="Right">
                                                     <materialDesign:PackIcon Kind="Pencil" Width="18" Height="18" Foreground="#1976D2" />
+                                                </Button>
+                                                <!-- Delete icon button (per-row) -->
+                                                <Button Grid.Column="7"
+                                                        Style="{StaticResource MaterialDesignToolButton}"
+                                                        MinWidth="0"
+                                                        Width="34" Height="28"
+                                                        Padding="6"
+                                                        Margin="6,0,0,0"
+                                                        Background="Transparent"
+                                                        BorderThickness="0"
+                                                        Command="{Binding DataContext.DeleteCorrectiveActionItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        ToolTip="Xóa phiếu"
+                                                        VerticalAlignment="Center" HorizontalAlignment="Right">
+                                                    <materialDesign:PackIcon Kind="Delete" Width="18" Height="18" Foreground="#D32F2F" />
                                                 </Button>
                                             </Grid>
                                         </DataTemplate>

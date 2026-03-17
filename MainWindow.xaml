@@ -201,6 +201,29 @@
                                 </ListViewItem.ToolTip>
                             </ListViewItem>
 
+                            <!-- ListViewItem: Ngoại kiểm -->
+                            <ListViewItem MouseEnter="ListViewItem_MouseEnter">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Selected">
+                                        <i:InvokeCommandAction Command="{Binding LoadExternalControlEntryViewCommand}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                                <Grid Margin="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="Database" Margin="6,0,6,0" Height="22" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Ngoại kiểm" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <ListViewItem.ToolTip>
+                                    <ToolTip Content="Nhập ngoại kiểm" Style="{StaticResource tt_style}"/>
+                                </ListViewItem.ToolTip>
+                            </ListViewItem>
+
                             <!-- QC Infor -->
                             <ListViewItem Visibility="{Binding Visibility1}" MouseEnter="ListViewItem_MouseEnter">
                                 <i:Interaction.Triggers>
@@ -216,34 +239,11 @@
                                     </Grid.ColumnDefinitions>
 
                                     <materialDesign:PackIcon Grid.Column="0" Kind="AlphaQBox" Height="22" Width="28" Margin="6,0,6,0" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Thông tin" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Thông tin QC" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
                                 </Grid>
 
                                 <ListViewItem.ToolTip>
                                     <ToolTip x:Name="tt_qcInfor" Content="Thông tin QC" Style="{StaticResource tt_style}"/>
-                                </ListViewItem.ToolTip>
-                            </ListViewItem>
-
-                            <!-- Range QC -->
-                            <ListViewItem Visibility="{Binding Visibility1}" MouseEnter="ListViewItem_MouseEnter">
-                                <i:Interaction.Triggers>
-                                    <i:EventTrigger EventName="Selected">
-                                        <i:InvokeCommandAction Command="{Binding LoadQC_DetailViewCommand}" CommandParameter="{Binding ElementName=HomeItem}"/>
-                                    </i:EventTrigger>
-                                </i:Interaction.Triggers>
-
-                                <Grid Margin="6">
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="36"/>
-                                        <ColumnDefinition Width="*"/>
-                                    </Grid.ColumnDefinitions>
-
-                                    <materialDesign:PackIcon Grid.Column="0" Kind="AlphaQBoxOutline" Height="22" Width="28" Margin="6,0,6,0" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="1" Text="Range QC" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
-                                </Grid>
-
-                                <ListViewItem.ToolTip>
-                                    <ToolTip x:Name="tt_range" Content="Range QC" Style="{StaticResource tt_style}"/>
                                 </ListViewItem.ToolTip>
                             </ListViewItem>
 
@@ -503,6 +503,7 @@
                             <materialDesign:PackIcon Kind="CardSearchOutline" Width="24" Height="24"/>
                         </Button>
 
+                        
                         <!-- NEW: Quản lý Lỗi / Khắc phục (Incident Management) -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"
                                 Command="{Binding LoadIncidentManagementViewCommand}"
@@ -514,29 +515,20 @@
                         <!-- QC Info -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"
                                 Command="{Binding LoadQC_InformationViewCommand}"
-                                ToolTipService.ToolTip="Thông tin"
+                                ToolTipService.ToolTip="Thông tin QC"
                                 Margin="0,6"
                                 Visibility="{Binding Visibility1}">
                             <materialDesign:PackIcon Kind="AlphaQBox" Width="24" Height="24"/>
                         </Button>
 
-                        <!-- NEW: Chi tiết ControlDetail (Range / Control Detail) -->
+
+                        <!-- CAL Info -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"
-                                Command="{Binding LoadQC_DetailViewCommand}"
-                                ToolTipService.ToolTip="Chi tiết ControlDetail"
+                                Command="{Binding LoadCALViewCommand}"
+                                ToolTipService.ToolTip="Thông tin Calib"
                                 Margin="0,6"
                                 Visibility="{Binding Visibility1}">
-                            <materialDesign:PackIcon Kind="AlphaQBoxOutline" Width="24" Height="24"/>
-                        </Button>
-                        
-
-                        <!-- User -->
-                        <Button Style="{StaticResource MaterialDesignIconButton}"
-                                Command="{Binding LoadUserViewCommand}"
-                                ToolTipService.ToolTip="Người dùng"
-                                Margin="0,6"
-                                Visibility="{Binding Visibility2}">
-                            <materialDesign:PackIcon Kind="AccountTie" Width="24" Height="24"/>
+                            <materialDesign:PackIcon Kind="AlphaCBox" Width="24" Height="24"/>
                         </Button>
                     </StackPanel>
                 </StackPanel>

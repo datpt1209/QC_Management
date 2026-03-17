@@ -33,9 +33,13 @@ namespace QC_Management.ViewModels
         public ICommand LoadDeviceViewCommand { get; set; }
         public ICommand LoadCALViewCommand { get; set; }
         public ICommand LoadCALDetailViewCommand { get; set; }
+        public ICommand? LoadEqaManagementViewCommand { get; set; }
 
         // New command to open Incident / CorrectiveAction management
         public ICommand LoadIncidentManagementViewCommand { get; set; }
+
+        // New: command to open External Control entry screen
+        public ICommand LoadExternalControlEntryViewCommand { get; set; }
 
         public BaseViewModel CurrentView
         {
@@ -71,13 +75,13 @@ namespace QC_Management.ViewModels
             LoadCategoryViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new CategoryViewModel()));
             LoadUnitViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new UnitTableViewModel()));
             LoadQC_InformationViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new QC_InformationViewModel()));
-            LoadQC_DetailViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new QC_DetailViewModel()));
+           // LoadQC_DetailViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new QC_DetailViewModel()));
             LoadTestViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new TestViewModel()));
             LoadDeviceViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new DeviceViewModel()));
             LoadCALViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new CAL_InforViewModel()));
-
             // Initialize new incident management command
             LoadIncidentManagementViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new IncidentManagementViewModel()));
+
         }
 
         private void LoadWindow(Window window)

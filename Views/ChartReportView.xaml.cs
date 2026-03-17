@@ -41,6 +41,25 @@ namespace QC_Management
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            // Helper for robust color mapping (handles numeric and textual level values)
+            static string MapLevelToColor(string levelName)
+            {
+                var ln = (levelName ?? string.Empty).Trim();
+                return ln == "1" || ln == "Low" || ln == "Ne" ? "Green" :
+                       ln == "2" || ln == "Normal" || ln == "Pos" || ln == "Pos 1" ? "Orange" :
+                       ln == "3" || ln == "High" || ln == "Pos 2" ? "Red" : "Black";
+            }
+
+            // Symmetric clamp for SDs: values < -4 become -4, values > 4 become 4
+            static double? ClampSDs(double? sd)
+            {
+                if (!sd.HasValue) return sd;
+                var v = sd.Value;
+                if (v > 4) return 4;
+                if (v < -4) return -4;
+                return v;
+            }
+
             var reportSource = new Object();
             if (fillter == FilterOptions[1])
             {
@@ -56,6 +75,7 @@ namespace QC_Management
                     UserName = s.IdUserNavigation.DisplayName,
                     DateRun = s.DateRun,
                     DateRunString = s.DateRun.ToString("dd/MM/yy"),
+
                     Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
                     Mean = s.IdControlDetailNavigation.MeanNsx,
                     SD = s.IdControlDetailNavigation.SdNsx,
@@ -65,10 +85,9 @@ namespace QC_Management
                     MeanPXN = s.IdControlDetailNavigation.CurMean,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                     ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    SDs = (s.Result1 - s.IdControlDetailNavigation.CurMean) / s.IdControlDetailNavigation.CurSd,
-                    SeriesColor = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "Low" ? "LightSeaGreen" :
-                                  s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? "Salmon" :
-                                  s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? "DimGray" : "Black",
+                    // Use persisted ZScore when available; otherwise fallback to previous CurMean/CurSd calculation
+                    SDs = ClampSDs(s.ZScore ?? ((s.Result1 - s.IdControlDetailNavigation.CurMean) / s.IdControlDetailNavigation.CurSd)),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)
@@ -98,10 +117,9 @@ namespace QC_Management
                     MeanPXN = (double)s.IdControlDetailNavigation.CurMean,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                     ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    SDs = (s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx,
-                    SeriesColor = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "Low" ? "LightSeaGreen" :
-                                  s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? "Salmon" :
-                                  s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? "DimGray" : "Black",
+                    // Use persisted ZScore when available; otherwise fallback to manufacturer mean/sd
+                    SDs = ClampSDs((s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)
@@ -131,10 +149,9 @@ namespace QC_Management
                     MeanPXN = (double)s.IdControlDetailNavigation.CurMean,
                     ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
                     ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    SDs = (s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp,
-                    SeriesColor = s.IdLevelNavigation.Name == "1" || s.IdLevelNavigation.Name == "Low" ? "LightSeaGreen" :
-                                  s.IdLevelNavigation.Name == "2" || s.IdLevelNavigation.Name == "Normal" ? "Salmon" :
-                                  s.IdLevelNavigation.Name == "3" || s.IdLevelNavigation.Name == "High" ? "DimGray" : "Black",
+                    // Use persisted ZScore when available; otherwise fallback to application mean/sd
+                    SDs = ClampSDs((s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)

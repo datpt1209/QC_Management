@@ -19,15 +19,16 @@
     <viewmodel:TestViewModel x:Key="TestVM"></viewmodel:TestViewModel>
     <viewmodel:ResultViewModel x:Key="ResultVM"></viewmodel:ResultViewModel>
     <viewmodel:DeviceViewModel x:Key="DeviceVM"></viewmodel:DeviceViewModel>
-    <viewmodel:QC_DetailViewModel x:Key="QC_DetailVM"></viewmodel:QC_DetailViewModel>
     <viewmodel:LoginViewModel x:Key="LoginVM"></viewmodel:LoginViewModel>
     <viewmodel:RegisterViewModel x:Key="RegisterVM"></viewmodel:RegisterViewModel>
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
     <viewmodel:IncidentManagementViewModel x:Key="IncidentManagementVM"></viewmodel:IncidentManagementViewModel>
+
     
     <!--<viewmodel:CorrectiveActionViewModel x:Key="CorrectiveActionVM"></viewmodel:CorrectiveActionViewModel>-->
     
+    <!-- add External Control VM -->
     <local1:RelativeToAbsoluteConverter x:Key="absoluteConverter"></local1:RelativeToAbsoluteConverter>
 
 
@@ -62,6 +63,7 @@
     <DataTemplate DataType="{x:Type viewmodel:QC_InformationViewModel}">
         <views:QC_InformationView></views:QC_InformationView>
     </DataTemplate>
+
     
     <DataTemplate DataType="{x:Type viewmodel:ResultViewModel}">
         <views:ResultView></views:ResultView>
@@ -82,15 +84,11 @@
     <DataTemplate DataType="{x:Type viewmodel:UserViewModel}">
         <views:UserView></views:UserView>
     </DataTemplate>
-    
+
     <DataTemplate DataType="{x:Type viewmodel:DeviceViewModel}">
         <views:DeviceView></views:DeviceView>
     </DataTemplate>
     
-    <DataTemplate DataType="{x:Type viewmodel:QC_DetailViewModel}">
-        <views:QC_DetailView></views:QC_DetailView>
-    </DataTemplate>
-
     <DataTemplate DataType="{x:Type viewmodel:ViewResultViewModel}">
         <views:ViewResultView></views:ViewResultView>
     </DataTemplate>

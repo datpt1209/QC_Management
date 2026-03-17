@@ -9,6 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using System.ComponentModel;
 using System.Collections.Generic;
+using QC_Management.Services; // <-- added for UserManager
 
 namespace QC_Management.ViewModels
 {
@@ -62,15 +63,29 @@ namespace QC_Management.ViewModels
             }
         }
 
+        // Expose whether current user is a manager (used by the view to hide/show admin actions)
+        private bool _isManagement;
+        public bool IsManagement
+        {
+            get => _isManagement;
+            private set
+            {
+                if (_isManagement == value) return;
+                _isManagement = value;
+                OnPropertyChanged();
+            }
+        }
         public ICommand ReloadInternalErrorsCommand { get; }
         public ICommand AddInternalErrorCommand { get; }
         public ICommand EditInternalErrorCommand { get; }
         public ICommand DeleteInternalErrorCommand { get; }
-
         public ICommand ReloadCorrectiveActionsCommand { get; }
         public ICommand AddCorrectiveActionCommand { get; }
         public ICommand EditCorrectiveActionCommand { get; }
         public ICommand DeleteCorrectiveActionCommand { get; }
+
+        // New command: delete a single corrective action (row-level)
+        public ICommand DeleteCorrectiveActionItemCommand { get; }
 
         // New command to open corrective action window for selected internal error
         public ICommand OpenCorrectiveActionCommand { get; }
@@ -89,6 +104,17 @@ namespace QC_Management.ViewModels
         // Accept optional initial id so callers can open the management view with a preselected error.
         public IncidentManagementViewModel()
         {
+            // Determine current user's management status by Role id: 1 or 3 are managers.
+            try
+            {
+                var current = UserManager.Instance?.CurrentUser;
+                IsManagement = current != null && (current.Role == 1 || current.Role == 3);
+            }
+            catch
+            {
+                IsManagement = false;
+            }
+
             ReloadInternalErrorsCommand = new RelayCommand<object>(p => true, async p => await LoadInternalErrorsAsync());
             AddInternalErrorCommand = new RelayCommand<object>(p => true, p => MessageBox.Show("Add InternalError - implement UI"));
             EditInternalErrorCommand = new RelayCommand<object>(p => SelectedInternalError != null, p => MessageBox.Show("Edit InternalError - implement UI"));
@@ -109,6 +135,11 @@ namespace QC_Management.ViewModels
             EditCorrectiveActionItemCommand = new RelayCommand<object>(
                 p => p is CorrectiveAction,
                 async p => await OpenCorrectiveActionForEditAsync(p as CorrectiveAction));
+
+            // New: delete specific corrective action item (row-level delete)
+            DeleteCorrectiveActionItemCommand = new RelayCommand<object>(
+                p => p is CorrectiveAction,
+                async p => await DeleteCorrectiveActionItemAsync(p as CorrectiveAction));
 
             FilterInternalErrorsCommand = new RelayCommand<object>(p => true, async p => await LoadInternalErrorsAsync());
             ClearFiltersCommand = new RelayCommand<object>(p => true, async p =>
@@ -206,6 +237,12 @@ namespace QC_Management.ViewModels
                 var list = await query.Take(500).ToListAsync();
 
                 foreach (var e in list) InternalErrors.Add(e);
+
+                // inside LoadInternalErrorsAsync after populating InternalErrors
+                for (int i = 0; i < InternalErrors.Count; i++)
+                {
+                    InternalErrors[i].RowNumber = i + 1;
+                }
             }
             catch (Exception ex)
             {
@@ -354,6 +391,75 @@ namespace QC_Management.ViewModels
             catch (Exception ex)
             {
                 MessageBox.Show($"Delete failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task DeleteCorrectiveActionItemAsync(CorrectiveAction? ca)
+        {
+            if (ca == null) return;
+            if (MessageBox.Show("Xóa phiếu khắc phục đã chọn?", "Xác nhận", MessageBoxButton.YesNo) != MessageBoxResult.Yes) return;
+
+            try
+            {
+                // Load CA with its internal error and resolving result
+                await using var db = new QcManagmentContext();
+                var caEntity = await db.CorrectiveActions
+                    .Include(c => c.InternalError)
+                    .FirstOrDefaultAsync(x => x.Id == ca.Id);
+
+                if (caEntity == null)
+                {
+                    MessageBox.Show("Corrective action not found.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+
+                int internalErrorId = caEntity.InternalErrorId;
+
+                // Remove the corrective action
+                db.CorrectiveActions.Remove(caEntity);
+                await db.SaveChangesAsync();
+
+                // Re-evaluate remaining corrective actions for the same internal error
+                var remainingCAs = await db.CorrectiveActions
+                    .AsNoTracking()
+                    .Where(x => x.InternalErrorId == internalErrorId)
+                    .ToListAsync();
+
+                // Decide new InternalError state:
+                bool anyCompleted = remainingCAs.Any(x => x.ActionCompletedAt != null);
+
+                var ie = await db.InternalErrors.FindAsync(internalErrorId);
+                if (ie != null)
+                {
+                    ie.IsResolved = anyCompleted;
+                    ie.Status = anyCompleted ? "Hoàn thành" : "Đang chờ";
+                    db.InternalErrors.Update(ie);
+
+                    // Also update Erroneous Result.IsCorrected accordingly (if ErroneousResult exists)
+                    if (ie.ErroneousResultId.HasValue)
+                    {
+                        var res = await db.Results.FindAsync(ie.ErroneousResultId.Value);
+                        if (res != null)
+                        {
+                            res.IsCorrected = anyCompleted ? (bool?)true : null;
+                            db.Results.Update(res);
+                        }
+                    }
+
+                    await db.SaveChangesAsync();
+                }
+
+                // Reload UI collections to ensure full synchronization
+                await LoadInternalErrorsAsync();
+                await LoadCorrectiveActionsAsync();
+
+                // Clear selection(s)
+                SelectedCorrectiveAction = null;
+                SelectedInternalError = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Xóa phiếu thất bại: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

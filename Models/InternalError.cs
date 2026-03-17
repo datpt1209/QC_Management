@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QC_Management.Models
 {
@@ -39,5 +40,7 @@ namespace QC_Management.Models
 
         // Navigation: corrective actions addressing this internal error
         public virtual ICollection<CorrectiveAction> CorrectiveActions { get; set; } = new List<CorrectiveAction>();
+        [NotMapped]
+        public int RowNumber { get; set; }
     }
 }

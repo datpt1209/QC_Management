@@ -379,12 +379,6 @@ namespace QC_Management.Services
                     if (neg >= 4) outList.Add($"4_1S (-) {tag}");
                 }
 
-                // mixed detection (legacy) only added if tag is "(L)" or "(cross)" explicitly allowed by caller via main->detailed expansion
-                if (pos + neg >= 4 && outList.Count == 0)
-                {
-                    outList.Add($"4_1S {tag}");
-                }
-
                 return outList;
             }
 
@@ -411,7 +405,7 @@ namespace QC_Management.Services
                 var last11 = list.Take(10).Select(r => r?.ZScore ?? double.NaN).ToList();
                 if (last11.Any(double.IsNaN)) return outList;
 
-                var pos = last11.Count(z => z >= 0);
+                var pos = last11.Count(z => z > 0);
                 var neg = last11.Count(z => z < 0);
 
                 if (sign > 0)

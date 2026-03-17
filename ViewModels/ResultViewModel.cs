@@ -103,13 +103,13 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private bool _isOutOfRange;
-        public bool isOutOfRange
+        private bool _isOutRange;
+        public bool isOutRange
         {
-            get => _isOutOfRange;
+            get => _isOutRange;
             set
             {
-                _isOutOfRange = SelectedItem.isOutOfRange;
+                _isOutRange = SelectedItem.isOutRange;
                 OnPropertyChanged();
             }
 
@@ -164,10 +164,12 @@ namespace QC_Management.ViewModels
                     && _SelectedDevice.Id==21)
                 {
                     ShowQualitative = Visibility.Visible;
+                    WidthColum = 120;
                 }
                 else
                 {
                     ShowQualitative = Visibility.Collapsed;
+                    WidthColum = 0;
                 }
             }
         }
@@ -274,6 +276,18 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+        // new property to control whether Qualitative column is visible
+        private int _WidthColum;
+        public int WidthColum
+        {
+            get => _WidthColum;
+            set
+            {
+                if (_WidthColum == value) return;
+                _WidthColum = value;
+                OnPropertyChanged();
+            }
+        }
 
         // --- Inserted fields and helper types ---
         private readonly object _historyCacheLock = new();
@@ -329,7 +343,7 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                isOutOfRange = SelectedItem.isOutOfRange;
+                isOutRange = SelectedItem.isOutRange;
             });
 
             DeviceSelectionChanged = new RelayCommand<LevelQc>((p) =>
@@ -634,8 +648,8 @@ namespace QC_Management.ViewModels
             {
                 if (string.IsNullOrEmpty(item.TempResult)) continue;
 
-                var now = DateTime.Now;
-                var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+                // Use user-selected date+time (SelectedDateTime) rather than current time
+                var combinedDateTime = SelectedDateTime;
 
                 var result = new Result
                 {
@@ -697,18 +711,7 @@ namespace QC_Management.ViewModels
 
                 // copy UI-detected Westgard state into entity prior to save
                 result.WestgardRule = string.IsNullOrWhiteSpace(item.WestgardRule) ? null : item.WestgardRule;
-                result.IsOutRange = item.isOutOfRange;
-
-                // try to propagate 2SD flag into Result.IsOutRangeNSX if property exists
-                try
-                {
-                    var prop = result.GetType().GetProperty("IsOutRangeNSX");
-                    if (prop != null && prop.CanWrite)
-                    {
-                        prop.SetValue(result, item.isOut2SD);
-                    }
-                }
-                catch { /* ignore reflection failures */ }
+                result.IsOutRange = item.isOutRange;
 
                 result.IsCorrected = (!string.IsNullOrWhiteSpace(result.WestgardRule) || result.IsOutRange == true)
                     ? (bool?)false
@@ -735,9 +738,7 @@ namespace QC_Management.ViewModels
             {
                 if (r.IsOutRange == true || !string.IsNullOrEmpty(r.WestgardRule))
                 {
-                    view.isOutOfRange = (bool)r.IsOutRange;
-                    view.isOut2SD = false;
-                    // if Levey result had 2SD flag earlier it would have been copied — keep UI consistent
+                    view.isOutRange = (bool)r.IsOutRange;
                     view.WestgardRule = r.WestgardRule;
                 }
             }
@@ -763,9 +764,8 @@ namespace QC_Management.ViewModels
             {
                 if (item.Result != null)
                 {
-                    // combine date + time so DateRun stores full date+time
-                    var now = DateTime.Now;
-                    var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+                    // Use user-selected date+time instead of current time
+                    var combinedDateTime = SelectedDateTime;
 
                     var calResult = new CalResult
                     {
@@ -792,31 +792,65 @@ namespace QC_Management.ViewModels
         {
             try
             {
+                // Ensure AppliedMean/AppliedSd/AppliedAt set for new results before persisting
+                var now = DateTime.UtcNow;
+                foreach (var r in results)
+                {
+                    ControlInfoDetail ctrl = null;
+                    if (r.IdControlDetailNavigation != null)
+                    {
+                        ctrl = r.IdControlDetailNavigation;
+                        DB.Entry(ctrl).State = EntityState.Unchanged;
+                    }
+                    else if (r.IdControlDetail.HasValue)
+                    {
+                        ctrl = await DB.ControlInfoDetails.FindAsync(r.IdControlDetail.Value);
+                        if (ctrl != null)
+                        {
+                            r.IdControlDetailNavigation = ctrl;
+                            DB.Entry(ctrl).State = EntityState.Unchanged;
+                        }
+                    }
+
+                    if (!r.AppliedAt.HasValue && ctrl != null)
+                    {
+                        double? meanToApply = ctrl.CurMean ?? ctrl.MeanApp ?? ctrl.MeanNsx;
+                        double? sdToApply = ctrl.CurSd ?? ctrl.SdApp ?? ctrl.SdNsx;
+                        if (meanToApply.HasValue && sdToApply.HasValue)
+                        {
+                            r.AppliedMean = meanToApply;
+                            r.AppliedSd = sdToApply;
+                            r.AppliedAt = now;
+
+                            if (r.Result1.HasValue)
+                            {
+                                var sdVal = sdToApply.Value == 0 ? 0.0001 : sdToApply.Value;
+                                r.ZScore = Math.Round((r.Result1.Value - meanToApply.Value) / sdVal, 4);
+                            }
+                        }
+                    }
+                }
+
                 // Persist results
                 DB.AddRange(results);
                 await DB.SaveChangesAsync();
 
                 if (createInternalErrors)
                 {
-                    // After saving, create InternalErrors for problematic results (if not already created).
                     try
                     {
                         var problematic = results.Where(r => (r.IsOutRange == true) || !string.IsNullOrEmpty(r.WestgardRule)).ToList();
                         if (problematic.Any())
                         {
                             var newErrors = new List<InternalError>();
-
                             foreach (var r in problematic)
                             {
-                                // Avoid duplicate InternalError for same Result
                                 var exists = await DB.InternalErrors
                                     .AsNoTracking()
                                     .AnyAsync(i => i.ErroneousResultId == r.Id);
-
                                 if (exists) continue;
 
                                 var cid = r.IdControlDetailNavigation;
-
                                 var error = new InternalError
                                 {
                                     ErroneousResultId = r.Id,
@@ -827,12 +861,10 @@ namespace QC_Management.ViewModels
                                     WestgardDescription = !string.IsNullOrEmpty(r.WestgardRule) ? r.WestgardRule : (r.IsOutRange == true ? "Out-of-range" : null),
                                     RelatedResultsJson = JsonSerializer.Serialize(new { r.Id, r.IdTest, r.TempResult }),
                                     IsResolved = false,
-                                    // Vietnamese status
                                     Status = "Đang chờ",
-                                    CreatedAt = DateTime.Now,
-                                    CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance.CurrentUser?.Id.ToString()
+                                    CreatedAt = r.DateRun,
+                                    CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance?.CurrentUser?.Id.ToString()
                                 };
-
                                 newErrors.Add(error);
                             }
 
@@ -845,7 +877,6 @@ namespace QC_Management.ViewModels
                     }
                     catch (Exception exErr)
                     {
-                        // Don't block main flow — just warn
                         MessageBox.Show($"Tạo bản ghi lỗi nội kiểm thất bại: {exErr.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
@@ -928,9 +959,8 @@ namespace QC_Management.ViewModels
             // Load history (existing code)
             var (sameLevelPrev, crossLevelPrev) = await GetRecentHistoryAsync(testId, deviceId, levelId, take: 10);
 
-            // Build temporary current Result (existing code)
-            var now = DateTime.Now;
-            var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+            // Use user-selected date+time (SelectedDateTime) for the temporary current result
+            var combinedDateTime = SelectedDateTime;
 
             var current = new Result
             {
@@ -957,7 +987,7 @@ namespace QC_Management.ViewModels
                     var ctrl = item.IdControlDetailNavigation;
                     if (ctrl != null && ctrl.CurMean.HasValue && ctrl.CurSd.HasValue && ctrl.CurSd.Value != 0)
                     {
-                        current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 2);
+                        current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 4);
                     }
                     else current.ZScore = null;
                 }
@@ -983,27 +1013,24 @@ namespace QC_Management.ViewModels
                         var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(dt.WestgardRulesJson);
                         if (parsed != null && parsed.Count > 0)
                         {
-                            // use main keys as-is (LeveyJenningsChecker will expand 4_1S/10X/2_2S)
                             enabledRules = parsed.Select(s => s?.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
                         }
                         else
                         {
-                            enabledRules = null; // treat empty as "all rules" (preserve previous behaviour)
+                            enabledRules = null;
                         }
                     }
                     catch
                     {
-                        enabledRules = null; // parsing failed -> fall back to all rules
+                        enabledRules = null;
                     }
                 }
             }
             catch
             {
-                // DB load failed -> fall back to previous behaviour (all rules)
                 enabledRules = null;
             }
 
-            // Instead of calling Evaluate(...) with the whole list, call EvaluateSingleRule per enabled/main rule
             var keysToEvaluate = (enabledRules != null)
                 ? enabledRules.ToList()
                 : new List<string> { "1_3S", "1_2S", "2_2S", "R-4s", "4_1S", "10X" };
@@ -1044,8 +1071,7 @@ namespace QC_Management.ViewModels
             levey.IsOutRange = aggIsOutRange;
 
             // Update UI item
-            item.isOutOfRange = levey.IsOutRange;
-            item.isOut2SD = levey.IsOut2SD;
+            item.isOutRange = levey.IsOutRange;
             item.WestgardRule = levey.ViolatedRules.Count > 0 ? string.Join(", ", levey.ViolatedRules) : null;
         }
 
@@ -1117,12 +1143,6 @@ namespace QC_Management.ViewModels
             var cross = entry.CrossLevelRecent ?? new List<Result>();
             var sameLevel = cross.Where(r => r.IdLevel == levelId).ToList();
             return (sameLevel, cross);
-        }
-
-        // helper to combine date + timespan safely
-        private DateTime CombineDateAndTime(DateTime date, TimeSpan time)
-        {
-            return date.Date.Add(time);
         }
     }
 }

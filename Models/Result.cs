@@ -93,17 +93,6 @@ public partial class Result : BaseViewModel
         }
     }
 
-    private bool? _isOutOfRangeNSX;
-    public bool? IsOutRangeNSX
-    {
-        get => _isOutOfRangeNSX;
-        set
-        {
-            _isOutOfRangeNSX = value;
-            OnPropertyChanged();
-        }
-    }
-
     // New: flag indicating this Result has been resolved by a corrective action
     private bool? _isCorrected;
     public bool? IsCorrected
@@ -138,28 +127,25 @@ public partial class Result : BaseViewModel
 
     public virtual User IdUserNavigation { get; set; } = null!;
 
-    /// <summary>
-    /// Apply Levey-Jennings using history. Returns LeveyResult containing ZScore/ViolatedRules and HistoryIdsToMark.
-    /// Caller must ensure IdControlDetailNavigation is set (Include) or else this will return empty result.
-    /// </summary>
-    //public LeveyResult ApplyLeveyJennings(IEnumerable<Result>? recentHistory)
-    //{
-    //    var control = IdControlDetailNavigation;
-    //    if (control == null)
-    //        return new LeveyResult();
+    // --- Persisted fields to record which mean/sd were used and when ---
+    private double? _appliedMean;
+    public double? AppliedMean
+    {
+        get => _appliedMean;
+        set { _appliedMean = value; OnPropertyChanged(nameof(AppliedMean)); }
+    }
 
-    //    var levey = LeveyJenningsChecker.Evaluate(
-    //        this,
-    //        recentHistory
-    //       );
+    private double? _appliedSd;
+    public double? AppliedSd
+    {
+        get => _appliedSd;
+        set { _appliedSd = value; OnPropertyChanged(nameof(AppliedSd)); }
+    }
 
-    //    ZScore = levey.ZScore;
-    //    WestgardRule = levey.ViolatedRules.Count > 0 ? string.Join(", ", levey.ViolatedRules) : null;
-    //    IsOutRange = levey.IsOutRange;
-    //    IsOutRangeNSX = levey.IsOutRangeNSX;
-
-    //    OnPropertyChanged(nameof(WestgardRule));
-    //    OnPropertyChanged(nameof(ZScore));
-    //    return levey;
-    //}
+    private DateTime? _appliedAt;
+    public DateTime? AppliedAt
+    {
+        get => _appliedAt;
+        set { _appliedAt = value; OnPropertyChanged(nameof(AppliedAt)); }
+    }
 }

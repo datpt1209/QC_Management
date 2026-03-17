@@ -314,9 +314,6 @@ namespace QC_Management.ViewModels
                             viewModelItem.SdApp = qcInfor.CurSd;
                             viewModelItem.MeanNSX = qcInfor.MeanNsx;
                             viewModelItem.SdNSX = qcInfor.SdNsx;
-                            // Use CurMean/CurSd or MeanApp/SdApp as appropriate — keep existing behavior for display
-                            //viewModelItem.Max = qcInfor.MeanApp + 2 * (qcInfor.CurSd ?? qcInfor.SdNsx ?? 0);
-                            //viewModelItem.Min = qcInfor.MeanApp - 2 * (qcInfor.CurSd ?? qcInfor.SdNsx ?? 0);
                             viewModelItem.TempResult = item.Result.HasValue ? item.Result.Value.ToString() : null;
                         }
 
@@ -419,10 +416,8 @@ namespace QC_Management.ViewModels
                             levey.IsOut2SD = aggIsOut2SD;
                             levey.IsOutRange = aggIsOutRange;
 
-                            viewModelItem.isOutOfRange = levey.IsOutRange;
-                            // map NSX/out-2SD flag if available
-                            viewModelItem.isOut2SD = levey.IsOut2SD;
-
+                            viewModelItem.isOutRange = levey.IsOutRange;
+                 
                             // store violated rules / error directly on the ResultReView
                             if (levey.ViolatedRules != null && levey.ViolatedRules.Count > 0)
                             {
@@ -484,9 +479,30 @@ namespace QC_Management.ViewModels
                         // find matching original ReResult by id (id was assigned during Load)
                         var original = Results?.FirstOrDefault(r => r.Id == item.id);
 
-                        var runDate = original != null
-                            ? CombineDateAndTime(original.Date, original.Time)
-                            : CombineDateAndTime(Date, DateTime.Now.TimeOfDay);
+                        // Use ReResult's date/time when available; otherwise use VM Date + Time (user-picked)
+                        DateTime runDate;
+                        if (original != null)
+                        {
+                            runDate = CombineDateAndTime(original.Date, original.Time);
+                        }
+                        else
+                        {
+                            // use form Date and Time (Time may be null) — avoid DateTime.Now here
+                            var timeSpan = Time ?? TimeSpan.Zero;
+                            runDate = CombineDateAndTime(Date, timeSpan);
+                        }
+
+                        // Determine index: if device is 1 or 2 and original ReResult provides an Index, use it.
+                        // Otherwise use computed Index (same as before).
+                        int targetIndex;
+                        if (original != null && (reResultGroup.IdDevice == 1 || reResultGroup.IdDevice == 2) && original.Index.HasValue)
+                        {
+                            targetIndex = original.Index.Value;
+                        }
+                        else
+                        {
+                            targetIndex = Index;
+                        }
 
                         var result = new Result()
                         {
@@ -495,18 +511,18 @@ namespace QC_Management.ViewModels
                             IdTestNavigation = item.Test,
                             IdDevice = reResultGroup.IdDevice,
                             IdLevel = reResultGroup.IdLevel,
-                            DateRun = runDate, // <-- full date+time stored now
+                            DateRun = runDate, // <-- full date+time taken from ReResult when available
                             Time = runDate.TimeOfDay,
                             IdUser = UserManager.Instance.CurrentUser.Id,
-                            IndexQc = Index,
+                            IndexQc = targetIndex,
                             IdControlDetail = item.IdControlDetailNavigation.Id,
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
                             Comment = item.Comment,
-                            IsOutRange = item.isOutOfRange,
+                            IsOutRange = item.isOutRange,
                             TempResult = item.TempResult,
                             WestgardRule = string.IsNullOrWhiteSpace(item.WestgardRule) ? null : item.WestgardRule,
                             // Mark newly-detected problematic results as not-corrected; otherwise leave null
-                            IsCorrected = (!string.IsNullOrWhiteSpace(item.WestgardRule) || item.isOutOfRange) ? (bool?)false : null
+                            IsCorrected = (!string.IsNullOrWhiteSpace(item.WestgardRule) || item.isOutRange) ? (bool?)false : null
                         };
 
                         // Compute numeric Result1 and ZScore here (do not rely on VM transfer)
@@ -603,7 +619,50 @@ namespace QC_Management.ViewModels
         {
             try
             {
-                // Persist results (ensure Ids exist for InternalError linking)
+                // Ensure AppliedMean/AppliedSd/AppliedAt set for new results before persisting
+                var now = DateTime.UtcNow;
+                foreach (var r in results)
+                {
+                    // Ensure IdControlDetailNavigation is attached if only IdControlDetail provided
+                    ControlInfoDetail ctrl = null;
+                    if (r.IdControlDetailNavigation != null)
+                    {
+                        ctrl = r.IdControlDetailNavigation;
+                        // attach existing control detail so EF doesn't try to insert it
+                        DB.Entry(ctrl).State = EntityState.Unchanged;
+                    }
+                    else if (r.IdControlDetail.HasValue)
+                    {
+                        ctrl = await DB.ControlInfoDetails.FindAsync(r.IdControlDetail.Value);
+                        if (ctrl != null)
+                        {
+                            r.IdControlDetailNavigation = ctrl;
+                            DB.Entry(ctrl).State = EntityState.Unchanged;
+                        }
+                    }
+
+                    // If AppliedAt not set, assign default applied mean/sd from control (CurMean -> MeanApp -> MeanNsx)
+                    if (!r.AppliedAt.HasValue && ctrl != null)
+                    {
+                        double? meanToApply = ctrl.CurMean ?? ctrl.MeanApp ?? ctrl.MeanNsx;
+                        double? sdToApply = ctrl.CurSd ?? ctrl.SdApp ?? ctrl.SdNsx;
+                        if (meanToApply.HasValue && sdToApply.HasValue)
+                        {
+                            r.AppliedMean = meanToApply;
+                            r.AppliedSd = sdToApply;
+                            r.AppliedAt = now;
+
+                            // compute ZScore using applied values if numeric
+                            if (r.Result1.HasValue)
+                            {
+                                var sdVal = sdToApply.Value == 0 ? 0.0001 : sdToApply.Value;
+                                r.ZScore = Math.Round((r.Result1.Value - meanToApply.Value) / sdVal, 4);
+                            }
+                        }
+                    }
+                }
+
+                // Persist results
                 DB.AddRange(results);
                 await DB.SaveChangesAsync();
 
@@ -611,25 +670,18 @@ namespace QC_Management.ViewModels
                 {
                     try
                     {
-                        var problematic = results
-                            .Where(r => (r.IsOutRange == true) || !string.IsNullOrEmpty(r.WestgardRule))
-                            .ToList();
-
+                        var problematic = results.Where(r => (r.IsOutRange == true) || !string.IsNullOrEmpty(r.WestgardRule)).ToList();
                         if (problematic.Any())
                         {
                             var newErrors = new List<InternalError>();
-
                             foreach (var r in problematic)
                             {
-                                // avoid duplicate InternalError for same Result
                                 var exists = await DB.InternalErrors
                                     .AsNoTracking()
                                     .AnyAsync(i => i.ErroneousResultId == r.Id);
-
                                 if (exists) continue;
 
                                 var cid = r.IdControlDetailNavigation;
-
                                 var error = new InternalError
                                 {
                                     ErroneousResultId = r.Id,
@@ -640,12 +692,10 @@ namespace QC_Management.ViewModels
                                     WestgardDescription = !string.IsNullOrEmpty(r.WestgardRule) ? r.WestgardRule : (r.IsOutRange == true ? "Out-of-range" : null),
                                     RelatedResultsJson = JsonSerializer.Serialize(new { r.Id, r.IdTest, r.TempResult }),
                                     IsResolved = false,
-                                    // Vietnamese status
                                     Status = "Đang chờ",
-                                    CreatedAt = DateTime.Now,
+                                    CreatedAt = r.DateRun,
                                     CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance.CurrentUser?.Id.ToString()
                                 };
-
                                 newErrors.Add(error);
                             }
 
@@ -658,7 +708,6 @@ namespace QC_Management.ViewModels
                     }
                     catch (Exception exErr)
                     {
-                        // Non-blocking: warn user but keep overall save successful
                         MessageBox.Show($"Tạo bản ghi lỗi nội kiểm thất bại: {exErr.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
                     }
                 }
@@ -755,7 +804,7 @@ namespace QC_Management.ViewModels
                         var ctrl = item.IdControlDetailNavigation;
                         if (ctrl != null && ctrl.CurMean.HasValue && ctrl.CurSd.HasValue && ctrl.CurSd.Value != 0)
                         {
-                            current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 2);
+                            current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 4);
                         }
                         else current.ZScore = null;
                     }
@@ -836,8 +885,7 @@ namespace QC_Management.ViewModels
                 levey.IsOutRange = aggIsOutRange;
 
                 // update UI item
-                item.isOutOfRange = levey.IsOutRange;
-                item.isOut2SD = levey.IsOut2SD;
+                item.isOutRange = levey.IsOutRange;
                 item.WestgardRule = levey.ViolatedRules != null && levey.ViolatedRules.Count > 0
                     ? string.Join(", ", levey.ViolatedRules)
                     : null;

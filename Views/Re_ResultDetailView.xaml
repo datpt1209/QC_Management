@@ -173,14 +173,10 @@
                                 <Setter Property="HorizontalAlignment" Value="Center"/>
                                 <!--Màu mặc định-->
                                 <Style.Triggers>
-                                    <DataTrigger Binding="{Binding isOutOfRange}" Value="True">
+                                    <DataTrigger Binding="{Binding isOutRange}" Value="True">
                                         <Setter Property="Foreground" Value="Red" />
                                         <Setter Property="Background" Value="Yellow" />
                                         <!--Thay đổi màu nền nếu ngoài 3 SD-->
-                                    </DataTrigger>
-                                    <DataTrigger Binding="{Binding isOut2SD}" Value="True">
-                                        <Setter Property="Foreground" Value="Red" />
-                                        <!--Thay đổi màu nền nếu ngoài 2 SD-->
                                     </DataTrigger>
                                 </Style.Triggers>
                             </Style>
@@ -195,7 +191,7 @@
                     </DataGridTextColumn>
 
                     <!-- New Westgard column -->
-                    <DataGridTextColumn Header="Westgard" CanUserSort="False" Binding="{Binding WestgardRule}" Width="*">
+                    <DataGridTextColumn Header="Westgard" CanUserSort="False" IsReadOnly="True" Binding="{Binding WestgardRule}" Width="*">
                         <DataGridTextColumn.ElementStyle>
                             <Style TargetType="TextBlock">
                                 <Setter Property="TextWrapping" Value="Wrap"/>

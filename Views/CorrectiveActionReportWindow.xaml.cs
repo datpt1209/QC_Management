@@ -57,20 +57,6 @@ namespace QC_Management.Views
                 dtCorrectAction.Columns.Add("ReferenceRangeAfter", typeof(string));
                 dtCorrectAction.Columns.Add("Unit", typeof(string));
 
-                // local helper to build range string from min/max or mean±n*sd
-                static string BuildRangeFromMinMax(double? min, double? max)
-                {
-                    if (min.HasValue || max.HasValue)
-                    {
-                        var sMin = min.HasValue ? min.Value.ToString("F2") : string.Empty;
-                        var sMax = max.HasValue ? max.Value.ToString("F2") : string.Empty;
-                        if (string.IsNullOrEmpty(sMin) && string.IsNullOrEmpty(sMax)) return string.Empty;
-                        if (string.IsNullOrEmpty(sMin)) return $"- {sMax}";
-                        if (string.IsNullOrEmpty(sMax)) return $"{sMin} -";
-                        return $"{sMin} - {sMax}";
-                    }
-                    return string.Empty;
-                }
 
                 // build range from control detail mean/sd using multiplier (2 by default)
                 static string BuildRangeFromMeanSd(double? mean, double? sd, double multiplier = 2.0)

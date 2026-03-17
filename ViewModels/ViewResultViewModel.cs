@@ -33,7 +33,7 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
 
-        private List<int?> _IndexList;
+        private List<int?> _IndexList = new List<int?>();
         public List<int?> IndexList { get => _IndexList; set { _IndexList = value; OnPropertyChanged(); } }
 
         private List<LevelQc> _LevelList;
@@ -394,7 +394,6 @@ namespace QC_Management.ViewModels
                                 editResult.IsExclude = item.IsExclude; // Cập nhật Exclude
                                 editResult.Result1 = item.Result1;
                                 editResult.IsOutRange = item.IsOutRange;
-                                editResult.IsOutRangeNSX = item.IsOutRangeNSX;
                                 editResult.QualitativeResult = item.QualitativeResult;
                                 // Persist corrected status when editing
                                 editResult.IsCorrected = item.IsCorrected;
@@ -431,122 +430,157 @@ namespace QC_Management.ViewModels
             }
             );
 
-
             DeleteCommand = new RelayCommand<object>((p) =>
             {
                 if (ResultViewList.Count == 0 || ResultViewList == null) return false;
                 else
                     return true;
 
-            }, (p) =>
+            }, async (p) =>
             {
                 var deleteItem = ResultViewList.ToList();
                 MessageBoxResult result = MessageBox.Show($"Bạn có muốn xóa các kết quả máy: {SelectedDevice.Name}, Level: {SelectedLevel.Name}, Ngày: {SelectedDate.Date} Index: {SelectedIndex.ToString()}?", "Confirmation", MessageBoxButton.YesNo);
-                if (result == MessageBoxResult.Yes)
+                if (result != MessageBoxResult.Yes) return;
+
+                try
                 {
-                    try
+                    var ids = deleteItem.Select(d => d.Id).ToList();
+
+                    await using (var context = new QcManagmentContext())
                     {
-                        var ids = deleteItem.Select(d => d.Id).ToList();
+                        // gather related entities (async)
+                        var internalErrors = await context.InternalErrors
+                            .Where(i => i.ErroneousResultId.HasValue && ids.Contains(i.ErroneousResultId.Value))
+                            .ToListAsync();
 
-                        using (var context = new QcManagmentContext())
+                        var internalErrorIds = internalErrors.Select(i => i.Id).ToList();
+
+                        // corrective actions referencing the results OR referencing those internal errors
+                        var caByResolving = await context.CorrectiveActions
+                            .Where(c => c.ResolvingResultId != null && ids.Contains(c.ResolvingResultId.Value))
+                            .ToListAsync();
+
+                        var caByInternalError = await context.CorrectiveActions
+                            .Where(c => internalErrorIds.Contains(c.InternalErrorId)) // use property directly (no .Value)
+                            .ToListAsync();
+
+                        var correctiveActionsToDelete = caByResolving.Union(caByInternalError).ToList();
+
+                        int totalCA = correctiveActionsToDelete.Count;
+                        int totalIE = internalErrors.Count;
+
+                        if (totalIE > 0 || totalCA > 0)
                         {
-                            // gather related entities
-                            var resolvingCAs = context.CorrectiveActions.Where(c => c.ResolvingResultId.HasValue && ids.Contains(c.ResolvingResultId.Value)).ToList();
-                            var internalErrors = context.InternalErrors.Where(i => i.ErroneousResultId.HasValue && ids.Contains(i.ErroneousResultId.Value)).ToList();
-                            var internalErrorIds = internalErrors.Select(i => i.Id).ToList();
+                            var msg = $"There are {ids.Count} result(s) to delete.\n" +
+                                $"Linked InternalErrors: {totalIE}\n" +
+                                $"Linked CorrectiveActions: {totalCA}\n\n" +
+                                $"Do you want to delete these related InternalError/CorrectiveAction records as well? (Yes = delete related, No = cancel)";
+                            var confirmRelated = MessageBox.Show(msg, "Confirm related deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+                            if (confirmRelated != MessageBoxResult.Yes)
+                            {
+                                // user cancelled deletion of related items -> abort whole delete
+                                MessageBox.Show("Deletion cancelled.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
+                                return;
+                            }
 
-                            // Build one unified list of corrective actions that reference either the results (as resolving)
-                            // or reference the internal errors (as InternalErrorId). This avoids deleting the same CA twice.
-                            var correctiveActionsToDelete = context.CorrectiveActions
-                                .Where(c => (c.ResolvingResultId.HasValue && ids.Contains(c.ResolvingResultId.Value))
-                                            || internalErrorIds.Contains(c.InternalErrorId))
+                            // Track internal error ids referenced by CAs we will remove
+                            var affectedInternalErrorIds = correctiveActionsToDelete
+                                .Select(c => (int?)c.InternalErrorId)
+                                .Where(id => id.HasValue)
+                                .Select(id => id.Value)
+                                .Distinct()
                                 .ToList();
 
-                            int totalCA = correctiveActionsToDelete.Count;
-                            int totalIE = internalErrors.Count;
-
-                            // If there are linked InternalErrors/CorrectiveActions prompt user with counts and confirm deletion of related items
-                            if (totalIE > 0 || totalCA > 0)
+                            await using var tx = await context.Database.BeginTransactionAsync();
+                            try
                             {
-                                var msg = $"There are {ids.Count} result(s) to delete.\n" +
-                                    $"Linked InternalErrors: {totalIE}\n" +
-                                    $"Linked CorrectiveActions: {totalCA}\n\n" +
-                                    $"Do you want to delete these related InternalError/CorrectiveAction records as well? (Yes = delete related, No = cancel)";
-                                var confirmRelated = MessageBox.Show(msg, "Confirm related deletion", MessageBoxButton.YesNo, MessageBoxImage.Warning);
-                                if (confirmRelated != MessageBoxResult.Yes)
+                                // Delete corrective actions first
+                                if (correctiveActionsToDelete.Any())
+                                    context.CorrectiveActions.RemoveRange(correctiveActionsToDelete);
+
+                                // Then delete internal errors
+                                if (internalErrors.Any())
+                                    context.InternalErrors.RemoveRange(internalErrors);
+
+                                // Finally delete the results
+                                var entitiesToDelete = await context.Results.Where(r => ids.Contains(r.Id)).ToListAsync();
+                                if (entitiesToDelete.Any())
+                                    context.Results.RemoveRange(entitiesToDelete);
+
+                                await context.SaveChangesAsync();
+
+                                // Re-evaluate remaining corrective actions for affected internal errors
+                                var remainingAffectedInternalIds = affectedInternalErrorIds
+                                    .Except(internalErrors.Select(i => i.Id))
+                                    .ToList();
+
+                                if (remainingAffectedInternalIds.Any())
                                 {
-                                    // user cancelled deletion of related items -> abort whole delete
-                                    MessageBox.Show("Deletion cancelled.", "Information", MessageBoxButton.OK, MessageBoxImage.Information);
-                                    return;
+                                    foreach (var ieId in remainingAffectedInternalIds)
+                                    {
+                                        var ie = await context.InternalErrors.FirstOrDefaultAsync(x => x.Id == ieId);
+                                        if (ie == null) continue;
+
+                                        // any corrective actions still reference this internal error?
+                                        var remainingCAExists = await context.CorrectiveActions
+                                            .AsNoTracking()
+                                            .AnyAsync(c => c.InternalErrorId == ieId);
+
+                                        ie.IsResolved = remainingCAExists;
+                                        ie.Status = remainingCAExists ? "Đã khắc phục" : "Đang chờ";
+
+                                        context.InternalErrors.Update(ie);
+                                    }
+                                    await context.SaveChangesAsync();
                                 }
 
-                                using var tx = context.Database.BeginTransaction();
-                                try
-                                {
-                                    // Delete corrective actions first (they reference InternalErrors and Results)
-                                    if (correctiveActionsToDelete.Any())
-                                        context.CorrectiveActions.RemoveRange(correctiveActionsToDelete);
-
-                                    // Then delete internal errors
-                                    if (internalErrors.Any())
-                                        context.InternalErrors.RemoveRange(internalErrors);
-
-                                    // Finally delete the results
-                                    var entitiesToDelete = context.Results.Where(r => ids.Contains(r.Id)).ToList();
-                                    if (entitiesToDelete.Any())
-                                        context.Results.RemoveRange(entitiesToDelete);
-
-                                    context.SaveChanges();
-                                    tx.Commit();
-                                }
-                                catch
-                                {
-                                    try { tx.Rollback(); } catch { /* swallow */ }
-                                    throw;
-                                }
+                                await tx.CommitAsync();
                             }
-                            else
+                            catch
                             {
-                                // No related entities; proceed with safe delete
-                                using var tx2 = context.Database.BeginTransaction();
-                                try
-                                {
-                                    var entitiesToDelete = context.Results.Where(r => ids.Contains(r.Id)).ToList();
-                                    if (entitiesToDelete.Any())
-                                        context.Results.RemoveRange(entitiesToDelete);
-
-                                    context.SaveChanges();
-                                    tx2.Commit();
-                                }
-                                catch
-                                {
-                                    try { tx2.Rollback(); } catch { /* swallow */ }
-                                    throw;
-                                }
+                                try { await tx.RollbackAsync(); } catch { /* swallow */ }
+                                throw;
                             }
                         }
+                        else
+                        {
+                            // No related entities; proceed with safe delete
+                            await using var tx2 = await context.Database.BeginTransactionAsync();
+                            try
+                            {
+                                var entitiesToDelete = await context.Results.Where(r => ids.Contains(r.Id)).ToListAsync();
+                                if (entitiesToDelete.Any())
+                                    context.Results.RemoveRange(entitiesToDelete);
 
-                        MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
-                        Reload();
-                        using var fresh = new QcManagmentContext();
-                        FilterResults(fresh);
+                                await context.SaveChangesAsync();
+                                await tx2.CommitAsync();
+                            }
+                            catch
+                            {
+                                try { await tx2.RollbackAsync(); } catch { /* swallow */ }
+                                throw;
+                            }
+                        }
                     }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
-                    }
+
+                    MessageBox.Show("Xóa thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    Reload();
+                    using var fresh = new QcManagmentContext();
+                    FilterResults(fresh);
                 }
-                else return;
-
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Error: {ex}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Stop);
+                }
             });
 
             DeleteOneQCResultCommand = new RelayCommand<Result>((p) =>
             {
                 if (SelectedItem == null) return false;
                 else return true;
-            }, (p) =>
+            }, async (p) =>
             {
-                DeleteQCResult(SelectedItem);
+                await DeleteQCResult(p ?? SelectedItem);
             });
 
             DeleteOneCalResultCommand = new RelayCommand<CalResult>((p) =>
@@ -635,7 +669,7 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private async void DeleteQCResult(Result result)
+        private async Task DeleteQCResult(Result result)
         {
             if (result == null) return;
 
@@ -645,19 +679,24 @@ namespace QC_Management.ViewModels
 
             try
             {
-                using (var context = new QcManagmentContext())
+                await using (var context = new QcManagmentContext())
                 {
-                    // find related entities
-                    var resolvingCAs = context.CorrectiveActions.Where(c => c.ResolvingResultId.HasValue && c.ResolvingResultId.Value == result.Id).ToList();
-                    var internalErrors = context.InternalErrors.Where(i => i.ErroneousResultId.HasValue && i.ErroneousResultId.Value == result.Id).ToList();
+                    // find related entities (async)
+                    var internalErrors = await context.InternalErrors
+                        .Where(i => i.ErroneousResultId.HasValue && i.ErroneousResultId.Value == result.Id)
+                        .ToListAsync();
+
                     var internalErrorIds = internalErrors.Select(i => i.Id).ToList();
 
-                    // Build one unified list of corrective actions that reference either the results (as resolving)
-                    // or reference the internal errors (as InternalErrorId). This avoids deleting the same CA twice.
-                    var correctiveActionsToDelete = context.CorrectiveActions
-                        .Where(c => (c.ResolvingResultId.HasValue && c.ResolvingResultId.Value == result.Id)
-                                    || internalErrorIds.Contains(c.InternalErrorId))
-                        .ToList();
+                    var caByResolving = await context.CorrectiveActions
+                        .Where(c => c.ResolvingResultId != null && c.ResolvingResultId.Value == result.Id)
+                        .ToListAsync();
+
+                    var caByInternalError = await context.CorrectiveActions
+                        .Where(c => internalErrorIds.Contains(c.InternalErrorId)) // use property directly
+                        .ToListAsync();
+
+                    var correctiveActionsToDelete = caByResolving.Union(caByInternalError).ToList();
 
                     int totalCA = correctiveActionsToDelete.Count;
                     int totalIE = internalErrors.Count;
@@ -672,11 +711,19 @@ namespace QC_Management.ViewModels
                             return;
                         }
 
-                        using var tx = context.Database.BeginTransaction();
+                        // track internal errors referenced by CA we'll delete
+                        var affectedInternalErrorIds = correctiveActionsToDelete
+                            .Select(c => (int?)c.InternalErrorId)
+                            .Where(id => id.HasValue)
+                            .Select(id => id.Value)
+                            .Distinct()
+                            .ToList();
+
+                        await using var tx = await context.Database.BeginTransactionAsync();
 
                         try
                         {
-                            // delete corrective actions referencing internal errors
+                            // delete corrective actions
                             if (correctiveActionsToDelete.Any())
                                 context.CorrectiveActions.RemoveRange(correctiveActionsToDelete);
 
@@ -685,42 +732,70 @@ namespace QC_Management.ViewModels
                                 context.InternalErrors.RemoveRange(internalErrors);
 
                             // delete the result
-                            var entity = context.Results.Find(result.Id);
+                            var entity = await context.Results.FindAsync(result.Id);
                             if (entity != null)
                                 context.Results.Remove(entity);
 
-                            context.SaveChanges();
-                            tx.Commit();
+                            await context.SaveChangesAsync();
+
+                            // re-evaluate internal errors remaining (those affected but not removed)
+                            var remainingAffectedInternalIds = affectedInternalErrorIds
+                                .Except(internalErrors.Select(i => i.Id))
+                                .ToList();
+
+                            if (remainingAffectedInternalIds.Any())
+                            {
+                                foreach (var ieId in remainingAffectedInternalIds)
+                                {
+                                    var ie = await context.InternalErrors.FirstOrDefaultAsync(x => x.Id == ieId);
+                                    if (ie == null) continue;
+
+                                    var remainingCAExists = await context.CorrectiveActions
+                                        .AsNoTracking()
+                                        .AnyAsync(c => c.InternalErrorId == ieId);
+
+                                    ie.IsResolved = remainingCAExists;
+                                    ie.Status = remainingCAExists ? "Đã khắc phục" : "Đang chờ";
+
+                                    context.InternalErrors.Update(ie);
+                                }
+                                await context.SaveChangesAsync();
+                            }
+
+                            await tx.CommitAsync();
                         }
                         catch
                         {
-                            try { tx.Rollback(); } catch { /* swallow */ }
+                            try { await tx.RollbackAsync(); } catch { /* swallow */ }
                             throw;
                         }
                     }
                     else
                     {
                         // no related items; delete result directly
-                        using var tx2 = context.Database.BeginTransaction();
+                        await using var tx2 = await context.Database.BeginTransactionAsync();
                         try
                         {
-                            var entity = context.Results.Find(result.Id);
+                            var entity = await context.Results.FindAsync(result.Id);
                             if (entity != null)
                                 context.Results.Remove(entity);
 
-                            context.SaveChanges();
-                            tx2.Commit();
+                            await context.SaveChangesAsync();
+                            await tx2.CommitAsync();
                         }
                         catch
                         {
-                            try { tx2.Rollback(); } catch { /* swallow */ }
+                            try { await tx2.RollbackAsync(); } catch { /* swallow */ }
                             throw;
                         }
                     }
                 }
 
-                // Remove from the ObservableCollection (UI)
-                ResultViewList.Remove(result);
+                // Remove from the ObservableCollection (UI) on UI thread
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ResultViewList.Remove(result);
+                });
             }
             catch (Exception ex)
             {

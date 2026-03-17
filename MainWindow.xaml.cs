@@ -72,7 +72,7 @@ namespace QC_Management
             if (tt_input != null) tt_input.Visibility = setVisibility;
             if (tt_device != null) tt_device.Visibility = setVisibility;
             if (tt_qcInfor != null) tt_qcInfor.Visibility = setVisibility;
-            if (tt_range != null) tt_range.Visibility = setVisibility;
+            //if (tt_range != null) tt_range.Visibility = setVisibility;
             if (tt_test != null) tt_test.Visibility = setVisibility;
             if (tt_unit != null) tt_unit.Visibility = setVisibility;
             if (tt_user != null) tt_user.Visibility = setVisibility;

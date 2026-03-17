@@ -21,32 +21,6 @@ namespace QC_Management.Models
             }
         }
 
-        private void CheckIfOutOfRange()
-        {
-            if (ResultType == 1 && !string.IsNullOrEmpty(_TempResult))
-            {
-               isOutOfRange = !IdControlDetailNavigation.IsQualitativeResultAcceptable(_TempResult);
-            }
-            else if (ResultType == 2 && !string.IsNullOrEmpty(_TempResult))
-            {
-                // Parse TempResult to double and set Result
-                if (double.TryParse(_TempResult, out double resultValue))
-                {
-                    if (double.TryParse(MeanApp, out double meanApp))
-                    {
-                        isOut2SD = resultValue > meanApp + 2 * SdApp || resultValue < meanApp - 2 * SdApp;
-                    }
-                    else
-                    {
-                        MessageBox.Show("MeanApp is not a number");
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Please enter a valid number");
-                }
-            }
-        }
 
         public int? ResultType { get; set; }
         public Test? Test { get; set; } 
@@ -73,24 +47,13 @@ namespace QC_Management.Models
             }
         }
 
-        private bool _isOutOfRange;
-        public bool isOutOfRange
+        private bool _isOutRange;
+        public bool isOutRange
         {
-            get => _isOutOfRange;
+            get => _isOutRange;
             set
             {
-                _isOutOfRange = value;
-                OnPropertyChanged();
-            }
-        }
-
-        private bool _isOut2SD;
-        public bool isOut2SD
-        {
-            get => _isOut2SD;
-            set
-            {
-                _isOut2SD = value;
+                _isOutRange = value;
                 OnPropertyChanged();
             }
         }
