@@ -9,7 +9,6 @@
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes" 
              xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf" 
              xmlns:viewmodels="clr-namespace:QC_Management.ViewModels"
-             d:DataContext="{d:DesignInstance Type=viewmodels:HomeViewModel_V2}"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
