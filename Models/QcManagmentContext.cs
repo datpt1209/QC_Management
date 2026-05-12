@@ -57,6 +57,10 @@ public partial class QcManagmentContext : DbContext
 
     public virtual DbSet<CorrectiveAction> CorrectiveActions { get; set; }
 
+    // Added external QC tables
+    public virtual DbSet<ExternalProgram> ExternalPrograms { get; set; }
+    public virtual DbSet<ExternalResult> ExternalResults { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         var connectionString = AppConfig.BuildConnectionString();
@@ -66,8 +70,7 @@ public partial class QcManagmentContext : DbContext
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
 
-
-    modelBuilder.Entity<CalDetail>(entity =>
+        modelBuilder.Entity<CalDetail>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__CalDetai__3214EC072D3A7912");
 
@@ -214,7 +217,6 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.CalTypeName).HasMaxLength(100);
         });
 
-
         modelBuilder.Entity<Category>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__Category__3214EC073108088C");
@@ -240,6 +242,7 @@ public partial class QcManagmentContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_ControlInfo_ControlType");
         });
+
         modelBuilder.Entity<ControlInfoDetail>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("PK__ControlI__3214EC074F524D96");
@@ -454,7 +457,6 @@ public partial class QcManagmentContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(50);
         });
 
-
         modelBuilder.Entity<UnitTable>(entity =>
         {
             entity.ToTable("UnitTable");
@@ -484,6 +486,70 @@ public partial class QcManagmentContext : DbContext
             entity.ToTable("UserRole");
 
             entity.Property(e => e.DisplayName).HasMaxLength(255);
+        });
+        // --- External program / results mapping ---
+        modelBuilder.Entity<ExternalProgram>(entity =>
+        {
+            entity.ToTable("ExternalProgram");
+            entity.HasKey(e => e.Id).HasName("PK_ExternalProgram");
+
+            entity.Property(e => e.Year).IsRequired();
+            entity.Property(e => e.Name).HasMaxLength(250).IsRequired();
+            entity.Property(e => e.Description).HasMaxLength(2000);
+            entity.Property(e => e.Vendor).HasMaxLength(200);
+            entity.Property(e => e.IsActive).HasDefaultValue(true);
+            entity.Property(e => e.CreatedAt).HasColumnType("datetime2");
+            entity.Property(e => e.CreatedBy).HasMaxLength(255);
+        });
+
+        modelBuilder.Entity<ExternalResult>(entity =>
+        {
+            entity.ToTable("ExternalResult");
+            entity.HasKey(e => e.Id).HasName("PK_ExternalResult");
+
+            entity.Property(e => e.Batch).HasMaxLength(200);
+            entity.Property(e => e.DateRun).HasColumnType("datetime2").IsRequired();
+            entity.Property(e => e.TempResult).HasMaxLength(500);
+
+            // string-backed fields (user-entered)
+            entity.Property(e => e.ReferenceValue).HasMaxLength(200).HasColumnName("ReferenceValue");
+            entity.Property(e => e.SigmaP).HasMaxLength(200).HasColumnName("SigmaP");
+
+            // computed / persisted numeric fields
+            entity.Property(e => e.ZScore).HasColumnType("float");
+            entity.Property(e => e.IsDefect).HasColumnType("bit");
+
+            entity.Property(e => e.EvaluatedBy).HasMaxLength(255);
+            entity.Property(e => e.Notes).HasMaxLength(2000);
+            // new columns
+            entity.Property(e => e.Sample).HasMaxLength(200).HasColumnName("Sample");
+            entity.Property(e => e.ReceivedAt).HasColumnType("datetime2").HasColumnName("ReceivedAt");
+
+
+            // foreign keys (use consistent names)
+            entity.HasOne(d => d.ExternalProgram)
+                .WithMany(p => p.Results)
+                .HasForeignKey(d => d.ExternalProgramId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("FK_ExternalResult_ExternalProgram");
+
+            entity.HasOne(d => d.IdDeviceNavigation)
+                .WithMany()
+                .HasForeignKey(d => d.IdDevice)
+                .OnDelete(DeleteBehavior.SetNull)
+                .HasConstraintName("FK_ExternalResult_Device");
+
+            entity.HasOne(d => d.IdTestNavigation)
+                .WithMany()
+                .HasForeignKey(d => d.IdTest)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_ExternalResult_Test");
+
+            // indexes
+            entity.HasIndex(e => e.ExternalProgramId).HasDatabaseName("IX_ExternalResult_ExternalProgramId");
+            entity.HasIndex(e => e.IdTest).HasDatabaseName("IX_ExternalResult_IdTest");
+            entity.HasIndex(e => e.IdDevice).HasDatabaseName("IX_ExternalResult_IdDevice");
+            entity.HasIndex(e => e.DateRun).HasDatabaseName("IX_ExternalResult_DateRun");
         });
 
         OnModelCreatingPartial(modelBuilder);

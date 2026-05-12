@@ -24,8 +24,15 @@
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
     <viewmodel:IncidentManagementViewModel x:Key="IncidentManagementVM"></viewmodel:IncidentManagementViewModel>
-
     
+
+    <!-- ExternalProgram VM added -->
+    <viewmodel:ExternalProgramViewModel x:Key="ExternalProgramVM" />
+
+
+    <!-- add ExternalResult VM so DataContext in ExternalResultView resolves -->
+    <viewmodel:ExternalResultViewModel x:Key="ExternalResultVM" />
+
     <!--<viewmodel:CorrectiveActionViewModel x:Key="CorrectiveActionVM"></viewmodel:CorrectiveActionViewModel>-->
     
     <!-- add External Control VM -->
@@ -99,6 +106,15 @@
 
     <DataTemplate DataType="{x:Type viewmodel:IncidentManagementViewModel}">
         <views:IncidentManagementView></views:IncidentManagementView>
+    </DataTemplate>
+
+    <!-- DataTemplate for ExternalProgramViewModel -->
+    <DataTemplate DataType="{x:Type viewmodel:ExternalProgramViewModel}">
+        <views:ExternalProgramView />
+    </DataTemplate>
+
+    <DataTemplate DataType="{x:Type viewmodel:ExternalResultViewModel}">
+        <views:ExternalResultView />
     </DataTemplate>
 
 

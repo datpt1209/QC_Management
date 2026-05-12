@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace QC_Management.Models;
 
@@ -13,6 +14,9 @@ public partial class User : BaseViewModel
     public string DisplayName { get; set; } = null!;
 
     public string Password { get; set; } = null!;
+
+    [NotMapped]
+    public bool IsAdmin { get; set; } = false;
 
     public virtual ICollection<Result> Results { get; set; } = new List<Result>();
     public virtual ICollection<CalResult> CalResults { get; set; } = new List<CalResult>();

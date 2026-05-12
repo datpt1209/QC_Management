@@ -50,6 +50,7 @@ namespace QC_Management.ViewModels
             set { _DetailList = value; OnPropertyChanged(); }
         }
 
+        // SelectedDetail: update DetailLOT when a detail row is selected
         private ControlInfoDetail? _SelectedDetail;
         public ControlInfoDetail? SelectedDetail
         {
@@ -74,6 +75,9 @@ namespace QC_Management.ViewModels
                         CurMean = _SelectedDetail.CurMean;
                         CurSd = _SelectedDetail.CurSd;
                         QualitativeMean = _SelectedDetail.QualitativeMean;
+
+                        // ensure the detail LOT editor reflects the selected detail's Lot
+                        DetailLOT = _SelectedDetail.Lot ?? string.Empty;
 
                         // pick device instance from DeviceList by id (so ComboBox.SelectedItem matches by reference)
                         if (DeviceList != null)
@@ -209,6 +213,20 @@ namespace QC_Management.ViewModels
                 }
             }
         }
+        // new backing + property to manage the LOT for the selected detail row
+        private string _detailLOT = string.Empty;
+        public string DetailLOT
+        {
+            get => _detailLOT;
+            set
+            {
+                if (_detailLOT == value) return;
+                _detailLOT = value;
+                OnPropertyChanged();
+            }
+        }
+
+
 
         private bool _isChecked_Info;
 
@@ -335,39 +353,39 @@ namespace QC_Management.ViewModels
                 // reload master lists and lookup tables
                 LoadNew();
 
-                // repopulate List to reflect current SelectedType if any
-                if (previousSelectedTypeId.HasValue)
-                    List = ListDB.Where(s => s.IdControlType == previousSelectedTypeId.Value).ToList();
-                else
-                    List = ListDB.ToList();
+                //// repopulate List to reflect current SelectedType if any
+                //if (previousSelectedTypeId.HasValue)
+                //    List = ListDB.Where(s => s.IdControlType == previousSelectedTypeId.Value).ToList();
+                //else
+                //    List = ListDB.ToList();
 
-                // try to restore previous selection (prefer Id, then LOT)
-                ControlInfo restored = null;
-                if (previousSelectedId.HasValue)
-                {
-                    restored = ListDB.FirstOrDefault(c => c.Id == previousSelectedId.Value);
-                }
-                if (restored == null && !string.IsNullOrWhiteSpace(previousLot))
-                {
-                    restored = ListDB.FirstOrDefault(c => c.Lot == previousLot);
-                }
+                //// try to restore previous selection (prefer Id, then LOT)
+                //ControlInfo restored = null;
+                //if (previousSelectedId.HasValue)
+                //{
+                //    restored = ListDB.FirstOrDefault(c => c.Id == previousSelectedId.Value);
+                //}
+                //if (restored == null && !string.IsNullOrWhiteSpace(previousLot))
+                //{
+                //    restored = ListDB.FirstOrDefault(c => c.Lot == previousLot);
+                //}
 
-                if (restored != null)
-                {
-                    // assign SelectedItem from the freshly loaded collection (keeps entity tracking consistent)
-                    SelectedItem = restored;
+                //if (restored != null)
+                //{
+                //    // assign SelectedItem from the freshly loaded collection (keeps entity tracking consistent)
+                //    SelectedItem = restored;
 
-                    // reload details for this LOT
-                    LoadDetailsForSelectedItem();
+                //    // reload details for this LOT
+                //    LoadDetailsForSelectedItem();
 
-                    // keep LOT field (SelectedItem setter sets LOT already)
-                }
-                else
-                {
-                    // no previous selection found — keep UI as fresh
-                    SelectedItem = null;
-                    DetailList = new ObservableCollection<ControlInfoDetail>();
-                }
+                //    // keep LOT field (SelectedItem setter sets LOT already)
+                //}
+                //else
+                //{
+                //    // no previous selection found — keep UI as fresh
+                //    SelectedItem = null;
+                //    DetailList = new ObservableCollection<ControlInfoDetail>();
+                //}
             });
 
             TestSelectionChangedCommand = new RelayCommand<Test>(CanChangeTest, _ => UpdateView());
@@ -817,7 +835,7 @@ namespace QC_Management.ViewModels
                 SelectedDetail.IdLevel = SelectedLevel.Id;
                 SelectedDetail.IdTest = SelectedTest.Id;
                 SelectedDetail.Status = ischecked_detail;
-                SelectedDetail.Lot = LOT;
+                SelectedDetail.Lot = DetailLOT;
                 SelectedDetail.QualitativeMean = QualitativeMean;
             }
             else
@@ -832,7 +850,7 @@ namespace QC_Management.ViewModels
                 SelectedDetail.MeanApp = MeanPXN;
                 SelectedDetail.SdApp = SdPXN;
                 SelectedDetail.Status = ischecked_detail;
-                SelectedDetail.Lot = LOT;
+                SelectedDetail.Lot = DetailLOT;
                 SelectedDetail.CurSd = CurSd;
                 SelectedDetail.CurMean = CurMean;
             }
@@ -981,7 +999,7 @@ namespace QC_Management.ViewModels
                     // Use user-selected status/LOT from the editor controls (IsChecked / LOT),
                     // not the SelectedItem (ControlInfo) values.
                     Status = ischecked_detail,
-                    Lot = LOT
+                    Lot = DetailLOT
                 };
             }
             else
@@ -1005,7 +1023,7 @@ namespace QC_Management.ViewModels
                     Status = ischecked_detail,
                     CurSd = CurSd,
                     CurMean = CurMean,
-                    Lot = LOT
+                    Lot = DetailLOT
                 };
             }
 

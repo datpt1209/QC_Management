@@ -43,7 +43,7 @@
                         Margin="5"
                         ItemsSource="{Binding CategorytList}"
                         DisplayMemberPath="Name"
-                        SelectedItem="{Binding SelectedCategory, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        SelectedItem="{Binding SelectedCategory}"
                         materialDesign:ComboBoxAssist.MaxLength="2"
                         materialDesign:HintAssist.Hint="Category"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
@@ -77,7 +77,7 @@
 
         <!-- LEFT: device list (unchanged) -->
         <materialDesign:Card Grid.Row="2" Grid.Column="0" Margin="5" VerticalAlignment="Stretch">
-            <ListView ItemsSource="{Binding List}" SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}" ScrollViewer.VerticalScrollBarVisibility="Auto">
+            <ListView ItemsSource="{Binding List}" SelectedItem="{Binding SelectedItem, Mode=TwoWay}" ScrollViewer.VerticalScrollBarVisibility="Auto">
                 <i:Interaction.Triggers>
                     <i:EventTrigger EventName="SelectionChanged">
                         <i:InvokeCommandAction Command="{Binding DeviceSelectionChangedCommand}"/>

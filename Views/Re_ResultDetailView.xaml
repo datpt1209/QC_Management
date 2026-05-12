@@ -51,11 +51,8 @@
                         <DatePicker 
                             Margin="5"
                             SelectedDate="{Binding Date, UpdateSourceTrigger=PropertyChanged}"
-    
                             materialDesign:HintAssist.Hint="Ngày"
-   
                             materialDesign:TextFieldAssist.HasClearButton="True" 
-    
                             Style="{StaticResource MaterialDesignOutlinedDatePicker}" Width="128" Height="50" />
 
                         <materialDesign:TimePicker  
@@ -66,13 +63,23 @@
                             materialDesign:HintAssist.Hint="Pick Time"
                             Is24Hours="True"
                             Style="{StaticResource MaterialDesignOutlinedTimePicker}" >
-
                         </materialDesign:TimePicker>
+                        <!-- NEW: Users ComboBox -->
+                        <ComboBox
+                            Margin="5"
+                            ItemsSource="{Binding UserList}"
+                            DisplayMemberPath="DisplayName"
+                            SelectedItem="{Binding SelectedUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding IsUserSelectionEnabled}"
+                            materialDesign:HintAssist.Hint="Người thực hiện"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                            Width="150" Height="50"
+                            ToolTip="{Binding SelectedUser.RoleNavigation.DisplayName}" />
 
                     </StackPanel>
                 </materialDesign:Card>
             </Grid>
-            
+
             <Grid Grid.Column="1">
                 <materialDesign:Card  Margin="5">
                     <StackPanel Orientation="Horizontal">
@@ -82,7 +89,6 @@
                     </StackPanel>
                 </materialDesign:Card>
             </Grid>
-           
         </Grid>
 
         <Grid Grid.Row="1">

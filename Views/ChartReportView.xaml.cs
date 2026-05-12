@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Reporting.WinForms;
 using QC_Management.Models;
 using System;
@@ -60,34 +61,43 @@ namespace QC_Management
                 return v;
             }
 
+            // Helper to compute SDs safely: prefer persisted ZScore, else compute only when valid mean & sd present
+            static double? ComputeSafeSds(double? persistedZ, double? result1, double? mean, double? sd)
+            {
+                if (persistedZ.HasValue) return persistedZ;
+                if (!result1.HasValue) return null;
+                if (!mean.HasValue || !sd.HasValue) return null;
+                if (sd.Value == 0) return null;
+                return (result1.Value - mean.Value) / sd.Value;
+            }
+
             var reportSource = new Object();
             if (fillter == FilterOptions[1])
             {
                 reportSource = resultList.Select(s => new
                 {
                     Id = s.Id,
-                    NameDevice = s.IdDeviceNavigation.Name,
+                    NameDevice = s.IdDeviceNavigation?.Name,
                     Index = s.IndexQc,
-                    LOTQC = s.IdControlDetailNavigation.Lot,
-                    NameTest = s.IdTestNavigation.Name,
-                    Level = s.IdLevelNavigation.Name,
+                    LOTQC = s.IdControlDetailNavigation?.Lot ?? string.Empty,
+                    NameTest = s.IdTestNavigation?.Name ?? string.Empty,
+                    Level = s.IdLevelNavigation?.Name ?? string.Empty,
                     Result = s.Result1,
-                    UserName = s.IdUserNavigation.DisplayName,
+                    UserName = s.IdUserNavigation?.DisplayName ?? string.Empty,
                     DateRun = s.DateRun,
                     DateRunString = s.DateRun.ToString("dd/MM/yy"),
-
-                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
-                    Mean = s.IdControlDetailNavigation.MeanNsx,
-                    SD = s.IdControlDetailNavigation.SdNsx,
-                    Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
+                    Time = (s.DateRun + (s.Time ?? TimeSpan.Zero)).ToString("hh:mm:ss"),
+                    Mean = s.IdControlDetailNavigation?.MeanNsx,
+                    SD = s.IdControlDetailNavigation?.SdNsx,
+                    Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty,
                     WestgardRule = s.WestgardRule,
-                    SDPXN = s.IdControlDetailNavigation.CurSd,
-                    MeanPXN = s.IdControlDetailNavigation.CurMean,
-                    ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
-                    ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    // Use persisted ZScore when available; otherwise fallback to previous CurMean/CurSd calculation
-                    SDs = ClampSDs(s.ZScore ?? ((s.Result1 - s.IdControlDetailNavigation.CurMean) / s.IdControlDetailNavigation.CurSd)),
-                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
+                    SDPXN = s.IdControlDetailNavigation?.CurSd,
+                    MeanPXN = s.IdControlDetailNavigation?.CurMean,
+                    ExpirationDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ExpirationDate,
+                    ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
+                    // Use persisted ZScore when available; otherwise compute safely with current mean/sd
+                    SDs = ClampSDs(ComputeSafeSds(s.ZScore, s.Result1, s.IdControlDetailNavigation?.CurMean, s.IdControlDetailNavigation?.CurSd)),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation?.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)
@@ -99,27 +109,27 @@ namespace QC_Management
                 reportSource = resultList.Select(s => new
                 {
                     Id = s.Id,
-                    NameDevice = s.IdDeviceNavigation.Name,
+                    NameDevice = s.IdDeviceNavigation?.Name,
                     Index = s.IndexQc,
-                    LOTQC = s.IdControlDetailNavigation.Lot,
-                    NameTest = s.IdTestNavigation.Name,
-                    Level = s.IdLevelNavigation.Name,
+                    LOTQC = s.IdControlDetailNavigation?.Lot ?? string.Empty,
+                    NameTest = s.IdTestNavigation?.Name ?? string.Empty,
+                    Level = s.IdLevelNavigation?.Name ?? string.Empty,
                     Result = s.Result1,
-                    UserName = s.IdUserNavigation.DisplayName,
+                    UserName = s.IdUserNavigation?.DisplayName ?? string.Empty,
                     DateRun = s.DateRun.Date,
                     DateRunString = s.DateRun.ToString("dd/MM/yy"),
-                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
-                    Mean = s.IdControlDetailNavigation.MeanNsx,
-                    SD = s.IdControlDetailNavigation.SdNsx,
-                    Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
+                    Time = (s.DateRun + (s.Time ?? TimeSpan.Zero)).ToString("hh:mm:ss"),
+                    Mean = s.IdControlDetailNavigation?.MeanNsx,
+                    SD = s.IdControlDetailNavigation?.SdNsx,
+                    Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty,
                     WestgardRule = s.WestgardRule,
-                    SDPXN = (double)s.IdControlDetailNavigation.CurSd,
-                    MeanPXN = (double)s.IdControlDetailNavigation.CurMean,
-                    ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
-                    ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    // Use persisted ZScore when available; otherwise fallback to manufacturer mean/sd
-                    SDs = ClampSDs((s.Result1 - s.IdControlDetailNavigation.MeanNsx) / s.IdControlDetailNavigation.SdNsx),
-                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
+                    SDPXN = s.IdControlDetailNavigation?.CurSd,
+                    MeanPXN = s.IdControlDetailNavigation?.CurMean,
+                    ExpirationDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ExpirationDate,
+                    ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
+                    // Use persisted ZScore when available; otherwise compute using manufacturer mean/sd if possible
+                    SDs = ClampSDs(ComputeSafeSds(s.ZScore, s.Result1, s.IdControlDetailNavigation?.MeanNsx, s.IdControlDetailNavigation?.SdNsx)),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation?.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)
@@ -131,27 +141,27 @@ namespace QC_Management
                 reportSource = resultList.Select(s => new
                 {
                     Id = s.Id,
-                    NameDevice = s.IdDeviceNavigation.Name,
+                    NameDevice = s.IdDeviceNavigation?.Name,
                     Index = s.IndexQc,
-                    LOTQC = s.IdControlDetailNavigation.Lot,
-                    NameTest = s.IdTestNavigation.Name,
-                    Level = s.IdLevelNavigation.Name,
+                    LOTQC = s.IdControlDetailNavigation?.Lot ?? string.Empty,
+                    NameTest = s.IdTestNavigation?.Name ?? string.Empty,
+                    Level = s.IdLevelNavigation?.Name ?? string.Empty,
                     Result = s.Result1,
-                    UserName = s.IdUserNavigation.DisplayName,
+                    UserName = s.IdUserNavigation?.DisplayName ?? string.Empty,
                     DateRun = s.DateRun.Date,
                     DateRunString = s.DateRun.ToString("dd/MM/yy"),
-                    Time = s.DateRun.Add((System.TimeSpan)s.Time).ToString("hh:mm:ss"),
-                    Mean = s.IdControlDetailNavigation.MeanNsx,
-                    SD = s.IdControlDetailNavigation.SdNsx,
-                    Unit = s.IdTestNavigation.IdUnitTableNavigation.Name,
+                    Time = (s.DateRun + (s.Time ?? TimeSpan.Zero)).ToString("hh:mm:ss"),
+                    Mean = s.IdControlDetailNavigation?.MeanNsx,
+                    SD = s.IdControlDetailNavigation?.SdNsx,
+                    Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty,
                     WestgardRule = s.WestgardRule,
-                    SDPXN = (double)s.IdControlDetailNavigation.CurSd,
-                    MeanPXN = (double)s.IdControlDetailNavigation.CurMean,
-                    ExpirationDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ExpirationDate,
-                    ProductionDate = s.IdControlDetailNavigation.IdControlInfoNavigation.ProductionDate,
-                    // Use persisted ZScore when available; otherwise fallback to application mean/sd
-                    SDs = ClampSDs((s.Result1 - s.IdControlDetailNavigation.MeanApp) / s.IdControlDetailNavigation.SdApp),
-                    SeriesColor = MapLevelToColor(s.IdLevelNavigation.Name),
+                    SDPXN = s.IdControlDetailNavigation?.CurSd,
+                    MeanPXN = s.IdControlDetailNavigation?.CurMean,
+                    ExpirationDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ExpirationDate,
+                    ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
+                    // Use persisted ZScore when available; otherwise compute using application mean/sd if possible
+                    SDs = ClampSDs(ComputeSafeSds(s.ZScore, s.Result1, s.IdControlDetailNavigation?.MeanApp, s.IdControlDetailNavigation?.SdApp)),
+                    SeriesColor = MapLevelToColor(s.IdLevelNavigation?.Name),
                     IsEmptyPoint = s.Result1 == null // Add IsEmptyPoint flag
                 }).OrderBy(s => s.DateRun.Month)
                   .ThenBy(s => s.DateRun.Day)

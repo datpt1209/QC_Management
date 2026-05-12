@@ -1,0 +1,126 @@
+﻿<UserControl x:Class="QC_Management.Views.ExternalResultView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:QC_Management.Views"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             DataContext="{StaticResource ExternalResultVM}"
+             MinHeight="400" MinWidth="700">
+
+    <i:Interaction.Triggers>
+        <i:EventTrigger EventName="Loaded">
+            <i:InvokeCommandAction Command="{Binding RefreshCommand}" />
+        </i:EventTrigger>
+    </i:Interaction.Triggers>
+
+    <DockPanel Margin="12">
+        <!-- Entry controls -->
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,8" VerticalAlignment="Center" >
+            <ComboBox Width="220" Margin="0,0,8,0"
+                      ItemsSource="{Binding Programs}"
+                      SelectedItem="{Binding SelectedProgram, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="Name"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      materialDesign:HintAssist.Hint="Chương trình" />
+            <TextBox Width="140" Margin="0,0,8,0"
+                     Text="{Binding Batch, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     materialDesign:HintAssist.Hint="Đợt / Batch" />
+            <TextBox Width="180" Margin="12,0,8,0"
+                     Text="{Binding SharedSample, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                     materialDesign:HintAssist.Hint="Mẫu" />
+            <ComboBox Width="200" Margin="0,0,8,0"
+                      ItemsSource="{Binding Devices}"
+                      SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                      DisplayMemberPath="Name"
+                      Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                      materialDesign:HintAssist.Hint="Thiết bị" >
+                <i:Interaction.Triggers>
+                    <i:EventTrigger EventName="SelectionChanged">
+                        <i:InvokeCommandAction Command="{Binding LoadTestsCommand}" CommandParameter="{Binding SelectedDevice}" />
+                    </i:EventTrigger>
+                </i:Interaction.Triggers>
+            </ComboBox>
+
+            <!-- Date + Time picker for DateRun -->
+            <DatePicker Width="140" Margin="0,0,8,0"
+                        SelectedDate="{Binding SelectedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        materialDesign:HintAssist.Hint="Ngày chạy" />
+            <Border Margin="0,0,8,0" Width="120" Height="40" CornerRadius="4"
+                    Background="{DynamicResource MaterialDesignPaper}"
+                    BorderBrush="{DynamicResource MaterialDesignDivider}" BorderThickness="1"
+                    materialDesign:HintAssist.Hint="Giờ chạy" materialDesign:HintAssist.IsFloating="True">
+                <materialDesign:TimePicker
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Stretch"
+                    Margin="2,0"
+                    Background="Transparent"
+                    BorderThickness="0"
+                    SelectedTime="{Binding SelectedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                    Style="{StaticResource MaterialDesignFloatingHintTimePicker}" />
+            </Border>
+            <DatePicker Width="160" Margin="0,0,8,0"
+                        SelectedDate="{Binding SharedReceivedAt, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        Style="{StaticResource MaterialDesignOutlinedDatePicker}"
+                        materialDesign:HintAssist.Hint="Ngày nhận" />
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,12">
+            <Button Content="Load (tests)" Width="100" Command="{Binding LoadTestsCommand}" Margin="0,0,8,0"/>
+            <Button Content="Save All" Width="90" Command="{Binding SaveCommand}" Margin="0,0,8,0"/>
+            <Button Content="Delete" Width="80" Command="{Binding DeleteCommand}" Margin="0,0,8,0"/>
+            <Button Content="Refresh" Width="80" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
+            <Button Content="Manage Programs" Width="140" Margin="12,0,0,0" Command="{Binding OpenProgramCommand}" />
+        </StackPanel>
+
+        <DataGrid ItemsSource="{Binding NewResults}" SelectedItem="{Binding SelectedResult}" AutoGenerateColumns="False" CanUserAddRows="False">
+            <!-- reusable style: empty -> dim, Status true -> yellow -->
+            <DataGrid.Resources>
+                <Style x:Key="ExternalResultTempCellStyle" TargetType="DataGridCell">
+                    <Setter Property="Background" Value="LightGray"/>
+                    <Setter Property="FontWeight" Value="Bold"/>
+                    <Setter Property="Foreground" Value="Green"/>
+                    <Setter Property="Padding" Value="4,2"/>
+                    <Setter Property="VerticalAlignment" Value="Center"/>
+                    <Setter Property="IsTabStop" Value="False"/>
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding TempResult}" Value="">
+                            <Setter Property="Background" Value="#FFDCDCDC"/>
+                            <Setter Property="Foreground" Value="Gray"/>
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding Status}" Value="True">
+                            <Setter Property="Background" Value="Yellow"/>
+                            <Setter Property="Foreground" Value="Red"/>
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </DataGrid.Resources>
+
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="Test" Binding="{Binding TestName}"
+                                    IsReadOnly="True" Width="0.7*"/>
+                <DataGridTextColumn Header="Kết quả"
+                                    Binding="{Binding TempResult, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                    Width="0.5*" >
+                    <DataGridTextColumn.CellStyle>
+                        <StaticResource ResourceKey="ExternalResultTempCellStyle"/>
+                    </DataGridTextColumn.CellStyle>
+                </DataGridTextColumn>
+                <DataGridTextColumn Header="Giá trị ấn định"
+                                    Binding="{Binding ReferenceValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                                    Width="0.5*" />
+                <DataGridTextColumn Header="σp" 
+                                    Binding="{Binding SigmaP, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, TargetNullValue=''}"
+                                    Width="0.5*" />
+                <DataGridTextColumn Header="ZScore" Binding="{Binding ZScore}" Width="0.5*" IsReadOnly="True"/>
+                <DataGridTextColumn Header="Ghi chú" Binding="{Binding Notes, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="1.5*"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>  

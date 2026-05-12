@@ -56,6 +56,17 @@
                             Style="{StaticResource MaterialDesignOutlinedTimePicker}" >
 
                         </materialDesign:TimePicker>
+                        <!-- Users ComboBox -->
+                        <ComboBox
+                            Margin="5"
+                            ItemsSource="{Binding UserList}"
+                            DisplayMemberPath="DisplayName"
+                            SelectedItem="{Binding SelectedUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                            IsEnabled="{Binding IsUserSelectionEnabled}"
+                            materialDesign:HintAssist.Hint="Người thực hiện"
+                            Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                            Width="150" Height="50"
+                            ToolTip="{Binding SelectedUser.RoleNavigation.DisplayName}" />
 
                     </StackPanel>
                 </materialDesign:Card>

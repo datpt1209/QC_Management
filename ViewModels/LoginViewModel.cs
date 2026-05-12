@@ -1,4 +1,5 @@
-﻿using QC_Management.Models;
+﻿using Microsoft.EntityFrameworkCore;
+using QC_Management.Models;
 using QC_Management.Views;
 using System;
 using System.IO;
@@ -80,7 +81,10 @@ namespace QC_Management.ViewModels
                         if (context.Database.CanConnect())
                         {
                             string passEncode = MD5Hash(Base64Encode(Password));
-                            var user = context.Users.FirstOrDefault(x => x.UserName == UserName && x.Password == passEncode);
+                            // Include RoleNavigation so we can resolve role at login
+                            var user = context.Users
+                                              .Include(u => u.RoleNavigation)
+                                              .FirstOrDefault(x => x.UserName == UserName && x.Password == passEncode);
                             if (user == null)
                             {
                                 success = false;
@@ -88,6 +92,15 @@ namespace QC_Management.ViewModels
                             }
                             else
                             {
+                                // resolve and store IsAdmin flag once at login
+                                var roleName = user.RoleNavigation?.DisplayName;
+                                if (string.IsNullOrEmpty(roleName) && user.Role != 0)
+                                {
+                                    var role = context.UserRoles.AsNoTracking().FirstOrDefault(r => r.Id == user.Role);
+                                    roleName = role?.DisplayName;
+                                }
+                                user.IsAdmin = !string.IsNullOrEmpty(roleName) && string.Equals(roleName, "Admin", StringComparison.OrdinalIgnoreCase);
+
                                 currentUser = user;
                             }
                         }

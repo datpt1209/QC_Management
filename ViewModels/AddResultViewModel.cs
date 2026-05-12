@@ -18,6 +18,7 @@ namespace QC_Management.ViewModels
     public class AddResultViewModel : BaseViewModel
     {
         private DateTime _selectedDate;
+        private DateTime _selectedDateTime;
         private Device _selectedDevice;
         private LevelQc _selectedLevel;
         private Test _selectedTest;
@@ -29,6 +30,7 @@ namespace QC_Management.ViewModels
         private bool _isOut2SD;
         private string _resultString;
         private double _result;
+        private TimeSpan _selectedTime = DateTime.Now.TimeOfDay;
 
         // Added SelectedItem so DataGrid.SelectedItem binding has a target on the VM
         private Result? _selectedItem;
@@ -59,10 +61,8 @@ namespace QC_Management.ViewModels
                 }
             }
         }
-        private TimeSpan _selectedTime = DateTime.Now.TimeOfDay;
 
-        // SelectedTime bound in AddResultWindow.xaml (uses TimeSpan converter).
-        // Two-way so user can edit time before adding results.
+        // SelectedTime remains for backward compatibility / internal usage.
         public TimeSpan SelectedTime
         {
             get => _selectedTime;
@@ -71,6 +71,38 @@ namespace QC_Management.ViewModels
                 if (_selectedTime == value) return;
                 _selectedTime = value;
                 OnPropertyChanged(nameof(SelectedTime));
+
+                // keep SelectedDateTime in sync when user edits time via other controls
+                var newDt = SelectedDate.Date + _selectedTime;
+                if (SelectedDateTime != newDt)
+                {
+                    SelectedDateTime = newDt;
+                }
+            }
+        }
+
+        // New: SelectedDateTime used by TimePicker in XAML (Date + Time)
+        public DateTime SelectedDateTime
+        {
+            get => _selectedDateTime;
+            set
+            {
+                if (_selectedDateTime == value) return;
+                _selectedDateTime = value;
+                OnPropertyChanged(nameof(SelectedDateTime));
+
+                // keep SelectedDate (date-only) and SelectedTime (time-of-day) in sync
+                if (_selectedDate != _selectedDateTime.Date)
+                {
+                    _selectedDate = _selectedDateTime.Date;
+                    OnPropertyChanged(nameof(SelectedDate));
+                }
+
+                if (_selectedTime != _selectedDateTime.TimeOfDay)
+                {
+                    _selectedTime = _selectedDateTime.TimeOfDay;
+                    OnPropertyChanged(nameof(SelectedTime));
+                }
             }
         }
 
@@ -93,13 +125,19 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Test> _TestList;
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
 
+        // DatePicker binds to SelectedDate; keep it synchronized with SelectedDateTime
         public DateTime SelectedDate
         {
             get => _selectedDate;
             set
             {
+                if (_selectedDate == value) return;
                 _selectedDate = value;
                 OnPropertyChanged();
+
+                // preserve time-of-day portion from SelectedDateTime
+                var time = SelectedDateTime.TimeOfDay;
+                SelectedDateTime = _selectedDate.Date + time;
             }
         }
 
@@ -188,7 +226,10 @@ namespace QC_Management.ViewModels
 
         public AddResultViewModel(DateTime selectedDate, Device selectedDevice, LevelQc selectedLevel, int? selectedIndex, System.Windows.Window window)
         {
-            SelectedDate = selectedDate;
+            // Initialize SelectedDateTime from the incoming selectedDate so dialog shows same Date+Time
+            SelectedDateTime = selectedDate;
+            // SelectedDate and SelectedTime are kept in sync by SelectedDateTime setter
+
             SelectedDevice = selectedDevice;
             SelectedLevel = selectedLevel;
             SelectedIndex = selectedIndex ?? 0;
@@ -267,9 +308,8 @@ namespace QC_Management.ViewModels
 
                     if (qcInfor != null)
                     {
-                        // combine date + current time so DateRun stores full date+time
-                        var now = DateTime.Now;
-                        var combinedDateTime = SelectedDate.Date.Add(now.TimeOfDay);
+                        // use SelectedDateTime (date + time) as entered by user
+                        var combinedDateTime = SelectedDateTime;
 
                         var newResult = new Result
                         {

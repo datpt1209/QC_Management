@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Reporting.WinForms;
 using QC_Management.Models;
 using System;
@@ -20,38 +21,39 @@ namespace QC_Management
         public CalibReportView(List<CalResult> calResults)
         {
             InitializeComponent();
-            this.calResultList = calResults.ToList();
+            this.calResultList = calResults?.ToList() ?? new List<CalResult>();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             ReportViewer reportViewer2 = new ReportViewer();
             var reportSource2 = new Object();
+
+            // Build projection safely with null checks
             reportSource2 = calResultList
                     .Select(s => new
                     {
-                        NameDevice = s.IdDeviceNavigation?.Name,
-                        LOTCAL = s.IdCalDetailNavigation.IdCalInforNavigation.CalLot,
-                        NameTest = s.IdTestNavigation?.Name,
+                        NameDevice = s.IdDeviceNavigation?.Name ?? string.Empty,
+                        LOTCAL = s.IdCalDetailNavigation?.IdCalInforNavigation?.CalLot ?? string.Empty,
+                        NameTest = s.IdTestNavigation?.Name ?? string.Empty,
                         Level = s.Level,
                         Result = s.Result,
                         IndexCal = s.IndexCal,
-                        UserName = s.IdUserNavigation?.DisplayName,
+                        UserName = s.IdUserNavigation?.DisplayName ?? string.Empty,
                         DateRun = s.DateRun,
-                        Time = s.DateRun.Add(s.Time ?? TimeSpan.Zero).ToString("hh:mm:ss"),
+                        Time = (s.DateRun + (s.Time ?? TimeSpan.Zero)).ToString("hh:mm:ss"),
                         MinValue = s.IdCalDetailNavigation?.MinValue,
                         MaxValue = s.IdCalDetailNavigation?.MaxValue,
-                        Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name,
-                        Comment = s.Comment,
+                        Unit = s.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty,
+                        Comment = s.Comment ?? string.Empty,
                         CalResult = s.Result,
-                        CALName = s.IdCalDetailNavigation.IdCalInforNavigation.IdCalTypeNavigation.CalTypeName,
-                        ExpirationDate = s.IdCalDetailNavigation.IdCalInforNavigation.ExpirationDate,
-                       
+                        CALName = s.IdCalDetailNavigation?.IdCalInforNavigation?.IdCalTypeNavigation?.CalTypeName ?? string.Empty,
+                        ExpirationDate = s.IdCalDetailNavigation?.IdCalInforNavigation?.ExpirationDate,
                     })
                 .OrderBy(s => s.DateRun.Month)
                 .ThenBy(s => s.DateRun.Day)
                 .ToList();
-            
+
             reportViewer2.LocalReport.ReportEmbeddedResource = "QC_Management.Report.CALResultsReport.rdlc";
             reportViewer2.LocalReport.DataSources.Clear();
             reportViewer2.LocalReport.DataSources.Add(new ReportDataSource("DataSet1", reportSource2));

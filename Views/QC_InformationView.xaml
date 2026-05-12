@@ -264,7 +264,7 @@
                    Margin="5"
                    VerticalAlignment="Center"  
                    materialDesign:HintAssist.Hint="LOT"  
-                   Text="{Binding LOT}"
+                   Text="{Binding DetailLOT}"
                    AcceptsReturn="True"
                    Style="{StaticResource CompactOutlinedTextBox}"
                    TextWrapping="NoWrap" Width="120" />

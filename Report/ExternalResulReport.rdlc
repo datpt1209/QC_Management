@@ -1,0 +1,625 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Report xmlns="http://schemas.microsoft.com/sqlserver/reporting/2008/01/reportdefinition"
+        xmlns:rd="http://schemas.microsoft.com/SQLServer/reporting/reportdesigner">
+	<AutoRefresh>0</AutoRefresh>
+	<DataSources>
+		<DataSource Name="dsResult">
+			<ConnectionProperties>
+				<DataProvider>System.Data.DataSet</DataProvider>
+				<ConnectString />
+			</ConnectionProperties>
+			<rd:DataSourceID>2d7e7d55-1a8b-4f0c-9f2b-0f5a3b9c1a2b</rd:DataSourceID>
+		</DataSource>
+	</DataSources>
+
+	<DataSets>
+		<DataSet Name="dsResult">
+			<Fields>
+				<Field Name="ProgramName">
+					<DataField>ProgramName</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="Batch">
+					<DataField>Batch</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="DateSent">
+					<DataField>DateSent</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="ReceivedAt">
+					<DataField>ReceivedAt</DataField>
+					<rd:TypeName>System.DateTime</rd:TypeName>
+				</Field>
+				<Field Name="Sample">
+					<DataField>Sample</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="DeviceName">
+					<DataField>DeviceName</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="TestName">
+					<DataField>TestName</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="Unit">
+					<DataField>Unit</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="TempResult">
+					<DataField>TempResult</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="ReferenceValue">
+					<DataField>ReferenceValue</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="SigmaP">
+					<DataField>SigmaP</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="ZScore">
+					<DataField>ZScore</DataField>
+					<rd:TypeName>System.Double</rd:TypeName>
+				</Field>
+				<Field Name="Status">
+					<DataField>Status</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+				<Field Name="Notes">
+					<DataField>Notes</DataField>
+					<rd:TypeName>System.String</rd:TypeName>
+				</Field>
+			</Fields>
+			<Query>
+				<DataSourceName>dsResult</DataSourceName>
+				<CommandText />
+			</Query>
+		</DataSet>
+	</DataSets>
+
+	<Body>
+		<ReportItems>
+			<!-- Title -->
+			<Textbox Name="Title">
+				<CanGrow>true</CanGrow>
+				<KeepTogether>true</KeepTogether>
+				<Paragraphs>
+					<Paragraph>
+						<TextRuns>
+							<TextRun>
+								<Value>PHIẾU THEO DÕI VÀ ĐÁNH GIÁ KẾT QUẢ NGOẠI KIỂM TRA</Value>
+								<Style>
+									<FontSize>14pt</FontSize>
+									<FontWeight>Bold</FontWeight>
+								</Style>
+							</TextRun>
+						</TextRuns>
+						<Style/>
+					</Paragraph>
+				</Paragraphs>
+				<Top>0.1in</Top>
+				<Left>0in</Left>
+				<Width>7.5in</Width>
+				<Height>0.4in</Height>
+				<ZIndex>2</ZIndex>
+				<Style>
+					<TextAlign>Center</TextAlign>
+				</Style>
+			</Textbox>
+
+			<!-- Program header table -->
+			<Tablix Name="HeaderTable">
+				<TablixBody>
+					<TablixColumns>
+						<TablixColumn>
+							<Width>3.75in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>3.75in</Width>
+						</TablixColumn>
+					</TablixColumns>
+
+					<TablixRows>
+						<TablixRow>
+							<Height>0.25in</Height>
+							<TablixCells>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="ProgramNameBox">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!ProgramName.Value</Value>
+															<Style>
+																<FontSize>10pt</FontSize>
+															</Style>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="BatchBox">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>="Đợt: " &amp; Fields!Batch.Value</Value>
+															<Style>
+																<FontSize>10pt</FontSize>
+															</Style>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+							</TablixCells>
+						</TablixRow>
+						<TablixRow>
+							<Height>0.25in</Height>
+							<TablixCells>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="DateSentBox">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>="Ngày gửi kết quả: " &amp; Fields!DateSent.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="ReceivedAtBox">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>="Ngày nhận kết quả: " &amp; Format(Fields!ReceivedAt.Value, "dd/MM/yyyy")</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+							</TablixCells>
+						</TablixRow>
+					</TablixRows>
+				</TablixBody>
+
+				<TablixColumnHierarchy>
+					<TablixMembers>
+						<TablixMember/>
+						<TablixMember/>
+					</TablixMembers>
+				</TablixColumnHierarchy>
+				<TablixRowHierarchy>
+					<TablixMembers>
+						<TablixMember/>
+						<TablixMember/>
+					</TablixMembers>
+				</TablixRowHierarchy>
+
+				<Top>0.6in</Top>
+				<Left>0in</Left>
+				<Height>0.6in</Height>
+				<Width>7.5in</Width>
+			</Tablix>
+
+			<!-- Main table (grouped by DeviceName) -->
+			<Tablix Name="ResultsTable">
+				<TablixBody>
+					<TablixColumns>
+						<TablixColumn>
+							<Width>0.4in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>1.8in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>0.6in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>1.0in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>1.0in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>0.9in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>0.8in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>0.8in</Width>
+						</TablixColumn>
+						<TablixColumn>
+							<Width>1.4in</Width>
+						</TablixColumn>
+					</TablixColumns>
+
+					<TablixRows>
+						<!-- header row -->
+						<TablixRow>
+							<Height>0.28in</Height>
+							<TablixCells>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_STT">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>stt</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Test">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Tên thông số</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Unit">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Đơn vị</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Result">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Kết quả PXN</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Ref">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Giá trị ấn định</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Sigma">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>σp</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Z">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>z-score</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Status">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Đánh giá</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="H_Notes">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>Ghi chú</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+							</TablixCells>
+						</TablixRow>
+
+						<!-- data row -->
+						<TablixRow>
+							<Height>0.26in</Height>
+							<TablixCells>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_STT">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=RowNumber(Nothing)</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Test">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!TestName.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Unit">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!Unit.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Result">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!TempResult.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Ref">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!ReferenceValue.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Sigma">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!SigmaP.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Z">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=IIf(IsNothing(Fields!ZScore.Value), "", FormatNumber(Fields!ZScore.Value, 3))</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Status">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!Status.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+								<TablixCell>
+									<CellContents>
+										<Textbox Name="D_Notes">
+											<Paragraphs>
+												<Paragraph>
+													<TextRuns>
+														<TextRun>
+															<Value>=Fields!Notes.Value</Value>
+														</TextRun>
+													</TextRuns>
+													<Style/>
+												</Paragraph>
+											</Paragraphs>
+										</Textbox>
+									</CellContents>
+								</TablixCell>
+							</TablixCells>
+						</TablixRow>
+					</TablixRows>
+				</TablixBody>
+
+				<TablixColumnHierarchy>
+					<TablixMembers>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+						<TablixMember/>
+					</TablixMembers>
+				</TablixColumnHierarchy>
+
+				<!-- dataset binding -->
+				<DataSetName>dsResult</DataSetName>
+
+				<!-- simple grouping by DeviceName to show device blocks -->
+				<TablixRowHierarchy>
+					<TablixMembers>
+						<TablixMember>
+							<Group Name="DeviceGroup">
+								<GroupExpressions>
+									<GroupExpression>=Fields!DeviceName.Value</GroupExpression>
+								</GroupExpressions>
+							</Group>
+							<TablixMembers>
+								<TablixMember>
+									<TablixMembers>
+										<TablixMember/>
+									</TablixMembers>
+								</TablixMember>
+							</TablixMembers>
+						</TablixMember>
+					</TablixMembers>
+				</TablixRowHierarchy>
+
+				<Top>1.4in</Top>
+				<Left>0in</Left>
+				<Height>2.5in</Height>
+				<Width>7.5in</Width>
+			</Tablix>
+
+		</ReportItems>
+		<Height>4in</Height>
+	</Body>
+
+	<Width>8.5in</Width>
+
+	<Page>
+		<PageHeight>11in</PageHeight>
+		<PageWidth>8.5in</PageWidth>
+		<LeftMargin>0.25in</LeftMargin>
+		<RightMargin>0.25in</RightMargin>
+		<TopMargin>0.25in</TopMargin>
+		<BottomMargin>0.25in</BottomMargin>
+	</Page>
+
+	<rd:ReportUnitType>Inch</rd:ReportUnitType>
+	<rd:ReportID>b1a7c9e8-3d6f-4b3a-9e70-8a1f2c3d4e5f</rd:ReportID>
+</Report>

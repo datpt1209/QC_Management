@@ -122,22 +122,36 @@
                             Margin="2,0"
                             Background="Transparent"
                             BorderThickness="0"
+                            Is24Hours="True"
                             SelectedTime="{Binding SelectedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                            Style="{StaticResource MaterialDesignFloatingHintTimePicker}" />
+                            Style="{StaticResource MaterialDesignOutlinedTimePicker}" />
                     </Border>
-                    
-                    <!-- Index changed: display-only TextBox bound to SelectedIndexDisplay, non-editable and not focusable -->
-                    <TextBox
+
+                    <!-- Replace the display-only TextBox for index with this ComboBox (binds to IndexList / SelectedIndex).
+     SelectedIndex is already set to the last item in the VM when IndexList is built, and IsIndexSelectionEnabled
+     (set in LoadUsers) controls whether the control is enabled only for admins. -->
+                    <ComboBox
                         Margin="5"
                         Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}"
-                        Style="{StaticResource MaterialDesignOutlinedTextBox}"
+                        ItemsSource="{Binding IndexList}"
+                        SelectedItem="{Binding SelectedIndex, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="{Binding IsIndexSelectionEnabled}"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         Width="150" Height="50"
-                        Text="{Binding SelectedIndexDisplay, Mode=OneWay}"
-                        IsReadOnly="True"
-                        IsHitTestVisible="False"
-                        Focusable="False"
                         materialDesign:HintAssist.Hint="Lần QC" />
-                     </WrapPanel>
+                    <!-- NEW: User selection -->
+                    <ComboBox
+                        Margin="5"
+                        ItemsSource="{Binding UserList}"
+                        DisplayMemberPath="DisplayName"
+                        SelectedItem="{Binding SelectedUser, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                        IsEnabled="{Binding IsUserSelectionEnabled}"
+                        materialDesign:HintAssist.Hint="Người thực hiện"
+                        Style="{StaticResource MaterialDesignOutlinedComboBox}"
+                        Width="150" Height="50"
+                        ToolTip="{Binding SelectedUser.RoleNavigation.DisplayName}" />
+
+                </WrapPanel>
             </materialDesign:Card>
             <Grid Grid.Row="1">
                 <Grid.ColumnDefinitions>

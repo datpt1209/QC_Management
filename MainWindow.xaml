@@ -201,7 +201,7 @@
                                 </ListViewItem.ToolTip>
                             </ListViewItem>
 
-                            <!-- ListViewItem: Ngoại kiểm -->
+                            <!-- ListViewItem: Ngoại kiểm --><!--
                             <ListViewItem MouseEnter="ListViewItem_MouseEnter">
                                 <i:Interaction.Triggers>
                                     <i:EventTrigger EventName="Selected">
@@ -222,7 +222,7 @@
                                 <ListViewItem.ToolTip>
                                     <ToolTip Content="Nhập ngoại kiểm" Style="{StaticResource tt_style}"/>
                                 </ListViewItem.ToolTip>
-                            </ListViewItem>
+                            </ListViewItem>-->
 
                             <!-- QC Infor -->
                             <ListViewItem Visibility="{Binding Visibility1}" MouseEnter="ListViewItem_MouseEnter">
@@ -503,7 +503,14 @@
                             <materialDesign:PackIcon Kind="CardSearchOutline" Width="24" Height="24"/>
                         </Button>
 
-                        
+                        <!-- Ngoại kiểm - Kết quả-->
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+         Command="{Binding LoadExternalResultViewCommand}"
+         ToolTipService.ToolTip="Ngoại kiểm - Kết quả"
+         Margin="0,6">
+                            <materialDesign:PackIcon Kind="Database" Width="24" Height="24"/>
+                        </Button>
+
                         <!-- NEW: Quản lý Lỗi / Khắc phục (Incident Management) -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"
                                 Command="{Binding LoadIncidentManagementViewCommand}"
@@ -520,7 +527,6 @@
                                 Visibility="{Binding Visibility1}">
                             <materialDesign:PackIcon Kind="AlphaQBox" Width="24" Height="24"/>
                         </Button>
-
 
                         <!-- CAL Info -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"

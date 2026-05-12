@@ -23,7 +23,11 @@ namespace QC_Management.ViewModels
         public ObservableCollection<Result> List { get => _List; set { _List = value; OnPropertyChanged(); } }
 
         private ObservableCollection<ResultReView> _ResutlViewList;
-        public ObservableCollection<ResultReView>? ResutlViewList { get => _ResutlViewList; set { _ResutlViewList = value; OnPropertyChanged(); } }
+        public ObservableCollection<ResultReView> ResutlViewList
+        {
+            get => _ResutlViewList;
+            set { _ResutlViewList = value ?? new ObservableCollection<ResultReView>(); OnPropertyChanged(); }
+        }
 
         private ObservableCollection<CalResult>? _CalList;
         public ObservableCollection<CalResult>? CalList { get => _CalList; set { _CalList = value; OnPropertyChanged(); } }
@@ -33,8 +37,13 @@ namespace QC_Management.ViewModels
 
         private ObservableCollection<Device> _DeviceList;
         public ObservableCollection<Device> DeviceList { get => _DeviceList; set { _DeviceList = value; OnPropertyChanged(); } }
-        private List<int?> _IndexList;
-        public List<int?> IndexList { get => _IndexList; set { _IndexList = value; OnPropertyChanged(); } }
+        // replace the List<int?> IndexList declaration with ObservableCollection<int?>
+        private ObservableCollection<int?> _IndexList;
+        public ObservableCollection<int?> IndexList
+        {
+            get => _IndexList;
+            set { _IndexList = value ?? new ObservableCollection<int?>(); OnPropertyChanged(); }
+        }
 
         private List<LevelQc> _LevelList;
         public List<LevelQc> LevelList { get => _LevelList; set { _LevelList = value; OnPropertyChanged(); } }
@@ -115,11 +124,11 @@ namespace QC_Management.ViewModels
 
         }
 
-        private ObservableCollection<CalibInputViewModel> _CalibInputList;
+        private ObservableCollection<CalibInputViewModel>? _CalibInputList;
         public ObservableCollection<CalibInputViewModel>? CalibInputList
         {
             get => _CalibInputList;
-            set { _CalibInputList = value; OnPropertyChanged(); }
+            set { _CalibInputList = value ?? new ObservableCollection<CalibInputViewModel>(); OnPropertyChanged(); }
         }
 
         private int? _SelectedIndex;
@@ -161,7 +170,7 @@ namespace QC_Management.ViewModels
                 // Current rule: visible only when device name equals "UC" (case-insensitive).
                 // If you prefer "contains" or "starts with" (e.g. "UC-01"), change Equals to Contains/StartsWith.
                 if (_SelectedDevice != null && !string.IsNullOrWhiteSpace(_SelectedDevice.Name)
-                    && _SelectedDevice.Id==21)
+                    && _SelectedDevice.Id == 21)
                 {
                     ShowQualitative = Visibility.Visible;
                     WidthColum = 120;
@@ -289,10 +298,26 @@ namespace QC_Management.ViewModels
             }
         }
 
+        // --- User selection fields ---
+        private ObservableCollection<User> _UserList;
+        public ObservableCollection<User> UserList { get => _UserList; set { _UserList = value; OnPropertyChanged(); } }
+
+        private User _SelectedUser;
+        public User SelectedUser { get => _SelectedUser; set { _SelectedUser = value; OnPropertyChanged(); } }
+
+        private bool _isUserSelectionEnabled;
+        public bool IsUserSelectionEnabled { get => _isUserSelectionEnabled; set { _isUserSelectionEnabled = value; OnPropertyChanged(); } }
+        public bool IsIndexSelectionEnabled
+        {
+            get => _isIndexSelectionEnabled;
+            set { _isIndexSelectionEnabled = value; OnPropertyChanged(); }
+        }
         // --- Inserted fields and helper types ---
         private readonly object _historyCacheLock = new();
         private readonly Dictionary<(int testId, int deviceId), CacheEntry> _historyCache = new();
         private readonly TimeSpan _historyCacheTtl = TimeSpan.FromSeconds(30); // adjust TTL as needed
+                                                                               // enable/disable Index selection for admins
+        private bool _isIndexSelectionEnabled;
 
         private class CacheEntry
         {
@@ -431,7 +456,6 @@ namespace QC_Management.ViewModels
                         }
                     }
 
-                    IndexList = new List<int?>();
 
                     // Use a date range so we match any Result.DateRun on the selected day (time included)
                     var start = SelectedDate.Date;
@@ -445,15 +469,22 @@ namespace QC_Management.ViewModels
 
                     List = results;
 
-                    // Build index list from the already-filtered results (no direct DateRun equality)
-                    var indexList = results
-                        .GroupBy(s => s.IndexQc)
-                        .Select(s => s.Key).ToList();
+                    // inside the InputCommand QC path, replace the IndexList population with this (preserve surrounding code)
+                    IndexList = new ObservableCollection<int?>();
 
-                    if (indexList == null || indexList.Count() == 0)
+                    // Build index list from the already-filtered results (no direct DateRun equality)
+                    // filter out nulls, ensure a stable order and distinct values
+                    var indexList = results
+                        .Where(r => r.IndexQc.HasValue)
+                        .Select(r => r.IndexQc.Value)
+                        .Distinct()
+                        .OrderBy(i => i)
+                        .ToList();
+
+                    if (!indexList.Any())
                     {
                         IndexList.Add(1);
-                        SelectedIndex = (int)IndexList[IndexList.Count() - 1];
+                        SelectedIndex = IndexList.Last();
                     }
                     else
                     {
@@ -461,8 +492,10 @@ namespace QC_Management.ViewModels
                         {
                             IndexList.Add(item);
                         }
+
+                        // add next sequential index (max + 1)
                         IndexList.Add(indexList.Max() + 1);
-                        SelectedIndex = (int)IndexList[IndexList.Count() - 1];
+                        SelectedIndex = IndexList.Last();
                     }
 
                     ResutlViewList = new ObservableCollection<ResultReView>();
@@ -524,7 +557,7 @@ namespace QC_Management.ViewModels
                     {
                         MessageBox.Show("Lưu dữ liệu Calib thất bại. Vui lòng thử lại.", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
-                }       
+                }
                 else
                 {
                     isSaved = await SaveQC();
@@ -611,14 +644,15 @@ namespace QC_Management.ViewModels
         private void LoadCalGroup(QcManagmentContext DB)
         {
             var reCalResults = DB.ReCalResults.Include(s => s.IdTestNavigation).ToList();
+            // In LoadCalGroup(QcManagmentContext DB), fix CS8629 by providing a default value if IndexCal is null
             var groupedCalResults = reCalResults
                 .GroupBy(r => new { r.IdDevice, r.DateRun, r.IndexCal })
                 .Select(g => new CalGroup
                 {
                     DeviceName = DB.Devices.FirstOrDefault(d => d.Id == g.Key.IdDevice)?.Name ?? "Unknown Device",
-                    Index = (int)g.Key.IndexCal,
-                    DateRun = g.Key.DateRun.Value,
-                    Time = g.FirstOrDefault()?.Time ?? TimeSpan.Zero, // Lấy thời gian đầu tiên trong nhóm
+                    Index = g.Key.IndexCal ?? 1, // Fix: Use 0 if IndexCal is null
+                    DateRun = g.Key.DateRun ?? DateTime.MinValue, // Already handled
+                    Time = g.FirstOrDefault()?.Time ?? TimeSpan.Zero,
                     ReCalResults = new ObservableCollection<ReCalResult>(g.ToList())
                 })
                 .ToList();
@@ -660,7 +694,8 @@ namespace QC_Management.ViewModels
                     IdLevel = SelectedLevel.Id,
                     DateRun = combinedDateTime,
                     Time = combinedDateTime.TimeOfDay,
-                    IdUser = UserManager.Instance.CurrentUser.Id,
+                    // Use SelectedUser if set; otherwise fallback to logged-in user
+                    IdUser = SelectedUser?.Id ?? UserManager.Instance.CurrentUser.Id,
                     IndexQc = SelectedIndex,
                     IdControlDetail = item.IdControlDetailNavigation.Id,
                     IdControlDetailNavigation = item.IdControlDetailNavigation,
@@ -776,7 +811,8 @@ namespace QC_Management.ViewModels
                         Time = combinedDateTime.TimeOfDay,
                         Result = item.Result,
                         Comment = item.Comment,
-                        IdUser = UserManager.Instance.CurrentUser.Id,
+                        // Use SelectedUser if set; otherwise fallback to logged-in user
+                        IdUser = SelectedUser?.Id ?? UserManager.Instance.CurrentUser.Id,
                         IndexCal = 1, // Cần bổ sung logic nếu cần
                         isOutOfRange = item.IsOutRange ?? false
                     };
@@ -910,6 +946,8 @@ namespace QC_Management.ViewModels
         {
             DeviceList = new ObservableCollection<Device>(DB.Devices);
             CalTypeList = new ObservableCollection<CalType>(DB.CalTypes);
+            // Load users for the new UI ComboBox
+            LoadUsers(DB);
         }
 
         private void OpenResultDetailWindow()
@@ -936,7 +974,7 @@ namespace QC_Management.ViewModels
         private void ReLoad()
         {
             QcManagmentContext DB = DataProvider.Ins.DB;
-            IndexList = new List<int?>();
+            IndexList = new ObservableCollection<int?>();
             ResutlViewList = null;
             CalibInputList = null;
             SelectedLevel = null;
@@ -971,7 +1009,8 @@ namespace QC_Management.ViewModels
                 IdLevel = levelId,
                 DateRun = combinedDateTime,
                 Time = combinedDateTime.TimeOfDay,
-                IdUser = UserManager.Instance.CurrentUser.Id,
+                // Use SelectedUser if set; otherwise fallback to logged-in user
+                IdUser = SelectedUser?.Id ?? UserManager.Instance.CurrentUser.Id,
                 IndexQc = SelectedIndex,
                 IdControlDetail = item.IdControlDetailNavigation?.Id,
                 IdControlDetailNavigation = item.IdControlDetailNavigation,
@@ -1144,5 +1183,47 @@ namespace QC_Management.ViewModels
             var sameLevel = cross.Where(r => r.IdLevel == levelId).ToList();
             return (sameLevel, cross);
         }
+
+        // replace existing LoadUsers(...) with this implementation
+        private void LoadUsers(QcManagmentContext DB)
+        {
+            try
+            {
+                // include RoleNavigation so we can check DisplayName / IsAdmin info
+                var users = DB.Users.Include(u => u.RoleNavigation).ToList();
+                UserList = new ObservableCollection<User>(users);
+
+                var current = UserManager.Instance?.CurrentUser;
+                if (current != null)
+                {
+                    SelectedUser = UserList.FirstOrDefault(u => u.Id == current.Id) ?? current;
+                    IsUserSelectionEnabled = current.IsAdmin == true;
+
+                    // enable Index selection for admins only
+                    IsIndexSelectionEnabled = IsUserSelectionEnabled;
+                }
+                else
+                {
+                    SelectedUser = UserList.FirstOrDefault();
+                    IsUserSelectionEnabled = false;
+                    IsIndexSelectionEnabled = false;
+                }
+            }
+            catch
+            {
+                UserList = new ObservableCollection<User>();
+                SelectedUser = null;
+                IsUserSelectionEnabled = false;
+                IsIndexSelectionEnabled = false;
+            }
+        }
+
+        private bool IsCurrentUserAdmin(User user)
+        {
+            // Simple check: rely on IsAdmin set at login (or default false)
+            return user?.IsAdmin == true;
+        }
     }
-}
+
+}// new property (place near the other user-selection properties)
+

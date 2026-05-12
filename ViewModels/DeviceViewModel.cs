@@ -13,21 +13,25 @@ namespace QC_Management.ViewModels
 {
     public class DeviceViewModel : BaseViewModel
     {
-        private ObservableCollection<Device> _List;
+        // Initialize collections to avoid CS8618 and possible null refs
+        private ObservableCollection<Device> _List = new();
         public ObservableCollection<Device> List { get => _List; set { _List = value; OnPropertyChanged(); } }
-        private ObservableCollection<Device> _ListDB;
+
+        private ObservableCollection<Device> _ListDB = new();
         public ObservableCollection<Device> ListDB { get => _ListDB; set { _ListDB = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<Test> _TestList;
+        private ObservableCollection<Test> _TestList = new();
         public ObservableCollection<Test> TestList { get => _TestList; set { _TestList = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<DeviceTest> _DeviceTestList;
+        private ObservableCollection<DeviceTest> _DeviceTestList = new();
         public ObservableCollection<DeviceTest> DeviceTestList { get => _DeviceTestList; set { _DeviceTestList = value; OnPropertyChanged(); } }
-        private ObservableCollection<DeviceTest> _DeviceTestListDB;
+
+        private ObservableCollection<DeviceTest> _DeviceTestListDB = new();
         public ObservableCollection<DeviceTest> DeviceTestListDB { get => _DeviceTestListDB; set { _DeviceTestListDB = value; OnPropertyChanged(); } }
 
-        private ObservableCollection<Category> _CategoryList;
+        private ObservableCollection<Category> _CategoryList = new();
         public ObservableCollection<Category> CategorytList { get => _CategoryList; set { _CategoryList = value; OnPropertyChanged(); } }
+
         public ICommand AddCommand { get; set; }
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
@@ -38,8 +42,9 @@ namespace QC_Management.ViewModels
 
         public ICommand LoadedCommand { get; set; }
 
-        private Device _SelectedItem;
-        public Device SelectedItem
+        // Make selected items nullable to avoid CS8618 / CS8625
+        private Device? _SelectedItem;
+        public Device? SelectedItem
         {
             get => _SelectedItem;
             set
@@ -54,14 +59,18 @@ namespace QC_Management.ViewModels
 
                 // notify dependent view state
                 OnPropertyChanged(nameof(IsDeviceSelected));
+
+                // When a device is selected via binding, immediately update dependent state
+                // (populate DeviceTestList snapshot and set SelectedCategory).
+                HandleDeviceSelection();
             }
         }
 
         // Exposed convenience property that UI can bind to for visibility
         public bool IsDeviceSelected => SelectedItem != null;
 
-        private Category _SelectedCategory;
-        public Category SelectedCategory
+        private Category? _SelectedCategory;
+        public Category? SelectedCategory
         {
             get => _SelectedCategory;
             set
@@ -72,8 +81,8 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private DeviceTest _SelectedDeviceTest;
-        public DeviceTest SelectedDeviceTest
+        private DeviceTest? _SelectedDeviceTest;
+        public DeviceTest? SelectedDeviceTest
         {
             get => _SelectedDeviceTest;
             set
@@ -85,8 +94,8 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private Test _SelectedTest;
-        public Test SelectedTest
+        private Test? _SelectedTest;
+        public Test? SelectedTest
         {
             get => _SelectedTest;
             set
@@ -97,7 +106,7 @@ namespace QC_Management.ViewModels
             }
         }
 
-        private string _DisplayName;
+        private string _DisplayName = string.Empty;
         public string DisplayName { get => _DisplayName; set { _DisplayName = value; OnPropertyChanged(); } }
 
         // keep a snapshot of originally assigned Test Ids for the selected device
@@ -127,15 +136,15 @@ namespace QC_Management.ViewModels
         // UI shows only these main rules. Keys are machine keys saved in DB.
         private static readonly (string Key, string Display)[] _availableRules = new[]
         {
-            ("1_2S", "1-2S"),
-            ("1_3S", "1-3S"),
-            ("2_2S", "2-2S"),
-            ("R-4s", "R4S"),
-            ("10X", "10X"),
-            ("4_1S", "4-1S"),
-            // Add qualitative check option so users can opt-in to qualitative acceptance checks
-            ("QUAL", "Qualitative")
-        };
+                    ("1_2S", "1-2S"),
+                    ("1_3S", "1-3S"),
+                    ("2_2S", "2-2S"),
+                    ("R-4s", "R4S"),
+                    ("10X", "10X"),
+                    ("4_1S", "4-1S"),
+                    // Add qualitative check option so users can opt-in to qualitative acceptance checks
+                    ("QUAL", "Qualitative")
+                };
 
         private ObservableCollection<WestgardRuleItem> _CurrentDeviceTestWestgardRuleItems = new();
         public ObservableCollection<WestgardRuleItem> CurrentDeviceTestWestgardRuleItems
@@ -195,16 +204,17 @@ namespace QC_Management.ViewModels
             {
                 try
                 {
-                    // update device fields
-                    var deviceEditor = DataProvider.Ins.DB.Devices.Where(x => x.Id == SelectedItem.Id).SingleOrDefault();
+                    // update device fields using IDs only to avoid attaching navigation properties
+                    var deviceEditor = DataProvider.Ins.DB.Devices.Where(x => x.Id == SelectedItem!.Id).SingleOrDefault();
                     if (deviceEditor == null) throw new InvalidOperationException("Device not found in database.");
 
                     deviceEditor.Name = DisplayName;
+                    // only set FK to avoid tracking another Category instance
                     deviceEditor.IdCategory = SelectedCategory?.Id;
-                    deviceEditor.IdCategoryNavigation = SelectedCategory;
+                    // do NOT assign deviceEditor.IdCategoryNavigation = SelectedCategory; // avoid cross-context tracking
 
                     // sync DeviceTests:
-                    var currentTestIds = DeviceTestList.Select(d => d.IdTest).ToHashSet();
+                    var currentTestIds = DeviceTestList?.Select(d => d.IdTest).ToHashSet() ?? new HashSet<int>();
 
                     // find DB entries currently assigned to this device
                     var dbAssigned = DataProvider.Ins.DB.DeviceTests.Where(d => d.IdDevice == SelectedItem.Id).ToList();
@@ -217,22 +227,22 @@ namespace QC_Management.ViewModels
                     }
 
                     // to add: items in DeviceTestList where original snapshot did not contain the test id
-                    var toAdd = DeviceTestList.Where(d => !_originalAssignedTestIds.Contains(d.IdTest)).ToList();
+                    var toAdd = (DeviceTestList ?? new ObservableCollection<DeviceTest>()).Where(d => !_originalAssignedTestIds.Contains(d.IdTest)).ToList();
                     foreach (var add in toAdd)
                     {
                         var newDt = new DeviceTest
                         {
                             IdDevice = SelectedItem.Id,
-                            IdDeviceNavigation = SelectedItem,
+                            // Do NOT set IdDeviceNavigation = SelectedItem to avoid attaching SelectedItem from another context
                             IdTest = add.IdTest,
-                            IdTestNavigation = add.IdTestNavigation,
+                            // Do NOT set IdTestNavigation = add.IdTestNavigation
                             WestgardRulesJson = add.WestgardRulesJson // persist selection
                         };
                         DataProvider.Ins.DB.DeviceTests.Add(newDt);
                     }
 
                     // update existing db-assigned entries with any changed WestgardRulesJson
-                    var toUpdate = DeviceTestList.Where(d => d.Id != 0).ToList();
+                    var toUpdate = (DeviceTestList ?? new ObservableCollection<DeviceTest>()).Where(d => d.Id != 0).ToList();
                     foreach (var upd in toUpdate)
                     {
                         var dbDt = DataProvider.Ins.DB.DeviceTests.FirstOrDefault(x => x.Id == upd.Id);
@@ -278,12 +288,18 @@ namespace QC_Management.ViewModels
                 {
                     // Id left as 0 -> indicates new, not yet persisted
                     IdDevice = SelectedItem.Id,
-                    IdDeviceNavigation = SelectedItem,
+                    // Do not set IdDeviceNavigation (prevents cross-context tracking)
                     IdTest = SelectedTest.Id,
+                    // Provide navigation so UI can display the test name immediately
                     IdTestNavigation = SelectedTest
                 };
 
+                // Ensure collection is initialized
+                DeviceTestList ??= new ObservableCollection<DeviceTest>();
                 DeviceTestList.Add(deviceTest);
+
+                // select the newly added assigned test so rules panel updates
+                SelectedDeviceTest = deviceTest;
             });
 
             DeviceSelectionChangedCommand = new RelayCommand<Device>((p) =>
@@ -293,24 +309,8 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                // Build an in-memory copy of DB-assigned DeviceTests for the selected device.
-                var dbAssigned = DeviceTestListDB.Where(s => s.IdDevice == SelectedItem.Id).ToList();
-
-                // snapshot original assigned test ids to detect additions/removals on save
-                _originalAssignedTestIds = dbAssigned.Select(d => d.IdTest).ToList();
-
-                DeviceTestList = new ObservableCollection<DeviceTest>(dbAssigned.Select(d => new DeviceTest
-                {
-                    Id = d.Id,
-                    IdDevice = d.IdDevice,
-                    IdDeviceNavigation = d.IdDeviceNavigation,
-                    IdTest = d.IdTest,
-                    IdTestNavigation = d.IdTestNavigation,
-                    WestgardRulesJson = d.WestgardRulesJson
-                }));
-
-                // If navigation is not loaded, fall back to lookup from CategorytList
-                SelectedCategory = SelectedItem.IdCategoryNavigation ?? CategorytList?.FirstOrDefault(c => c.Id == SelectedItem.IdCategory);
+                // Use the same selection handling used by the SelectedItem setter
+                HandleDeviceSelection();
             });
 
             CategorySelectionChangedCommand = new RelayCommand<Device>((p) =>
@@ -319,20 +319,21 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                // Null-safe: if ListDB not loaded, avoid NRE
-                if (ListDB == null)
+                // If ListDB not loaded, show empty list (do not show devices before category chosen)
+                if (ListDB == null || ListDB.Count == 0)
                 {
                     List = new ObservableCollection<Device>();
                     return;
                 }
 
-                // If no category selected, show all devices
+                // If no category selected, do NOT show all devices — keep empty until user chooses a category
                 if (SelectedCategory == null)
                 {
-                    List = new ObservableCollection<Device>(ListDB);
+                    List = new ObservableCollection<Device>();
                     return;
                 }
 
+                // Show only devices for the selected category
                 List = new ObservableCollection<Device>(ListDB.Where(s => s.IdCategory == SelectedCategory.Id));
             });
 
@@ -345,7 +346,7 @@ namespace QC_Management.ViewModels
             {
                 // Remove from in-memory assigned list only. Persist removals on Save (EditCommand).
                 if (SelectedDeviceTest == null) return;
-                DeviceTestList.Remove(SelectedDeviceTest);
+                DeviceTestList?.Remove(SelectedDeviceTest);
             });
 
             // Initialize new commands
@@ -382,11 +383,12 @@ namespace QC_Management.ViewModels
                 using var db = new QcManagmentContext();
 
                 CategorytList = new ObservableCollection<Category>(db.Categories.AsNoTracking().ToList());
-                // Include category navigation so SelectedItem.IdCategoryNavigation is available after selection
+                // Load DB master list but do NOT show devices until a category is selected
                 ListDB = new ObservableCollection<Device>(db.Devices.Include(d => d.IdCategoryNavigation).AsNoTracking().ToList());
 
                 TestList = new ObservableCollection<Test>(db.Tests.AsNoTracking().ToList());
-                List = new ObservableCollection<Device>(ListDB);
+                // Start with empty visible list — user must select a category first
+                List = new ObservableCollection<Device>();
 
                 DeviceTestListDB = new ObservableCollection<DeviceTest>(
                     db.DeviceTests
@@ -397,6 +399,11 @@ namespace QC_Management.ViewModels
 
                 // clear any transient assigned list
                 DeviceTestList = new ObservableCollection<DeviceTest>();
+
+                // clear selection
+                SelectedCategory = null;
+                SelectedItem = null;
+                SelectedDeviceTest = null;
             }
             catch (Exception ex)
             {
@@ -408,6 +415,32 @@ namespace QC_Management.ViewModels
         {
             SelectedItem = null;
             OnPropertyChanged(nameof(IsDeviceSelected));
+        }
+
+        // CENTRALIZED: handle a device selection (used by SelectedItem setter and DeviceSelectionChangedCommand)
+        private void HandleDeviceSelection()
+        {
+            if (SelectedItem == null) return;
+
+            // Build an in-memory copy of DB-assigned DeviceTests for the selected device.
+            var dbAssigned = DeviceTestListDB.Where(s => s.IdDevice == SelectedItem!.Id).ToList();
+
+            // snapshot original assigned test ids to detect additions/removals on save
+            _originalAssignedTestIds = dbAssigned.Select(d => d.IdTest).ToList();
+
+            DeviceTestList = new ObservableCollection<DeviceTest>(dbAssigned.Select(d => new DeviceTest
+            {
+                Id = d.Id,
+                IdDevice = d.IdDevice,
+                // Keep navigation for display only (these are from DB cache loaded AsNoTracking)
+                IdDeviceNavigation = d.IdDeviceNavigation,
+                IdTest = d.IdTest,
+                IdTestNavigation = d.IdTestNavigation,
+                WestgardRulesJson = d.WestgardRulesJson
+            }));
+
+            // If navigation is not loaded, fall back to lookup from CategorytList
+            SelectedCategory = SelectedItem!.IdCategoryNavigation ?? CategorytList?.FirstOrDefault(c => c.Id == SelectedItem.IdCategory);
         }
 
         // Populate CurrentDeviceTestWestgardRuleItems from SelectedDeviceTest.WestgardRulesJson
@@ -459,17 +492,17 @@ namespace QC_Management.ViewModels
                 {
                     case "4_1S":
                         return stored.Overlaps(new[] {
-                            "4_1S (+) (L)", "4_1S (-) (L)", "4_1S (L)",
-                            "4_1S (+) (cross)", "4_1S (-) (cross)", "4_1S (cross)"
-                        });
+                                    "4_1S (+) (L)", "4_1S (-) (L)", "4_1S (L)",
+                                    "4_1S (+) (cross)", "4_1S (-) (cross)", "4_1S (cross)"
+                                });
                     case "10X":
                         return stored.Overlaps(new[] {
-                            "10X (+) (L)", "10X (-) (L)", "10X (+) (cross)", "10X (-) (cross)"
-                        });
+                                    "10X (+) (L)", "10X (-) (L)", "10X (+) (cross)", "10X (-) (cross)"
+                                });
                     case "2_2S":
                         return stored.Overlaps(new[] {
-                            "2_2S (+) (L)", "2_2S (-) (L)", "2_2S (+) (cross)", "2_2S (-) (cross)"
-                        });
+                                    "2_2S (+) (L)", "2_2S (-) (L)", "2_2S (+) (cross)", "2_2S (-) (cross)"
+                                });
                     case "R-4s":
                         return stored.Overlaps(new[] { "R-4s" });
                     case "1_2S":
@@ -616,7 +649,7 @@ namespace QC_Management.ViewModels
                 using var db = new QcManagmentContext();
 
                 // Load DeviceTest rows for this device with test navigation
-                var list = db.DeviceTests.Include(dt => dt.IdTestNavigation).Where(d => d.IdDevice == SelectedItem.Id).ToList();
+                var list = db.DeviceTests.Include(dt => dt.IdTestNavigation).Where(d => d.IdDevice == SelectedItem!.Id).ToList();
                 if (!list.Any())
                 {
                     MessageBox.Show("Không tìm thấy xét nghiệm nào gán cho thiết bị này.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);

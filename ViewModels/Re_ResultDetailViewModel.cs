@@ -43,6 +43,16 @@ namespace QC_Management.ViewModels
             }
         }
 
+        // --- User selection fields ---
+        private ObservableCollection<User> _UserList;
+        public ObservableCollection<User> UserList { get => _UserList; set { _UserList = value; OnPropertyChanged(); } }
+
+        private User _SelectedUser;
+        public User SelectedUser { get => _SelectedUser; set { _SelectedUser = value; OnPropertyChanged(); } }
+
+        private bool _isUserSelectionEnabled;
+        public bool IsUserSelectionEnabled { get => _isUserSelectionEnabled; set { _isUserSelectionEnabled = value; OnPropertyChanged(); } }
+
         private System.Windows.Window _window;
 
         private string _Comment;
@@ -232,6 +242,7 @@ namespace QC_Management.ViewModels
 
                     lock (_historyCacheLock)
                     {
+                    _history_cache_add:;
                         _historyCache[key] = entry;
                     }
                 }
@@ -263,6 +274,9 @@ namespace QC_Management.ViewModels
             {
                 try
                 {
+                    // Load users for combo box (defaults + enable state)
+                    LoadUsers();
+
                     DeviceName = reResultGroup.DeviceName;
                     LevelName = reResultGroup.LevelName;
                     IdLevel = reResultGroup.IdLevel;
@@ -417,7 +431,7 @@ namespace QC_Management.ViewModels
                             levey.IsOutRange = aggIsOutRange;
 
                             viewModelItem.isOutRange = levey.IsOutRange;
-                 
+
                             // store violated rules / error directly on the ResultReView
                             if (levey.ViolatedRules != null && levey.ViolatedRules.Count > 0)
                             {
@@ -479,18 +493,9 @@ namespace QC_Management.ViewModels
                         // find matching original ReResult by id (id was assigned during Load)
                         var original = Results?.FirstOrDefault(r => r.Id == item.id);
 
-                        // Use ReResult's date/time when available; otherwise use VM Date + Time (user-picked)
-                        DateTime runDate;
-                        if (original != null)
-                        {
-                            runDate = CombineDateAndTime(original.Date, original.Time);
-                        }
-                        else
-                        {
-                            // use form Date and Time (Time may be null) — avoid DateTime.Now here
-                            var timeSpan = Time ?? TimeSpan.Zero;
-                            runDate = CombineDateAndTime(Date, timeSpan);
-                        }
+                        // Always use the VM Date + Time (user-edited). This replaces prior behavior that used original.Date/time.
+                        var timeSpan = Time ?? TimeSpan.Zero;
+                        var runDate = CombineDateAndTime(Date, timeSpan);
 
                         // Determine index: if device is 1 or 2 and original ReResult provides an Index, use it.
                         // Otherwise use computed Index (same as before).
@@ -511,9 +516,10 @@ namespace QC_Management.ViewModels
                             IdTestNavigation = item.Test,
                             IdDevice = reResultGroup.IdDevice,
                             IdLevel = reResultGroup.IdLevel,
-                            DateRun = runDate, // <-- full date+time taken from ReResult when available
+                            DateRun = runDate, // <-- full date+time taken from VM Date + Time
                             Time = runDate.TimeOfDay,
-                            IdUser = UserManager.Instance.CurrentUser.Id,
+                            // Use SelectedUser if set; otherwise fallback to logged-in user
+                            IdUser = SelectedUser?.Id ?? UserManager.Instance.CurrentUser.Id,
                             IndexQc = targetIndex,
                             IdControlDetail = item.IdControlDetailNavigation.Id,
                             IdControlDetailNavigation = item.IdControlDetailNavigation,
@@ -894,6 +900,35 @@ namespace QC_Management.ViewModels
             {
                 // non-blocking: show minimal warning to keep UI responsive
                 MessageBox.Show($"Lỗi khi kiểm tra Westgard: {ex.Message}", "Cảnh báo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+
+        // Load users for the detail view; called from LoadCommand
+        private void LoadUsers()
+        {
+            try
+            {
+                var db = DataProvider.Ins.DB;
+                var users = db.Users.Include(u => u.RoleNavigation).ToList();
+                UserList = new ObservableCollection<User>(users);
+
+                var current = UserManager.Instance?.CurrentUser;
+                if (current != null)
+                {
+                    SelectedUser = UserList.FirstOrDefault(u => u.Id == current.Id) ?? current;
+                    IsUserSelectionEnabled = current.IsAdmin == true;
+                }
+                else
+                {
+                    SelectedUser = UserList.FirstOrDefault();
+                    IsUserSelectionEnabled = false;
+                }
+            }
+            catch
+            {
+                UserList = new ObservableCollection<User>();
+                SelectedUser = UserManager.Instance?.CurrentUser;
+                IsUserSelectionEnabled = UserManager.Instance?.CurrentUser?.IsAdmin == true;
             }
         }
     }

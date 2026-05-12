@@ -41,6 +41,16 @@ namespace QC_Management.ViewModels
             }
         }
 
+        // --- User selection fields ---
+        private ObservableCollection<User> _UserList;
+        public ObservableCollection<User> UserList { get => _UserList; set { _UserList = value; OnPropertyChanged(); } }
+
+        private User _SelectedUser;
+        public User SelectedUser { get => _SelectedUser; set { _SelectedUser = value; OnPropertyChanged(); } }
+
+        private bool _isUserSelectionEnabled;
+        public bool IsUserSelectionEnabled { get => _isUserSelectionEnabled; set { _isUserSelectionEnabled = value; OnPropertyChanged(); } }
+
         private System.Windows.Window _window;
 
         private string _Comment;
@@ -136,18 +146,19 @@ namespace QC_Management.ViewModels
                 return true;
             }, (p) =>
             {
+                // Load users for the combo box
+                LoadUsers(DataProvider.Ins.DB);
+
                 DeviceName = reCalResultGroup.DeviceName;
                 Date = reCalResultGroup.DateRun.Date;
                 Time = string.Format("{0:D2}:{1:D2}:{2:D2}", reCalResultGroup.Time.Hours, reCalResultGroup.Time.Minutes, reCalResultGroup.Time.Seconds);
                 CalResutlViewList = new ObservableCollection<ReCalResultReView>();
 
-                foreach (var reCalResult in ReCalResults) 
+                foreach (var reCalResult in ReCalResults)
                 {
-                    //CalResutlViewList.Add(reCalResult);
-
                     var calInforDetail = DataProvider.Ins.DB.CalDetails.Include(cd => cd.IdCalInforNavigation).Where(s => s.Status == true
                       && s.IdDevice == reCalResult.IdDevice
-                      && s.IdTest == reCalResult.IdTest).FirstOrDefault(); 
+                      && s.IdTest == reCalResult.IdTest).FirstOrDefault();
 
                     if (calInforDetail == null)
                     {
@@ -187,7 +198,7 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-              
+
                 var results = new ObservableCollection<CalResult>();
                 foreach (var item in CalResutlViewList)
                 {
@@ -201,7 +212,8 @@ namespace QC_Management.ViewModels
                             Level = (int)item.Level,
                             DateRun = Date.Date,
                             Time = DateTime.Now.TimeOfDay,
-                            IdUser = UserManager.Instance.CurrentUser.Id,
+                            // use SelectedUser if provided, otherwise fallback
+                            IdUser = SelectedUser?.Id ?? UserManager.Instance.CurrentUser.Id,
                             IndexCal = Index,
                             IdCalDetail = item.IdCalDetailNavigation.Id,
                             IdCalDetailNavigation = item.IdCalDetailNavigation,
@@ -223,6 +235,33 @@ namespace QC_Management.ViewModels
 
                 }
             });
+        }
+
+        private void LoadUsers(QcManagmentContext DB)
+        {
+            try
+            {
+                var users = DB.Users.Include(u => u.RoleNavigation).ToList();
+                UserList = new ObservableCollection<User>(users);
+
+                var current = UserManager.Instance?.CurrentUser;
+                if (current != null)
+                {
+                    SelectedUser = UserList.FirstOrDefault(u => u.Id == current.Id) ?? current;
+                    IsUserSelectionEnabled = current.IsAdmin == true;
+                }
+                else
+                {
+                    SelectedUser = UserList.FirstOrDefault();
+                    IsUserSelectionEnabled = false;
+                }
+            }
+            catch
+            {
+                UserList = new ObservableCollection<User>();
+                SelectedUser = UserManager.Instance?.CurrentUser;
+                IsUserSelectionEnabled = UserManager.Instance?.CurrentUser?.IsAdmin == true;
+            }
         }
 
         private async Task SaveAsync(ObservableCollection<CalResult> results)

@@ -7,7 +7,9 @@
              xmlns:local1="clr-namespace:QC_Management.Models"
              xmlns:local="clr-namespace:QC_Management.Views"
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" >
+             
+             d:DesignHeight="300" d:DesignWidth="300" 
+             d:DataContext="{d:DesignInstance local:CustomersTooltip}">
 
     <Grid>
         <Border 
