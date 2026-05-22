@@ -22,41 +22,41 @@ namespace QC_Management.ViewModels
         public ObservableCollection<Result> ResolvingResults { get; } = new();
 
         public ObservableCollection<string> ActionOptions { get; } = new()
-        {
-            "Rửa/ làm sạch",
-            "Đổi LOT",
-            "Hiệu chuẩn lại",
-            "Đào tạo nhân viên",
-            "Khác"
-        };
+            {
+                "Rửa/ làm sạch",
+                "Đổi LOT",
+                "Hiệu chuẩn lại",
+                "Đào tạo nhân viên",
+                "Khác"
+            };
 
         public ObservableCollection<string> CorrectiveActionOptions { get; } = new ObservableCollection<string>
-        {
-            "Rửa máy",
-            "Đổi LOT",
-            "Hiệu chuẩn lại",
-            "Thực hiện lại QC",
-            "Bảo trì thiết bị",
-            "Cập nhật Range mới",
-            "Thay thế phụ tùng",
-            "Cài đặt lại phần mềm",
-            "Đào tạo nhân viên",
-            "Thay đổi quy trình",
-            "Kiểm tra chất lượng LOT",
-            "Khác"
-        };
+            {
+                "Rửa máy",
+                "Đổi LOT",
+                "Hiệu chuẩn lại",
+                "Thực hiện lại QC",
+                "Bảo trì thiết bị",
+                "Cập nhật Range mới",
+                "Thay thế phụ tùng",
+                "Cài đặt lại phần mềm",
+                "Đào tạo nhân viên",
+                "Thay đổi quy trình",
+                "Kiểm tra chất lượng LOT",
+                "Khác"
+            };
 
         // Cause categories + details (you can extend this dictionary)
         private readonly Dictionary<string, List<string>> _causeDetails = new()
-        {
-            { "Thao tác", new List<string> { "Nhầm vị trí QC", "Nhầm nồng độ QC", "Không theo quy trình" } },
-            { "Thuốc thử / hóa chất", new List<string> { "Hết date", "Hết hạn Onboard", "Biến tính", "Còn ít", "Đổi LOT thuốc thử" } },
-            { "Mẫu QC", new List<string> { "Hòa nguyên không đúng", "Đổi LOT chưa cập nhật Range", "Hết Date","Mẫu QC còn ít" } },
-            { "Mẫu Calib", new List<string> {"Hoàn nguyên không đúng","Đổi LOT", "Hết Date", "Hết hạn Calib", "Mẫu Calib bị hư" } },
-            { "Thiết bị", new List<string> { "Bảo trì/Bảo dưỡng không đúng hạn", "Lỗi phần cứng", "Cần bảo trì" } },
-            { "Điều kiện môi trường", new List<string> { "Nhiệt độ/ độ ẩm không đạt", "Lỗi lọc nữa" } },
-            { "Khác", new List<string> { "Khác" } }
-        };
+            {
+                { "Thao tác", new List<string> { "Nhầm vị trí QC", "Nhầm nồng độ QC", "Không theo quy trình" } },
+                { "Thuốc thử / hóa chất", new List<string> { "Hết date", "Hết hạn Onboard", "Biến tính", "Còn ít", "Đổi LOT thuốc thử" } },
+                { "Mẫu QC", new List<string> { "Hòa nguyên không đúng", "Đổi LOT chưa cập nhật Range", "Hết Date","Mẫu QC còn ít" } },
+                { "Mẫu Calib", new List<string> {"Hoàn nguyên không đúng","Đổi LOT", "Hết Date", "Hết hạn Calib", "Mẫu Calib bị hư" } },
+                { "Thiết bị", new List<string> { "Bảo trì/Bảo dưỡng không đúng hạn", "Lỗi phần cứng", "Cần bảo trì" } },
+                { "Điều kiện môi trường", new List<string> { "Nhiệt độ/ độ ẩm không đạt", "Lỗi lọc nữa" } },
+                { "Khác", new List<string> { "Khác" } }
+            };
 
         // Category combo
         public ObservableCollection<string> CauseCategoryOptions { get; } = new ObservableCollection<string>();
@@ -157,6 +157,11 @@ namespace QC_Management.ViewModels
                     // fire-and-forget background load (will update UI when done)
                     _ = EnsureErroneousResultLoadedAsync(_selectedExistingIncident);
                 }
+
+                // Cập nhật IsQualitative khi user chọn lỗi khác
+                // TestType == 1 → định tính, 2 → định lượng
+                if (_selectedExistingIncident?.Test != null)
+                    IsQualitative = _selectedExistingIncident.Test.TestType == 1;
 
                 // If ControlInfoDetail navigation is not populated but id exists, load it (background)
                 if (_selectedExistingIncident != null && _selectedExistingIncident.ControlInfoDetail == null && _selectedExistingIncident.ControlInfoDetailId.HasValue)
@@ -471,9 +476,18 @@ namespace QC_Management.ViewModels
                 var s = SelectedExistingIncident;
                 if (s == null) return string.Empty;
 
-                // prefer ControlInfoDetail's current mean/sd, fallback to InternalError's stored mean/sd
-                var cid = s.ControlInfoDetail;
-                double? mean = cid?.CurMean ;
+                // Prefer ControlInfoDetail navigation, fallback to ErroneousResult's control detail
+                var cid = s.ControlInfoDetail ?? s.ErroneousResult?.IdControlDetailNavigation;
+                if (cid == null) return string.Empty;
+
+                // For qualitative tests show the qualitative mean/list if available
+                if (IsQualitative || !string.IsNullOrWhiteSpace(cid.QualitativeMean))
+                {
+                    return cid.QualitativeMean?.Trim() ?? string.Empty;
+                }
+
+                // Quantitative: mean ± 2*sd (existing behavior)
+                double? mean = cid?.CurMean;
                 double? sd = cid?.CurSd;
                 if (mean.HasValue && sd.HasValue)
                 {
@@ -591,6 +605,18 @@ namespace QC_Management.ViewModels
         {
             get
             {
+                // If qualitative, prefer showing qualitative-mean/list from available control detail
+                if (IsQualitative)
+                {
+                    var cid = SelectedExistingIncident?.ControlInfoDetail
+                              ?? SelectedExistingIncident?.ErroneousResult?.IdControlDetailNavigation
+                              ?? SelectedResolvingResult?.IdControlDetailNavigation;
+
+                    if (cid != null && !string.IsNullOrWhiteSpace(cid.QualitativeMean))
+                        return cid.QualitativeMean.Trim();
+                }
+
+                // Numeric range display (existing behavior)
                 if (RangeMin.HasValue || RangeMax.HasValue)
                 {
                     if (RangeMin.HasValue && RangeMax.HasValue)
@@ -599,6 +625,7 @@ namespace QC_Management.ViewModels
                         return RangeMin.Value.ToString("N2");
                     return RangeMax.Value.ToString("N2");
                 }
+
                 return string.Empty;
             }
         }
@@ -841,6 +868,15 @@ namespace QC_Management.ViewModels
         // New: id of corrective action being edited (when set, Save updates instead of creating)
         private readonly int? _editingCorrectiveActionId;
 
+        // true khi xét nghiệm định tính (TestType == 1) — ẩn range, không cần parse số
+        private bool _isQualitative;
+        public bool IsQualitative
+        {
+            get => _isQualitative;
+            private set { _isQualitative = value; OnPropertyChanged(); OnPropertyChanged(nameof(IsQuantitative)); }
+        }
+        public bool IsQuantitative => !_isQualitative;
+
         // Accept InternalError collection directly — no wrapper class
         public CorrectiveActionViewModel(
             DateTime? date = null,
@@ -854,8 +890,10 @@ namespace QC_Management.ViewModels
             IEnumerable<InternalError>? existingErrors = null,
             int? resolvingResultId = null,
             int? initialInternalErrorId = null,
-            int? editingCorrectiveActionId = null) // added parameter
+            int? editingCorrectiveActionId = null,
+            int? testType = null)  // 1 = định tính, 2 = định lượng
         {
+            IsQualitative = testType == 1;
             Date = date ?? DateTime.Now;
             Reporter = reporter ?? (UserManager.Instance?.CurrentUser?.DisplayName ?? "Unknown");
             DeviceName = deviceName ?? string.Empty;
@@ -876,7 +914,7 @@ namespace QC_Management.ViewModels
 
             if (existingErrors != null)
             {
-                foreach (var e  in existingErrors.OrderByDescending(x => x.CreatedAt).Take(200))
+                foreach (var e in existingErrors.OrderByDescending(x => x.CreatedAt).Take(200))
                     ExistingIncidents.Add(e);
                 if (_initialInternalErrorId.HasValue)
                     SelectedExistingIncident = ExistingIncidents.FirstOrDefault(i => i.Id == _initialInternalErrorId.Value);
@@ -995,8 +1033,12 @@ namespace QC_Management.ViewModels
                     if (resolving.Result1.HasValue)
                         ResultValue = resolving.Result1.Value.ToString("0.###");
                     else if (!string.IsNullOrWhiteSpace(resolving.TempResult))
-                        ResultValue = resolving.TempResult;
+                        ResultValue = resolving.TempResult; // định tính: chuỗi kết quả
                 }
+
+                // Cập nhật IsQualitative nếu biết TestType từ InternalError
+                if (ca.InternalError?.Test?.TestType != null)
+                    IsQualitative = ca.InternalError.Test.TestType == 1;
             }
             catch
             {
@@ -1006,12 +1048,44 @@ namespace QC_Management.ViewModels
 
         private void EvaluateCorrectiveResult()
         {
+            // Định tính: đánh giá bằng chuỗi so với qualitative mean list (if available)
+            if (IsQualitative)
+            {
+                if (string.IsNullOrWhiteSpace(ResultValue))
+                {
+                    IsCorrectiveResultInRange = null;
+                    MarkResolved = false;
+                    return;
+                }
+
+                var candidate = ResultValue.Trim();
+                bool accepted = false;
+
+                // prefer explicit control detail on selected incident
+                var cid = SelectedExistingIncident?.ControlInfoDetail ?? SelectedExistingIncident?.ErroneousResult?.IdControlDetailNavigation;
+                if (cid != null)
+                {
+                    try
+                    {
+                        accepted = cid.IsQualitativeResultAcceptable(candidate);
+                    }
+                    catch
+                    {
+                        accepted = false;
+                    }
+                }
+
+                IsCorrectiveResultInRange = accepted;
+                MarkResolved = IsCorrectiveResultInRange == true;
+                return;
+            }
+
+            // Quantitative path (existing behavior)
             bool? newVal = null;
 
             if (string.IsNullOrWhiteSpace(ResultValue))
             {
                 IsCorrectiveResultInRange = null;
-                // when we cannot determine, ensure checkbox is unchecked
                 MarkResolved = false;
                 return;
             }
@@ -1037,22 +1111,63 @@ namespace QC_Management.ViewModels
             }
 
             IsCorrectiveResultInRange = newVal;
-            // update checkbox: check only when explicitly in-range; otherwise uncheck
             MarkResolved = IsCorrectiveResultInRange == true;
         }
 
-        // Evaluate the currently selected resolving result (SelectedResolvingResult).
-        // Uses Result1 if present, otherwise tries to parse TempResult.
+        // Replace the existing EvaluateResolvingResult method with this updated version.
         private void EvaluateResolvingResult()
         {
             var r = SelectedResolvingResult;
             if (r == null)
             {
-                // no selection -> fall back to evaluating the manual ResultValue textbox
                 EvaluateCorrectiveResult();
                 return;
             }
 
+            // If the selected resolving Result is explicitly marked out-of-range or has a Westgard violation,
+            // treat the corrective outcome as "not achieved" immediately.
+            if (r.IsOutRange == true || !string.IsNullOrWhiteSpace(r.WestgardRule))
+            {
+                // Reflect the resolving result value in the UI
+                if (IsQualitative)
+                    ResultValue = r.TempResult ?? string.Empty;
+                else
+                    ResultValue = r.Result1.HasValue ? r.Result1.Value.ToString("0.###") : (r.TempResult ?? string.Empty);
+
+                IsCorrectiveResultInRange = false;
+                MarkResolved = false;
+                return;
+            }
+
+            // Qualitative path: use TempResult and the control detail acceptance list
+            if (IsQualitative)
+            {
+                if (!string.IsNullOrWhiteSpace(r.TempResult))
+                    ResultValue = r.TempResult;
+                else
+                    ResultValue = string.Empty;
+
+                bool accepted = false;
+                // prefer resolving result's control detail if present, fallback to selected incident control detail
+                var cid = r.IdControlDetailNavigation ?? SelectedExistingIncident?.ControlInfoDetail ?? SelectedExistingIncident?.ErroneousResult?.IdControlDetailNavigation;
+                if (cid != null && !string.IsNullOrWhiteSpace(r.TempResult))
+                {
+                    try
+                    {
+                        accepted = cid.IsQualitativeResultAcceptable(r.TempResult.Trim());
+                    }
+                    catch
+                    {
+                        accepted = false;
+                    }
+                }
+
+                IsCorrectiveResultInRange = accepted ? true : (bool?)false;
+                MarkResolved = IsCorrectiveResultInRange == true;
+                return;
+            }
+
+            // Numeric path
             double? numeric = null;
 
             if (r.Result1.HasValue)
@@ -1061,14 +1176,12 @@ namespace QC_Management.ViewModels
             }
             else if (!string.IsNullOrWhiteSpace(r.TempResult))
             {
-                // try parse TempResult
                 if (double.TryParse(r.TempResult.Trim(), NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.CurrentCulture, out var parsed))
                     numeric = parsed;
             }
 
             if (!numeric.HasValue)
             {
-                // cannot determine numeric value -> set unknown and uncheck
                 IsCorrectiveResultInRange = null;
                 MarkResolved = false;
                 return;
@@ -1151,12 +1264,6 @@ namespace QC_Management.ViewModels
                         return;
                     }
 
-                    if (MarkResolved)
-                    {
-                        internalError.IsResolved = true;
-                        internalError.Status = "Hoàn thành";
-                    }
-
                     // update WestgardDescription as before
                     internalError.WestgardDescription = string.IsNullOrWhiteSpace(internalError.WestgardDescription) ? LeveyJenningsError : internalError.WestgardDescription;
 
@@ -1167,9 +1274,14 @@ namespace QC_Management.ViewModels
 
                     internalError.Cause = causeToSave ?? internalError.Cause;
 
+                    // DO NOT mark internal error resolved here — decide after CA save based on whether CA is completed.
                     db.InternalErrors.Update(internalError);
 
                     CorrectiveAction caEntity;
+
+                    // decide whether corrective action is considered completed:
+                    // MarkResolved may be set by UI, or IsCorrectiveResultInRange may be true from evaluation.
+                    bool caCompleted = MarkResolved || (IsCorrectiveResultInRange == true);
 
                     if (_editingCorrectiveActionId.HasValue)
                     {
@@ -1189,8 +1301,10 @@ namespace QC_Management.ViewModels
                                                     : (SelectedAction != null && SelectedAction != "Khác" ? SelectedAction : caEntity.ActionDescription);
 
                         caEntity.ActionOwner = SelectedResolvingResult?.IdUserNavigation?.DisplayName ?? Reporter;
-                        caEntity.ActionCompletedAt = SelectedResolvingResult?.DateRun ?? (MarkResolved ? (DateTime?)DateTime.Now : null);
-                        caEntity.Outcome = MarkResolved ? "Hoàn thành" : "Chưa hoàn thành";
+
+                        // Only set ActionCompletedAt when corrective action is considered completed.
+                        caEntity.ActionCompletedAt = caCompleted ? (SelectedResolvingResult?.DateRun ?? (DateTime?)DateTime.Now) : null;
+                        caEntity.Outcome = caCompleted ? "Hoàn thành" : "Chưa hoàn thành";
                         caEntity.PreventiveAction = !string.IsNullOrWhiteSpace(PreventiveAction) ? PreventiveAction : caEntity.PreventiveAction;
 
                         // Ensure CreatedAt reflects the internal error timestamp (per request)
@@ -1202,7 +1316,7 @@ namespace QC_Management.ViewModels
                     }
                     else
                     {
-                        // create new corrective action (existing behavior) but populate fields from SelectedResolvingResult when available
+                        // create new corrective action (existing behavior) but only mark completed when appropriate
                         var ca = new CorrectiveAction
                         {
                             InternalErrorId = internalError.Id,
@@ -1214,9 +1328,9 @@ namespace QC_Management.ViewModels
                                                 : (SelectedAction != null && SelectedAction != "Khác" ? SelectedAction : null),
                             // Prefer resolving result's actor if a resolving result is selected; otherwise use Reporter
                             ActionOwner = SelectedResolvingResult?.IdUserNavigation?.DisplayName ?? Reporter,
-                            // Prefer resolving result's DateRun for ActionCompletedAt if provided; otherwise use MarkResolved flag/time
-                            ActionCompletedAt = SelectedResolvingResult?.DateRun ?? (MarkResolved ? (DateTime?)DateTime.Now : null),
-                            Outcome = MarkResolved ? "Hoàn thành" : "Chưa hoàn thành",
+                            // Only set ActionCompletedAt when corrective action is considered completed.
+                            ActionCompletedAt = caCompleted ? (SelectedResolvingResult?.DateRun ?? (DateTime?)DateTime.Now) : null,
+                            Outcome = caCompleted ? "Hoàn thành" : "Chưa hoàn thành",
                             // CreatedAt: use the internal error's CreatedAt so CA matches the error timestamp
                             CreatedAt = internalError.CreatedAt,
                             CreatedBy = Reporter,
@@ -1228,15 +1342,22 @@ namespace QC_Management.ViewModels
                         savedCaId = ca.Id;
                     }
 
+                    // Update erroneous result corrected flag only if there is an erroneous result reference.
                     if (internalError.ErroneousResultId.HasValue)
                     {
                         var erroneous = await db.Results.FirstOrDefaultAsync(r => r.Id == internalError.ErroneousResultId.Value);
                         if (erroneous != null)
                         {
-                            erroneous.IsCorrected = true;
+                            // Set to true when CA completed, otherwise keep flagged as not-corrected (false).
+                            erroneous.IsCorrected = caCompleted ? (bool?)true : (bool?)false;
                             db.Results.Update(erroneous);
                         }
                     }
+
+                    // Reflect internal error resolved status based on whether CA was completed.
+                    internalError.IsResolved = caCompleted;
+                    internalError.Status = caCompleted ? "Hoàn thành" : "Đang chờ";
+                    db.InternalErrors.Update(internalError);
 
                     await db.SaveChangesAsync();
                 } // dispose DB

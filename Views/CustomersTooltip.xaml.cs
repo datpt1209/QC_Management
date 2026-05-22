@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System;
 using QC_Management.Models;
+using QC_Management.ViewModels;
 using System.Windows;
 
 
@@ -71,14 +72,29 @@ namespace QC_Management.Views
         {
             get
             {
-                if (_data == null)
+                if (_data == null) yield break;
+
+                var interestingTitles = new[] { "result", "excluded" };
+
+                foreach (var point in _data.Points.Where(p => interestingTitles.Contains(p.Series?.Title)))
                 {
-                    yield break; // End the iteration if _data is null
-                }
-                foreach (var point in _data.Points.Where(p => p.Series.Title == "result"))
-                {
-                    // Map DataPointViewModel to TooltipDisplayModel
-                    var result = point.ChartPoint.Instance as Result;
+                    var chartPoint = point.ChartPoint;
+                    if (chartPoint == null) continue;
+
+                    Result result = null;
+
+                    // Trường hợp 1: điểm bình thường — Instance là Result
+                    result = chartPoint.Instance as Result;
+
+                    // Trường hợp 2: điểm excluded — Instance là ExcludedResult
+                    if (result == null)
+                    {
+                        var ex = chartPoint.Instance as HomeViewModel_V2.ExcludedResult;
+                        result = ex?.Source;
+                    }
+
+                    if (result == null) continue;
+
                     var detail = result.IdControlDetailNavigation;
                     yield return new TooltipDisplayModel
                     {
@@ -87,7 +103,6 @@ namespace QC_Management.Views
                         Result1 = result.Result1,
                         Time = result.Time,
                         WestgardErrors = result.WestgardRule
-
                     };
                 }
             }

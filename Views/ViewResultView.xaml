@@ -166,7 +166,7 @@
                   GridLinesVisibility="None"
                   BorderThickness="0"
                   HorizontalGridLinesBrush="Transparent"
-                  VerticalGridLinesBrush="Transparent">
+                  VerticalGridLinesBrush="Transparent" >
 
                         <DataGrid.Style>
                             <Style TargetType="DataGrid">
@@ -349,6 +349,29 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
+
+                            <!-- New Exclude column -->
+                            <DataGridCheckBoxColumn Header="Loại trừ" CanUserResize="False" Width="0.6*" Binding="{Binding IsExclude, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Style.Triggers>
+                                            <!-- When grid is editable, allow interaction -->
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}" Value="False">
+                                                <Setter Property="IsHitTestVisible" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                                <DataGridCheckBoxColumn.EditingElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.EditingElementStyle>
+                            </DataGridCheckBoxColumn>
 
                             <!-- Combined Actions column: status icon + delete -->
                             <DataGridTemplateColumn Header="Actions" CanUserResize="False" Width="1.6*">

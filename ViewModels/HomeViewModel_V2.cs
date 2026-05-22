@@ -1,5 +1,4 @@
-﻿// (full file - only ViewChart start and ClearAllChartData changed as described)
-using LiveCharts;
+﻿using LiveCharts;
 using LiveCharts.Configurations;
 using LiveCharts.Defaults;
 using LiveCharts.Wpf;
@@ -290,11 +289,11 @@ namespace QC_Management.ViewModels
         public DateTime EndDate { get => _EndDate; set { _EndDate = value; OnPropertyChanged(); } }
 
         public ObservableCollection<string> FilterOptions { get; set; } = new()
-         {
-             "Nhà sản xuât",
-             "Đang sử dụng",
-             "Thống kê"
-         };
+             {
+                 "Nhà sản xuât",
+                 "Đang sử dụng",
+                 "Thống kê"
+             };
 
         private double _chartHeight = 300; // Default value
         public double ChartHeight
@@ -360,7 +359,9 @@ namespace QC_Management.ViewModels
 
             // Fix ④: Đăng ký mapper 1 lần duy nhất tại đây, không đăng ký lại trong ViewChart()
             var mapper = Mappers.Xy<Result>()
-                .X((value, index) => index)
+                // Use per-result ChartIndex when present so compact (non-excluded) series
+                // can be placed at their original X positions.
+                .X((value, index) => value.ChartIndex.HasValue ? value.ChartIndex.Value : index)
                 .Y(value =>
                 {
                     if (!value.ZScore.HasValue) return 0;
@@ -371,6 +372,14 @@ namespace QC_Management.ViewModels
                 .Fill((value, index) => (value.IsOutRange == true) ? Brushes.Red : null)
                 .Stroke((value, index) => (value.IsOutRange == true) ? Brushes.Red : Brushes.Transparent);
             Charting.For<Result>(mapper, SeriesOrientation.Horizontal);
+
+            // Mapper cho ExcludedResult wrapper — X = OriginalIndex gốc, có tooltip qua Source
+            var exMapper = Mappers.Xy<ExcludedResult>()
+                .X((v, _) => v.OriginalIndex)
+                .Y(v => ClampZScore(v.Source.ZScore))
+                .Fill((v, _) => Brushes.Transparent)
+                .Stroke((v, _) => Brushes.DimGray);   // màu outline của dấu X
+            Charting.For<ExcludedResult>(exMapper, SeriesOrientation.Horizontal);
 
             LoadedCommand = new RelayCommand<Test>((p) =>
             {
@@ -409,7 +418,8 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var results = List.ToList();
+                // report must exclude IsExclude==true
+                var results = List.Where(r => r.IsExclude != true).ToList();
                 ReportView rp = new ReportView(results, SelectedFilterOptions);
                 rp.ShowDialog();
 
@@ -461,8 +471,8 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                // Thiết lập dữ liệu cho báo cáo
-                var results = List.ToList();
+                // Charts report must exclude IsExclude==true
+                var results = List.Where(r => r.IsExclude != true).ToList();
                 ChartReportView rp = new ChartReportView(results, SelectedFilterOptions);
                 rp.ShowDialog();
 
@@ -689,7 +699,7 @@ namespace QC_Management.ViewModels
                                && s.IdDevice == SelectedDevice.Id
                                && s.IdTest == SelectedTest.Id
                                && s.DateRun.Date >= StartDate.Date
-                               && s.DateRun.Date <= EndDate.Date)
+                               && s.DateRun.Date <= EndDate.Date) // DO NOT filter IsExclude here — we want excluded points to appear on charts with special marker
                     .OrderBy(s => s.DateRun.Year)
                     .ThenBy(s => s.DateRun.Month)
                     .ThenBy(s => s.DateRun.Day)
@@ -877,410 +887,6 @@ namespace QC_Management.ViewModels
             };
         }
 
-        //private async Task ViewChart(ObservableCollection<Result> results, CancellationToken token = default)
-        //{
-        //    Application.Current.Dispatcher.Invoke(() =>
-        //    {
-        //        Visibility1 = Visibility.Collapsed;
-        //        Visibility2 = Visibility.Collapsed;
-        //        Visibility3 = Visibility.Collapsed;
-        //        Visibility4 = Visibility.Collapsed;
-
-        //        // Replace ChartValues instances (do not Clear) to avoid LiveCharts keeping old refs
-        //        ChartValues1 = new ChartValues<Result>();
-        //        ChartValues2 = new ChartValues<Result>();
-        //        ChartValues3 = new ChartValues<Result>();
-        //        ChartValues4 = new ChartValues<Result>();
-
-        //        // Reset SD/mean line collections too
-        //        MeanValues1 = new ChartValues<double>();
-        //        MeanValues2 = new ChartValues<double>();
-        //        MeanValues3 = new ChartValues<double>();
-        //        MeanValues4 = new ChartValues<double>();
-
-        //        PlusOneSDValues1 = new ChartValues<double>();
-        //        PlusOneSDValues2 = new ChartValues<double>();
-        //        PlusOneSDValues3 = new ChartValues<double>();
-        //        PlusOneSDValues4 = new ChartValues<double>();
-
-        //        MinusOneSDValues1 = new ChartValues<double>();
-        //        MinusOneSDValues2 = new ChartValues<double>();
-        //        MinusOneSDValues3 = new ChartValues<double>();
-        //        MinusOneSDValues4 = new ChartValues<double>();
-
-        //        PlusTwoSDValues1 = new ChartValues<double>();
-        //        PlusTwoSDValues2 = new ChartValues<double>();
-        //        PlusTwoSDValues3 = new ChartValues<double>();
-        //        PlusTwoSDValues4 = new ChartValues<double>();
-
-        //        MinusTwoSDValues1 = new ChartValues<double>();
-        //        MinusTwoSDValues2 = new ChartValues<double>();
-        //        MinusTwoSDValues3 = new ChartValues<double>();
-        //        MinusTwoSDValues4 = new ChartValues<double>();
-
-        //        PlusThreeSDValues1 = new ChartValues<double>();
-        //        PlusThreeSDValues2 = new ChartValues<double>();
-        //        PlusThreeSDValues3 = new ChartValues<double>();
-        //        PlusThreeSDValues4 = new ChartValues<double>();
-
-        //        MinusThreeSDValues1 = new ChartValues<double>();
-        //        MinusThreeSDValues2 = new ChartValues<double>();
-        //        MinusThreeSDValues3 = new ChartValues<double>();
-        //        MinusThreeSDValues4 = new ChartValues<double>();
-
-        //        // SeriesCollection rỗng (không null) → LiveCharts render blank ngay
-        //        SeriesCollection1 = new SeriesCollection();
-        //        SeriesCollection2 = new SeriesCollection();
-        //        SeriesCollection3 = new SeriesCollection();
-        //        SeriesCollection4 = new SeriesCollection();
-        //    });
-
-        //    await Task.Yield();
-        //    if (token.IsCancellationRequested) return;
-
-        //    IsLoading = true;
-        //    HasNoData = false;  // reset each time
-        //    InitializeYAxisLabelFormatter();
-
-        //    try
-        //    {
-        //        if (token.IsCancellationRequested) return;
-
-        //        if (SelectedDevice == null || SelectedTest == null)
-        //        {
-        //            IsLoading = false;
-        //            return;
-        //        }
-
-        //        if (results == null || !results.Any())
-        //        {
-        //            HasNoData = true;
-        //            IsLoading = false;
-        //            return;
-        //        }
-
-        //        HasNoData = false;
-        //        var levelList = results.GroupBy(s => s.IdLevel).ToList();
-
-        //        await Task.Run(() =>
-        //        {
-        //            foreach (var resultByLevel in levelList)
-        //            {
-        //                // Nếu user đã chọn xét nghiệm mới → hủy ngay, không render gì nữa
-        //                if (token.IsCancellationRequested) return;
-
-        //                var result = LoadChart1(resultByLevel);
-        //                var chartValues = result.Item1;
-        //                var visibility = result.Item2;
-        //                var dates = result.Item3;
-        //                var firstResult = resultByLevel.FirstOrDefault();
-
-        //                const int TRAILING_PADDING = 3;
-        //                float cmPerPoint = 2.0f;
-        //                float pixelsPerPoint = CmToPixels(cmPerPoint);
-        //                int numberOfPoints = chartValues.Count;
-        //                float totalWidth = pixelsPerPoint * numberOfPoints;
-        //                int minPointsForScreen = Math.Max((int)Math.Ceiling(ChartAreaWidth / pixelsPerPoint), numberOfPoints);
-        //                int sdLineCount = minPointsForScreen + TRAILING_PADDING;
-        //                float effectiveWidth = Math.Max(totalWidth, (float)ChartAreaWidth);
-
-        //                var meanValues = new ChartValues<double>(Enumerable.Repeat(0.0, sdLineCount));
-        //                var plusOneSDValues = new ChartValues<double>(Enumerable.Repeat(1.0, sdLineCount));
-        //                var minusOneSDValues = new ChartValues<double>(Enumerable.Repeat(-1.0, sdLineCount));
-        //                var plusTwoSDValues = new ChartValues<double>(Enumerable.Repeat(2.0, sdLineCount));
-        //                var minusTwoSDValues = new ChartValues<double>(Enumerable.Repeat(-2.0, sdLineCount));
-        //                var plusThreeSDValues = new ChartValues<double>(Enumerable.Repeat(3.0, sdLineCount));
-        //                var minusThreeSDValues = new ChartValues<double>(Enumerable.Repeat(-3.0, sdLineCount));
-
-        //                if (firstResult != null && firstResult.IdControlDetailNavigation != null)
-        //                {
-        //                    string levelName = firstResult.IdLevelNavigation?.Name ?? "";
-        //                    double? mean = null;
-        //                    double? sd = null;
-        //                    switch (SelectedFilterOptions)
-        //                    {
-        //                        case "Nhà sản xuât":
-        //                            mean = firstResult.IdControlDetailNavigation.MeanNsx;
-        //                            sd = firstResult.IdControlDetailNavigation.SdNsx;
-        //                            break;
-        //                        case "Đang sử dụng":
-        //                            mean = firstResult.IdControlDetailNavigation.CurMean;
-        //                            sd = firstResult.IdControlDetailNavigation.CurSd;
-        //                            break;
-        //                        case "Thống kê":
-        //                            mean = firstResult.IdControlDetailNavigation.MeanApp;
-        //                            sd = firstResult.IdControlDetailNavigation.SdApp;
-        //                            break;
-        //                    }
-
-        //                    var boundaryIndices = new List<int>();
-        //                    double tol = 1e-6;
-        //                    if (chartValues.Count > 0)
-        //                    {
-        //                        int prevControlId = chartValues[0].IdControlDetail ?? -1;
-        //                        double? prevAppliedMean = chartValues[0].AppliedMean;
-        //                        double? prevAppliedSd = chartValues[0].AppliedSd;
-        //                        for (int i = 1; i < chartValues.Count; i++)
-        //                        {
-        //                            if (token.IsCancellationRequested) return;
-
-        //                            var cur = chartValues[i];
-        //                            int curControlId = cur.IdControlDetail ?? -1;
-        //                            double? curAppliedMean = cur.AppliedMean;
-        //                            double? curAppliedSd = cur.AppliedSd;
-
-        //                            bool controlChanged = curControlId != prevControlId;
-
-        //                            bool appliedMeanChanged = false;
-        //                            if (prevAppliedMean.HasValue != curAppliedMean.HasValue)
-        //                            {
-        //                                appliedMeanChanged = true;
-        //                            }
-        //                            else if (prevAppliedMean.HasValue && curAppliedMean.HasValue)
-        //                            {
-        //                                if (Math.Abs(prevAppliedMean.Value - curAppliedMean.Value) > tol) appliedMeanChanged = true;
-        //                            }
-
-        //                            bool appliedSdChanged = false;
-        //                            if (prevAppliedSd.HasValue != curAppliedSd.HasValue)
-        //                            {
-        //                                appliedSdChanged = true;
-        //                            }
-        //                            else if (prevAppliedSd.HasValue && curAppliedSd.HasValue)
-        //                            {
-        //                                if (Math.Abs(prevAppliedSd.Value - curAppliedSd.Value) > tol) appliedSdChanged = true;
-        //                            }
-
-        //                            if (controlChanged || appliedMeanChanged || appliedSdChanged)
-        //                            {
-        //                                boundaryIndices.Add(i);
-        //                                prevControlId = curControlId;
-        //                                prevAppliedMean = curAppliedMean;
-        //                                prevAppliedSd = curAppliedSd;
-        //                            }
-        //                        }
-        //                    }
-
-        //                    var separators = boundaryIndices.Where(idx => idx > 0).Select(idx => idx - 0.5).ToList();
-
-        //                    // Kiểm tra lần cuối trước khi ghi lên UI
-        //                    if (token.IsCancellationRequested) return;
-
-        //                    Application.Current.Dispatcher.Invoke(() =>
-        //                    {
-        //                        // Nếu bị cancel trong lúc chờ Dispatcher → bỏ qua
-        //                        if (token.IsCancellationRequested) return;
-
-        //                        switch (resultByLevel.Key)
-        //                        {
-        //                            case 1:
-        //                            case 4:
-        //                            case 7:
-        //                                LevelName1 = levelName;
-        //                                Mean1 = mean;
-        //                                SD1 = sd;
-        //                                Range1 = $"{(mean - 2 * sd):F2}  -  {(mean + 2 * sd):F2}";
-        //                                TotalPoints1 = $"{chartValues.Count}";
-        //                                MeanValues1 = meanValues;
-        //                                PlusOneSDValues1 = plusOneSDValues;
-        //                                MinusOneSDValues1 = minusOneSDValues;
-        //                                PlusTwoSDValues1 = plusTwoSDValues;
-        //                                MinusTwoSDValues1 = minusTwoSDValues;
-        //                                PlusThreeSDValues1 = plusThreeSDValues;
-        //                                MinusThreeSDValues1 = minusThreeSDValues;
-        //                                ChartValues1 = chartValues;
-        //                                Visibility1 = visibility;
-        //                                Dates1 = dates;
-        //                                totalWidth1 = effectiveWidth;
-
-        //                                var sc1 = new SeriesCollection
-        //                                {
-        //                                    new LineSeries { Title="3SD", Values = PlusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                    new LineSeries { Title="+2SD", Values = PlusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                    new LineSeries { Title="1SD", Values = PlusOneSDValues1, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                    new LineSeries { Title="Mean", Values = MeanValues1, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                    new LineSeries { Title="-1SD", Values = MinusOneSDValues1, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                    new LineSeries { Title="-2SD", Values = MinusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                    new LineSeries { Title="-3SD", Values = MinusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                    new LineSeries { Title="result", Values = ChartValues1, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-        //                                };
-
-        //                                foreach (var sx in separators)
-        //                                {
-        //                                    sc1.Add(new LineSeries
-        //                                    {
-        //                                        Title = "sep",
-        //                                        Values = new ChartValues<ObservablePoint> { new ObservablePoint(sx, 4), new ObservablePoint(sx, -4) },
-        //                                        Stroke = Brushes.Black,
-        //                                        StrokeDashArray = new DoubleCollection { 4, 2 },
-        //                                        StrokeThickness = 2,
-        //                                        PointGeometry = null,
-        //                                        Fill = Brushes.Transparent,
-        //                                        IsHitTestVisible = false
-        //                                    });
-        //                                }
-
-        //                                SeriesCollection1 = sc1;
-        //                                break;
-        //                            case 2:
-        //                            case 5:
-        //                            case 8:
-        //                            case 9:
-        //                                LevelName2 = levelName;
-        //                                Mean2 = mean;
-        //                                SD2 = sd;
-        //                                Range2 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-        //                                TotalPoints2 = $"{chartValues.Count}";
-        //                                MeanValues2 = meanValues;
-        //                                PlusOneSDValues2 = plusOneSDValues;
-        //                                MinusOneSDValues2 = minusOneSDValues;
-        //                                PlusTwoSDValues2 = plusTwoSDValues;
-        //                                MinusTwoSDValues2 = minusTwoSDValues;
-        //                                PlusThreeSDValues2 = plusThreeSDValues;
-        //                                MinusThreeSDValues2 = minusThreeSDValues;
-        //                                ChartValues2 = chartValues;
-        //                                Visibility2 = visibility;
-        //                                Dates2 = dates;
-        //                                totalWidth2 = effectiveWidth;
-
-        //                                var sc2 = new SeriesCollection
-        //                            {
-        //                                new LineSeries { Title="3SD", Values = PlusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="1SD", Values = PlusOneSDValues2, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="Mean", Values = MeanValues2, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-1SD", Values = MinusOneSDValues2, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="result", Values = ChartValues2, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-        //                            };
-        //                                foreach (var sx in separators)
-        //                                {
-        //                                    sc2.Add(new LineSeries
-        //                                    {
-        //                                        Title = "sep",
-        //                                        Values = new ChartValues<ObservablePoint> { new ObservablePoint(sx, 4), new ObservablePoint(sx, -4) },
-        //                                        Stroke = Brushes.Black,
-        //                                        StrokeDashArray = new DoubleCollection { 4, 2 },
-        //                                        StrokeThickness = 2,
-        //                                        PointGeometry = null,
-        //                                        Fill = Brushes.Transparent,
-        //                                        IsHitTestVisible = false
-        //                                    });
-        //                                }
-        //                                SeriesCollection2 = sc2;
-        //                                break;
-        //                            case 3:
-        //                            case 6:
-        //                            case 10:
-        //                                LevelName3 = levelName;
-        //                                Mean3 = mean;
-        //                                SD3 = sd;
-        //                                Range3 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-        //                                TotalPoints3 = $"{chartValues.Count}";
-        //                                MeanValues3 = meanValues;
-        //                                PlusOneSDValues3 = plusOneSDValues;
-        //                                MinusOneSDValues3 = minusOneSDValues;
-        //                                PlusTwoSDValues3 = plusTwoSDValues;
-        //                                MinusTwoSDValues3 = minusTwoSDValues;
-        //                                PlusThreeSDValues3 = plusThreeSDValues;
-        //                                MinusThreeSDValues3 = minusThreeSDValues;
-        //                                ChartValues3 = chartValues;
-        //                                Visibility3 = visibility;
-        //                                Dates3 = dates;
-        //                                totalWidth3 = effectiveWidth;
-
-        //                                var sc3 = new SeriesCollection
-        //                            {
-        //                                new LineSeries { Title="3SD", Values = PlusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="1SD", Values = PlusOneSDValues3, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="Mean", Values = MeanValues3, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-1SD", Values = MinusOneSDValues3, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="result", Values = ChartValues3, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-        //                            };
-        //                                foreach (var sx in separators)
-        //                                {
-        //                                    sc3.Add(new LineSeries
-        //                                    {
-        //                                        Title = "sep",
-        //                                        Values = new ChartValues<ObservablePoint> { new ObservablePoint(sx, 4), new ObservablePoint(sx, -4) },
-        //                                        Stroke = Brushes.Black,
-        //                                        StrokeDashArray = new DoubleCollection { 4, 2 },
-        //                                        StrokeThickness = 2,
-        //                                        PointGeometry = null,
-        //                                        Fill = Brushes.Transparent,
-        //                                        IsHitTestVisible = false
-        //                                    });
-        //                                }
-        //                                SeriesCollection3 = sc3;
-        //                                break;
-        //                            case 11:
-        //                                LevelName4 = levelName;
-        //                                Mean4 = mean;
-        //                                SD4 = sd;
-        //                                Range4 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-        //                                TotalPoints4 = $"{chartValues.Count}";
-        //                                MeanValues4 = meanValues;
-        //                                PlusOneSDValues4 = plusOneSDValues;
-        //                                MinusOneSDValues4 = minusOneSDValues;
-        //                                PlusTwoSDValues4 = plusTwoSDValues;
-        //                                MinusTwoSDValues4 = minusTwoSDValues;
-        //                                PlusThreeSDValues4 = plusThreeSDValues;
-        //                                MinusThreeSDValues4 = minusThreeSDValues;
-        //                                ChartValues4 = chartValues;
-        //                                Visibility4 = visibility;
-        //                                Dates4 = dates;
-        //                                totalWidth4 = effectiveWidth;
-
-        //                                var sc4 = new SeriesCollection
-        //                            {
-        //                                new LineSeries { Title="3SD", Values = PlusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="1SD", Values = PlusOneSDValues4, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="Mean", Values = MeanValues4, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-1SD", Values = MinusOneSDValues4, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-        //                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-        //                                new LineSeries { Title="result", Values = ChartValues4, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-        //                            };
-        //                                foreach (var sx in separators)
-        //                                {
-        //                                    sc4.Add(new LineSeries
-        //                                    {
-        //                                        Title = "sep",
-        //                                        Values = new ChartValues<ObservablePoint> { new ObservablePoint(sx, 4), new ObservablePoint(sx, -4) },
-        //                                        Stroke = Brushes.Black,
-        //                                        StrokeDashArray = new DoubleCollection { 4, 2 },
-        //                                        StrokeThickness = 2,
-        //                                        PointGeometry = null,
-        //                                        Fill = Brushes.Transparent,
-        //                                        IsHitTestVisible = false
-        //                                    });
-        //                                }
-        //                                SeriesCollection4 = sc4;
-        //                                break;
-        //                        }
-        //                    });
-        //                }
-        //            }
-        //        });
-
-        //        await LoadChartAsync();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Nếu có lỗi không quan trọng, hiển thị nhưng không crash app
-        //        MessageBox.Show($"Lỗi khi tải biểu đồ: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
-        //    }
-        //    finally
-        //    {
-        //        IsLoading = false;
-        //    }
-        //}
-
         private async Task ViewChart(ObservableCollection<Result> results, CancellationToken token = default)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -1383,6 +989,13 @@ namespace QC_Management.ViewModels
                         var visibility = result.Item2;
                         var dates = result.Item3;
                         var firstResult = resultByLevel.FirstOrDefault();
+
+                        // IMPORTANT: assign ChartIndex for each Result so any series (compact or full)
+                        // can map X to the same original index.
+                        for (int ci = 0; ci < chartValues.Count; ci++)
+                        {
+                            chartValues[ci].ChartIndex = ci;
+                        }
 
                         const int TRAILING_PADDING = 1;
                         float cmPerPoint = 2.0f;
@@ -1491,7 +1104,8 @@ namespace QC_Management.ViewModels
                                     Mean1 = mean;
                                     SD1 = sd;
                                     Range1 = $"{(mean - 2 * sd):F2}  -  {(mean + 2 * sd):F2}";
-                                    TotalPoints1 = $"{chartValues.Count}";
+                                    // TotalPoints excludes IsExclude==true
+                                    TotalPoints1 = $"{chartValues.Count(r => r.IsExclude != true)}";
                                     MeanValues1 = meanValues;
                                     PlusOneSDValues1 = plusOneSDValues;
                                     MinusOneSDValues1 = minusOneSDValues;
@@ -1506,16 +1120,18 @@ namespace QC_Management.ViewModels
 
                                     var sc1 = new SeriesCollection
                             {
-                                new LineSeries { Title="3SD", Values = PlusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="1SD", Values = PlusOneSDValues1, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="Mean", Values = MeanValues1, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-1SD", Values = MinusOneSDValues1, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="result", Values = ChartValues1, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-                            };
+                                    new LineSeries { Title="3SD", Values = PlusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="+2SD", Values = PlusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="1SD", Values = PlusOneSDValues1, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="Mean", Values = MeanValues1, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-1SD", Values = MinusOneSDValues1, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-2SD", Values = MinusTwoSDValues1, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="-3SD", Values = MinusThreeSDValues1, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+};
+                                    sc1.Add(BuildConnectionLine(ChartValues1, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5"))));
+                                    sc1.Add(BuildDotSeries(ChartValues1, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31"))));
 
+                                    // separators
                                     foreach (var sx in separators)
                                     {
                                         sc1.Add(new LineSeries
@@ -1531,6 +1147,9 @@ namespace QC_Management.ViewModels
                                         });
                                     }
 
+                                    if (ChartValues1.Any(r => r.IsExclude == true))
+                                        sc1.Add(BuildExcludedScatter(ChartValues1));
+
                                     SeriesCollection1 = sc1;
                                     break;
 
@@ -1539,7 +1158,7 @@ namespace QC_Management.ViewModels
                                     Mean2 = mean;
                                     SD2 = sd;
                                     Range2 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-                                    TotalPoints2 = $"{chartValues.Count}";
+                                    TotalPoints2 = $"{chartValues.Count(r => r.IsExclude != true)}";
                                     MeanValues2 = meanValues;
                                     PlusOneSDValues2 = plusOneSDValues;
                                     MinusOneSDValues2 = minusOneSDValues;
@@ -1554,15 +1173,16 @@ namespace QC_Management.ViewModels
 
                                     var sc2 = new SeriesCollection
                             {
-                                new LineSeries { Title="3SD", Values = PlusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="1SD", Values = PlusOneSDValues2, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="Mean", Values = MeanValues2, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-1SD", Values = MinusOneSDValues2, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="result", Values = ChartValues2, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-                            };
+                                    new LineSeries { Title="3SD", Values = PlusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="+2SD", Values = PlusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="1SD", Values = PlusOneSDValues2, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="Mean", Values = MeanValues2, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-1SD", Values = MinusOneSDValues2, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-2SD", Values = MinusTwoSDValues2, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="-3SD", Values = MinusThreeSDValues2, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+};
+                                    sc2.Add(BuildConnectionLine(ChartValues2, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5"))));
+                                    sc2.Add(BuildDotSeries(ChartValues2, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31"))));
                                     foreach (var sx in separators)
                                     {
                                         sc2.Add(new LineSeries
@@ -1577,6 +1197,10 @@ namespace QC_Management.ViewModels
                                             IsHitTestVisible = false
                                         });
                                     }
+
+                                    if (ChartValues2.Any(r => r.IsExclude == true))
+                                        sc2.Add(BuildExcludedScatter(ChartValues2));
+
                                     SeriesCollection2 = sc2;
                                     break;
 
@@ -1585,7 +1209,7 @@ namespace QC_Management.ViewModels
                                     Mean3 = mean;
                                     SD3 = sd;
                                     Range3 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-                                    TotalPoints3 = $"{chartValues.Count}";
+                                    TotalPoints3 = $"{chartValues.Count(r => r.IsExclude != true)}";
                                     MeanValues3 = meanValues;
                                     PlusOneSDValues3 = plusOneSDValues;
                                     MinusOneSDValues3 = minusOneSDValues;
@@ -1600,15 +1224,16 @@ namespace QC_Management.ViewModels
 
                                     var sc3 = new SeriesCollection
                             {
-                                new LineSeries { Title="3SD", Values = PlusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="1SD", Values = PlusOneSDValues3, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="Mean", Values = MeanValues3, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-1SD", Values = MinusOneSDValues3, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="result", Values = ChartValues3, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-                            };
+                                    new LineSeries { Title="3SD", Values = PlusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="+2SD", Values = PlusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="1SD", Values = PlusOneSDValues3, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="Mean", Values = MeanValues3, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-1SD", Values = MinusOneSDValues3, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-2SD", Values = MinusTwoSDValues3, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="-3SD", Values = MinusThreeSDValues3, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+};
+                                    sc3.Add(BuildConnectionLine(ChartValues3, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5"))));
+                                    sc3.Add(BuildDotSeries(ChartValues3, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31"))));
                                     foreach (var sx in separators)
                                     {
                                         sc3.Add(new LineSeries
@@ -1623,6 +1248,10 @@ namespace QC_Management.ViewModels
                                             IsHitTestVisible = false
                                         });
                                     }
+
+                                    if (ChartValues3.Any(r => r.IsExclude == true))
+                                        sc3.Add(BuildExcludedScatter(ChartValues3));
+
                                     SeriesCollection3 = sc3;
                                     break;
 
@@ -1631,7 +1260,7 @@ namespace QC_Management.ViewModels
                                     Mean4 = mean;
                                     SD4 = sd;
                                     Range4 = $"{(mean - 2 * sd):F2} - {(mean + 2 * sd):F2}";
-                                    TotalPoints4 = $"{chartValues.Count}";
+                                    TotalPoints4 = $"{chartValues.Count(r => r.IsExclude != true)}";
                                     MeanValues4 = meanValues;
                                     PlusOneSDValues4 = plusOneSDValues;
                                     MinusOneSDValues4 = minusOneSDValues;
@@ -1646,15 +1275,16 @@ namespace QC_Management.ViewModels
 
                                     var sc4 = new SeriesCollection
                             {
-                                new LineSeries { Title="3SD", Values = PlusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="+2SD", Values = PlusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="1SD", Values = PlusOneSDValues4, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="Mean", Values = MeanValues4, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-1SD", Values = MinusOneSDValues4, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
-                                new LineSeries { Title="-2SD", Values = MinusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="-3SD", Values = MinusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
-                                new LineSeries { Title="result", Values = ChartValues4, Stroke = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5")), Fill = Brushes.Transparent, LineSmoothness = 0, PointGeometrySize = 15, PointForeground = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31")), StrokeThickness = 4 }
-                            };
+                                    new LineSeries { Title="3SD", Values = PlusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="+2SD", Values = PlusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="1SD", Values = PlusOneSDValues4, Stroke = Brushes.Green, Fill = new SolidColorBrush(Color.FromArgb(0xFF,0xC4,0xEE,0xB4)), PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="Mean", Values = MeanValues4, Stroke = Brushes.Green, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-1SD", Values = MinusOneSDValues4, Stroke = Brushes.Green, Fill = Brushes.White, PointGeometry = null, StrokeThickness = 3, IsHitTestVisible = false },
+                                    new LineSeries { Title="-2SD", Values = MinusTwoSDValues4, Stroke = Brushes.Orange, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+                                    new LineSeries { Title="-3SD", Values = MinusThreeSDValues4, Stroke = Brushes.Red, Fill = Brushes.Transparent, PointGeometry = null, StrokeThickness = 3 },
+};
+                                    sc4.Add(BuildConnectionLine(ChartValues4, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1C8FC5"))));
+                                    sc4.Add(BuildDotSeries(ChartValues4, new SolidColorBrush((Color)ColorConverter.ConvertFromString("#222E31"))));
                                     foreach (var sx in separators)
                                     {
                                         sc4.Add(new LineSeries
@@ -1669,6 +1299,10 @@ namespace QC_Management.ViewModels
                                             IsHitTestVisible = false
                                         });
                                     }
+
+                                    if (ChartValues4.Any(r => r.IsExclude == true))
+                                        sc4.Add(BuildExcludedScatter(ChartValues4));
+
                                     SeriesCollection4 = sc4;
                                     break;
                             }
@@ -1713,6 +1347,111 @@ namespace QC_Management.ViewModels
             // Keep mapper for Result registered (already done in ViewChart). No additional work required here.
             await Task.CompletedTask;
         }
+        // ── Helpers cho excluded points ───────────────────────────────────
+        // Tạo LineSeries<ObservablePoint> nối các điểm KHÔNG excluded.
+        // Bridge: khi gặp excluded, dùng Y nội suy tuyến tính giữa 2 điểm
+        // 2 bên để đường nối trông tự nhiên (không nhảy).
+        private static LineSeries BuildConnectionLine(
+            ChartValues<Result> all,
+            SolidColorBrush stroke)
+        {
+            var pts = new ChartValues<ObservablePoint>();
+            for (int i = 0; i < all.Count; i++)
+            {
+                var r = all[i];
+                double y = ClampZScore(r.ZScore);
+                if (r.IsExclude == true)
+                {
+                    // Nội suy Y giữa điểm trước và điểm sau (không excluded)
+                    int prev = i - 1; while (prev >= 0 && all[prev].IsExclude == true) prev--;
+                    int next = i + 1; while (next < all.Count && all[next].IsExclude == true) next++;
+                    if (prev >= 0 && next < all.Count)
+                        y = (ClampZScore(all[prev].ZScore) + ClampZScore(all[next].ZScore)) / 2.0;
+                    else if (prev >= 0) y = ClampZScore(all[prev].ZScore);
+                    else if (next < all.Count) y = ClampZScore(all[next].ZScore);
+                }
+                pts.Add(new ObservablePoint(i, y));
+            }
+            return new LineSeries
+            {
+                Title = "line",
+                Values = pts,
+                Stroke = stroke,
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0,
+                PointGeometry = null,
+                StrokeThickness = 4,
+                IsHitTestVisible = false
+            };
+        }
+
+        // Tạo LineSeries<Result> CHỈ chứa điểm không excluded → dot + tooltip
+        private static LineSeries BuildDotSeries(
+            ChartValues<Result> all,
+            SolidColorBrush pointForeground)
+        {
+            var nonExcluded = new ChartValues<Result>(
+                all.Where(r => r.IsExclude != true));
+
+            return new LineSeries
+            {
+                Title = "result",
+                Values = nonExcluded,
+                Stroke = Brushes.Transparent,
+                StrokeThickness = 0,
+                Fill = Brushes.Transparent,
+                LineSmoothness = 0,
+                PointGeometrySize = 15,
+                PointForeground = pointForeground,
+                IsHitTestVisible = true
+            };
+        }
+
+        // Wrapper giữ reference tới Result gốc + index gốc
+        // Dùng để tooltip lấy được Instance = ExcludedResult → tra ra Result
+        public class ExcludedResult
+        {
+            public Result Source { get; set; }
+            public double OriginalIndex { get; set; }
+        }
+
+        // Tạo LineSeries<ExcludedResult> dấu X cho điểm excluded
+        // Instance = ExcludedResult → tooltip có thể lấy Source (Result gốc)
+        private static LineSeries BuildExcludedScatter(ChartValues<Result> all)
+        {
+            var xGeo = Geometry.Parse("M-6,-6 L6,6 M6,-6 L-6,6");
+
+            var values = new ChartValues<ExcludedResult>(
+                all.Select((r, idx) => new { r, idx })
+                   .Where(x => x.r.IsExclude == true)
+                   .Select(x => new ExcludedResult
+                   {
+                       Source = x.r,
+                       OriginalIndex = x.idx
+                   }));
+
+            return new LineSeries
+            {
+                Title = "excluded",
+                Values = values,
+                PointGeometry = xGeo,
+                PointGeometrySize = 18,
+                Stroke = Brushes.Transparent, // ẩn đường nối giữa các điểm excluded
+                StrokeThickness = 3,
+                Fill = Brushes.Transparent,
+                PointForeground = Brushes.DimGray,     // màu dấu X
+                IsHitTestVisible = true
+            };
+        }
+
+        private static double ClampZScore(double? z)
+        {
+            if (!z.HasValue) return 0;
+            if (z >= 4) return 4;
+            if (z <= -4) return -4;
+            return z.Value;
+        }
+
         public static float CmToPixels(float cm)
         {
             // 1 inch = 2.54 cm
@@ -1725,6 +1464,7 @@ namespace QC_Management.ViewModels
                 return inches * dpiX;
             }
         }
+
     }
 
 }

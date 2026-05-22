@@ -70,6 +70,18 @@ namespace QC_Management.Views
                     return string.Empty;
                 }
 
+                // prefer qualitative text when available on ControlInfoDetail, otherwise numeric mean±sd
+                static string BuildRangeFromControlDetail(ControlInfoDetail? ctrl, double multiplier = 2.0)
+                {
+                    if (ctrl == null) return string.Empty;
+                    if (!string.IsNullOrWhiteSpace(ctrl.QualitativeMean))
+                        return ctrl.QualitativeMean.Trim();
+                    // try current then manufacturer/app values as used elsewhere
+                    var mean = ctrl.CurMean ?? ctrl.MeanNsx ?? ctrl.MeanApp;
+                    var sd = ctrl.CurSd ?? ctrl.SdNsx ?? ctrl.SdApp;
+                    return BuildRangeFromMeanSd(mean, sd, multiplier);
+                }
+
                 foreach (var ca in _items)
                 {
                     var row = dtCorrectAction.NewRow();
@@ -139,10 +151,10 @@ namespace QC_Management.Views
 
                             // ReferenceRangeBefore: derive from pre result's control detail first,
                             // then fall back to InternalError.ControlInfoDetail (we no longer use InternalError.RangeMin/RangeMax)
-                            var rr = BuildRangeFromMeanSd(preRes.IdControlDetailNavigation?.CurMean, preRes.IdControlDetailNavigation?.CurSd);
+                            var rr = BuildRangeFromControlDetail(preRes.IdControlDetailNavigation);
                             if (string.IsNullOrEmpty(rr))
                             {
-                                rr = BuildRangeFromMeanSd(ca.InternalError.ControlInfoDetail?.CurMean, ca.InternalError.ControlInfoDetail?.CurSd);
+                                rr = BuildRangeFromControlDetail(ca.InternalError.ControlInfoDetail);
                             }
 
                             row["ReferenceRangeBefore"] = rr;
@@ -150,18 +162,18 @@ namespace QC_Management.Views
                             // Level from pre result's level navigation (if available)
                             levelName = preRes.IdLevelNavigation?.Name ?? string.Empty;
 
-                            // If unit wasn't found earlier, try to get it from resolving result's test navigation
+                            // If unit wasn't found earlier, try to get it from pre result's test navigation
                             if (string.IsNullOrEmpty(row["Unit"] as string))
                             {
-                                var unitFromPost = preRes.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty;
-                                if (!string.IsNullOrEmpty(unitFromPost))
-                                    row["Unit"] = unitFromPost;
+                                var unitFromPre = preRes.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty;
+                                if (!string.IsNullOrEmpty(unitFromPre))
+                                    row["Unit"] = unitFromPre;
                             }
                         }
                         else
                         {
                             // no explicit erroneous result: attempt to show range from InternalError's control detail
-                            row["ReferenceRangeBefore"] = BuildRangeFromMeanSd(ca.InternalError.ControlInfoDetail?.CurMean, ca.InternalError.ControlInfoDetail?.CurSd);
+                            row["ReferenceRangeBefore"] = BuildRangeFromControlDetail(ca.InternalError.ControlInfoDetail);
 
                             // fallback: try control info detail level
                             levelName = ca.InternalError.ControlInfoDetail?.IdLevelNavigation?.Name ?? string.Empty;
@@ -175,16 +187,24 @@ namespace QC_Management.Views
                         row["PostCorrectResult"] = post.Result1?.ToString("G") ?? post.TempResult ?? string.Empty;
 
                         // ReferenceRangeAfter: derive from resolving result's control detail first; fallback to InternalError control detail
-                        var rrAfter = BuildRangeFromMeanSd(post.IdControlDetailNavigation?.CurMean, post.IdControlDetailNavigation?.CurSd);
+                        var rrAfter = BuildRangeFromControlDetail(post.IdControlDetailNavigation);
                         if (string.IsNullOrEmpty(rrAfter))
                         {
-                            rrAfter = BuildRangeFromMeanSd(ca.InternalError?.ControlInfoDetail?.CurMean, ca.InternalError?.ControlInfoDetail?.CurSd);
+                            rrAfter = BuildRangeFromControlDetail(ca.InternalError?.ControlInfoDetail);
                         }
                         row["ReferenceRangeAfter"] = rrAfter;
 
                         // If level not set yet, take level from resolving result
                         if (string.IsNullOrEmpty(levelName))
                             levelName = post.IdLevelNavigation?.Name ?? string.Empty;
+
+                        // If unit still empty, prefer resolving result's test unit
+                        if (string.IsNullOrEmpty(row["Unit"] as string))
+                        {
+                            var unitFromPost = post.IdTestNavigation?.IdUnitTableNavigation?.Name ?? string.Empty;
+                            if (!string.IsNullOrEmpty(unitFromPost))
+                                row["Unit"] = unitFromPost;
+                        }
 
                     }
 

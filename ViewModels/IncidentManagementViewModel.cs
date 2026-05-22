@@ -124,7 +124,7 @@ namespace QC_Management.ViewModels
             AddCorrectiveActionCommand = new RelayCommand<object>(p => true, p => MessageBox.Show("Add CorrectiveAction - implement UI"));
             EditCorrectiveActionCommand = new RelayCommand<object>(p => SelectedCorrectiveAction != null, p => MessageBox.Show("Edit CorrectiveAction - implement UI"));
             DeleteCorrectiveActionCommand = new RelayCommand<object>(p => SelectedCorrectiveAction != null, async p => await DeleteCorrectiveActionAsync());
-            LoadedCommand = new RelayCommand<object>(p => true , async p => await Loaded());
+            LoadedCommand = new RelayCommand<object>(p => true, async p => await Loaded());
 
             // New: open corrective action window for the selected internal error.
             OpenCorrectiveActionCommand = new RelayCommand<object>(
@@ -210,7 +210,7 @@ namespace QC_Management.ViewModels
                     .Include(i => i.ControlInfoDetail)
                     .Include(i => i.ErroneousResult) // <-- ensure ErroneousResult is loaded
                         .ThenInclude(r => r.IdLevelNavigation) // <-- ensure level navigation is loaded
-                    // include corrective actions and their resolving result + control detail for post-range
+                                                               // include corrective actions and their resolving result + control detail for post-range
                     .Include(i => i.CorrectiveActions)
                         .ThenInclude(c => c.ResolvingResult)
                             .ThenInclude(r => r.IdControlDetailNavigation)
@@ -484,23 +484,31 @@ namespace QC_Management.ViewModels
                     // Format numeric/text fields safely
                     var preCorrect = ie.ErroneousResult?.Result1?.ToString("0.###") ?? string.Empty;
 
-                    // compute rangeBefore as control-detail mean ± sd when possible,
-                    // otherwise empty (we no longer store RangeMin/RangeMax on InternalError)
+                    // compute rangeBefore: if qualitative mean exists, show that string,
+                    // otherwise compute numeric mean ± 2*sd as before.
                     string rangeBefore;
                     if (ie.ControlInfoDetail != null)
                     {
-                        double? mean = ie.ControlInfoDetail.CurMean ?? ie.ControlInfoDetail.MeanNsx;
-                        double? sd = ie.ControlInfoDetail.CurSd ?? ie.ControlInfoDetail.SdNsx;
-
-                        if (mean.HasValue && sd.HasValue)
+                        // prefer qualitative description when present
+                        if (!string.IsNullOrWhiteSpace(ie.ControlInfoDetail.QualitativeMean))
                         {
-                            var lower = mean.Value - 2* sd.Value;
-                            var upper = mean.Value + 2* sd.Value;
-                            rangeBefore = $"{lower:0.###} - {upper:0.###}";
+                            rangeBefore = ie.ControlInfoDetail.QualitativeMean.Trim();
                         }
                         else
                         {
-                            rangeBefore = string.Empty;
+                            double? mean = ie.ControlInfoDetail.CurMean ?? ie.ControlInfoDetail.MeanNsx;
+                            double? sd = ie.ControlInfoDetail.CurSd ?? ie.ControlInfoDetail.SdNsx;
+
+                            if (mean.HasValue && sd.HasValue)
+                            {
+                                var lower = mean.Value - 2 * sd.Value;
+                                var upper = mean.Value + 2 * sd.Value;
+                                rangeBefore = $"{lower:0.###} - {upper:0.###}";
+                            }
+                            else
+                            {
+                                rangeBefore = string.Empty;
+                            }
                         }
                     }
                     else
@@ -520,26 +528,42 @@ namespace QC_Management.ViewModels
 
                             if (afterControl != null)
                             {
-                                double? meanA = afterControl.CurMean ?? afterControl.MeanNsx;
-                                double? sdA = afterControl.CurSd ?? afterControl.SdNsx;
-                                if (meanA.HasValue && sdA.HasValue)
+                                // prefer qualitative description when present
+                                if (!string.IsNullOrWhiteSpace(afterControl.QualitativeMean))
                                 {
-                                    var lowerA = meanA.Value - 2* sdA.Value;
-                                    var upperA = meanA.Value + 2* sdA.Value;
-                                    rangeAfter = $"{lowerA:0.###} - {upperA:0.###}";
+                                    rangeAfter = afterControl.QualitativeMean.Trim();
+                                }
+                                else
+                                {
+                                    double? meanA = afterControl.CurMean ?? afterControl.MeanNsx;
+                                    double? sdA = afterControl.CurSd ?? afterControl.SdNsx;
+                                    if (meanA.HasValue && sdA.HasValue)
+                                    {
+                                        var lowerA = meanA.Value - 2 * sdA.Value;
+                                        var upperA = meanA.Value + 2 * sdA.Value;
+                                        rangeAfter = $"{lowerA:0.###} - {upperA:0.###}";
+                                    }
                                 }
                             }
                             else
                             {
+                                // fallback: if original error had a qualitative mean, show that
                                 if (ie.ControlInfoDetail != null)
                                 {
-                                    double? meanA = ie.ControlInfoDetail.CurMean ?? ie.ControlInfoDetail.MeanNsx;
-                                    double? sdA = ie.ControlInfoDetail.CurSd ?? ie.ControlInfoDetail.SdNsx;
-                                    if (meanA.HasValue && sdA.HasValue)
+                                    if (!string.IsNullOrWhiteSpace(ie.ControlInfoDetail.QualitativeMean))
                                     {
-                                        var lowerA = meanA.Value - 2* sdA.Value;
-                                        var upperA = meanA.Value + 2* sdA.Value;
-                                        rangeAfter = $"{lowerA:0.###} - {upperA:0.###}";
+                                        rangeAfter = ie.ControlInfoDetail.QualitativeMean.Trim();
+                                    }
+                                    else
+                                    {
+                                        double? meanA = ie.ControlInfoDetail.CurMean ?? ie.ControlInfoDetail.MeanNsx;
+                                        double? sdA = ie.ControlInfoDetail.CurSd ?? ie.ControlInfoDetail.SdNsx;
+                                        if (meanA.HasValue && sdA.HasValue)
+                                        {
+                                            var lowerA = meanA.Value - 2 * sdA.Value;
+                                            var upperA = meanA.Value + 2 * sdA.Value;
+                                            rangeAfter = $"{lowerA:0.###} - {upperA:0.###}";
+                                        }
                                     }
                                 }
                             }
@@ -729,12 +753,16 @@ namespace QC_Management.ViewModels
                     deviceName: SelectedInternalError.Device?.Name,
                     testName: SelectedInternalError.Test?.Name,
                     levey: SelectedInternalError.WestgardDescription,
-                    resultValue: SelectedInternalError.ErroneousResult?.Result1?.ToString("0.###"),
+                    // Định tính (TestType=1): dùng TempResult (chuỗi), định lượng: dùng Result1
+                    resultValue: SelectedInternalError.ErroneousResult?.Result1?.ToString("0.###")
+                                 ?? SelectedInternalError.ErroneousResult?.TempResult,
                     rangeMin: rangeMin,
                     rangeMax: rangeMax,
                     existingErrors: existingErrors,
                     resolvingResultId: null,
-                    initialInternalErrorId: SelectedInternalError.Id
+                    initialInternalErrorId: SelectedInternalError.Id,
+                    // truyền TestType để CorrectiveActionViewModel biết đây là định tính hay định lượng
+                    testType: SelectedInternalError.Test?.TestType
                 );
 
                 var win = new CorrectActionWindow
@@ -854,13 +882,18 @@ namespace QC_Management.ViewModels
                     deviceName: caLoaded.InternalError?.Device?.Name,
                     testName: caLoaded.InternalError?.Test?.Name,
                     levey: caLoaded.InternalError?.WestgardDescription,
-                    resultValue: caLoaded.ResolvingResult?.Result1?.ToString("0.###") ?? caLoaded.InternalError?.ErroneousResult?.Result1?.ToString("0.###"),
+                    // Định tính: dùng TempResult, định lượng: dùng Result1
+                    resultValue: caLoaded.ResolvingResult?.Result1?.ToString("0.###")
+                                 ?? caLoaded.ResolvingResult?.TempResult
+                                 ?? caLoaded.InternalError?.ErroneousResult?.Result1?.ToString("0.###")
+                                 ?? caLoaded.InternalError?.ErroneousResult?.TempResult,
                     rangeMin: rangeMin,
                     rangeMax: rangeMax,
                     existingErrors: existingErrors,
                     resolvingResultId: caLoaded.ResolvingResultId,
                     initialInternalErrorId: caLoaded.InternalErrorId,
-                    editingCorrectiveActionId: caLoaded.Id // pass editing id so VM loads & updates instead of creating new
+                    editingCorrectiveActionId: caLoaded.Id,
+                    testType: caLoaded.InternalError?.Test?.TestType
                 );
 
                 // Note: if CorrectiveActionViewModel exposes an "EditingCorrectiveActionId" or a load method,

@@ -126,6 +126,10 @@ public partial class Result : BaseViewModel
     public virtual Test IdTestNavigation { get; set; } = null!;
 
     public virtual User IdUserNavigation { get; set; } = null!;
+    // Temporary chart-only index used by LiveCharts mapping.
+    // NotMapped so EF Core ignores it.
+    [NotMapped]
+    public int? ChartIndex { get; set; }
 
     // --- Persisted fields to record which mean/sd were used and when ---
     private double? _appliedMean;
