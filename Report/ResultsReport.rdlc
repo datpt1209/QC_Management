@@ -129,6 +129,18 @@
           <DataField>IsCorrected</DataField>
           <rd:TypeName>System.String</rd:TypeName>
         </Field>
+        <Field Name="IsReagentReplaced">
+          <DataField>IsReagentReplaced</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsReagentLotChanged">
+          <DataField>IsReagentLotChanged</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
+        <Field Name="IsCalLotChanged">
+          <DataField>IsCalLotChanged</DataField>
+          <rd:TypeName>System.String</rd:TypeName>
+        </Field>
       </Fields>
       <rd:DataSetInfo>
         <rd:DataSetName>dsResult</rd:DataSetName>
@@ -148,7 +160,7 @@
             <TablixBody>
               <TablixColumns>
                 <TablixColumn>
-                  <Width>1.85391cm</Width>
+                  <Width>1.18599cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.31073cm</Width>
@@ -157,7 +169,16 @@
                   <Width>1.87817cm</Width>
                 </TablixColumn>
                 <TablixColumn>
-                  <Width>1.2985cm</Width>
+                  <Width>1.15987cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.01833cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>1.12417cm</Width>
+                </TablixColumn>
+                <TablixColumn>
+                  <Width>0.91034cm</Width>
                 </TablixColumn>
                 <TablixColumn>
                   <Width>1.76906cm</Width>
@@ -178,14 +199,14 @@
                                 <TextRun>
                                   <Value>Level </Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
                                 <TextRun>
                                   <Value>=Fields!Level.Value</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -221,7 +242,7 @@
                                 <TextRun>
                                   <Value>Đánh giá</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -292,7 +313,7 @@
                                 <TextRun>
                                   <Value>Khắc phục</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -318,6 +339,111 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="Textbox12">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>Thuốc thử mới</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox12</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox17">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>LOT Thuốc Thử</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox17</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox22">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>LOT cal</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                    <FontWeight>Bold</FontWeight>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox22</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <VerticalAlign>Middle</VerticalAlign>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Textbox4">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -327,7 +453,7 @@
                                 <TextRun>
                                   <Value>Ghi chú</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                     <FontWeight>Bold</FontWeight>
                                   </Style>
                                 </TextRun>
@@ -372,7 +498,7 @@
 	True, ""
 )</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -406,7 +532,7 @@
                                 <TextRun>
                                   <Value>= IIf(Fields!IsOutRange.Value, "K.đạt","Đạt")</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -439,7 +565,7 @@
                                 <TextRun>
                                   <Value>=Fields!WestgardRule.Value</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -476,7 +602,7 @@
   Fields!IsCorrected.Value = False, "✗"
 )</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -500,6 +626,105 @@
                     </TablixCell>
                     <TablixCell>
                       <CellContents>
+                        <Textbox Name="Textbox13">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!IsReagentReplaced.Value = true,"✓","")</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox13</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox19">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!IsReagentLotChanged.Value = true,"✓","")</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox19</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
+                        <Textbox Name="Textbox28">
+                          <CanGrow>true</CanGrow>
+                          <KeepTogether>true</KeepTogether>
+                          <Paragraphs>
+                            <Paragraph>
+                              <TextRuns>
+                                <TextRun>
+                                  <Value>=IIf(Fields!IsCalLotChanged.Value = true,"✓","")</Value>
+                                  <Style>
+                                    <FontSize>8pt</FontSize>
+                                  </Style>
+                                </TextRun>
+                              </TextRuns>
+                              <Style>
+                                <TextAlign>Center</TextAlign>
+                              </Style>
+                            </Paragraph>
+                          </Paragraphs>
+                          <rd:DefaultName>Textbox28</rd:DefaultName>
+                          <Style>
+                            <Border>
+                              <Style>Solid</Style>
+                            </Border>
+                            <PaddingLeft>2pt</PaddingLeft>
+                            <PaddingRight>2pt</PaddingRight>
+                            <PaddingTop>2pt</PaddingTop>
+                            <PaddingBottom>2pt</PaddingBottom>
+                          </Style>
+                        </Textbox>
+                      </CellContents>
+                    </TablixCell>
+                    <TablixCell>
+                      <CellContents>
                         <Textbox Name="Comment">
                           <CanGrow>true</CanGrow>
                           <KeepTogether>true</KeepTogether>
@@ -509,7 +734,7 @@
                                 <TextRun>
                                   <Value>=Fields!Comment.Value</Value>
                                   <Style>
-                                    <FontSize>9pt</FontSize>
+                                    <FontSize>8pt</FontSize>
                                   </Style>
                                 </TextRun>
                               </TextRuns>
@@ -558,6 +783,9 @@
                 <TablixMember />
                 <TablixMember />
                 <TablixMember />
+                <TablixMember />
+                <TablixMember />
+                <TablixMember />
               </TablixMembers>
             </TablixColumnHierarchy>
             <TablixRowHierarchy>
@@ -575,7 +803,7 @@
                               <TextRun>
                                 <Value>STT</Value>
                                 <Style>
-                                  <FontSize>9pt</FontSize>
+                                  <FontSize>8pt</FontSize>
                                   <FontWeight>Bold</FontWeight>
                                 </Style>
                               </TextRun>
@@ -603,7 +831,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.90299cm</Size>
+                        <Size>1.58549cm</Size>
                         <CellContents>
                           <Textbox Name="Textbox66">
                             <CanGrow>true</CanGrow>
@@ -614,7 +842,7 @@
                                   <TextRun>
                                     <Value>NgàyTH</Value>
                                     <Style>
-                                      <FontSize>9pt</FontSize>
+                                      <FontSize>8pt</FontSize>
                                       <FontWeight>Bold</FontWeight>
                                     </Style>
                                   </TextRun>
@@ -642,7 +870,7 @@
                       <TablixMembers>
                         <TablixMember>
                           <TablixHeader>
-                            <Size>1.80639cm</Size>
+                            <Size>1.3022cm</Size>
                             <CellContents>
                               <Textbox Name="Textbox72">
                                 <CanGrow>true</CanGrow>
@@ -653,7 +881,7 @@
                                       <TextRun>
                                         <Value>Người TH</Value>
                                         <Style>
-                                          <FontSize>9pt</FontSize>
+                                          <FontSize>8pt</FontSize>
                                           <FontWeight>Bold</FontWeight>
                                         </Style>
                                       </TextRun>
@@ -681,7 +909,7 @@
                           <TablixMembers>
                             <TablixMember>
                               <TablixHeader>
-                                <Size>1.86413cm</Size>
+                                <Size>1.3869cm</Size>
                                 <CellContents>
                                   <Textbox Name="Textbox3">
                                     <CanGrow>true</CanGrow>
@@ -692,7 +920,7 @@
                                           <TextRun>
                                             <Value>LOTQC</Value>
                                             <Style>
-                                              <FontSize>9pt</FontSize>
+                                              <FontSize>8pt</FontSize>
                                               <FontWeight>Bold</FontWeight>
                                             </Style>
                                           </TextRun>
@@ -756,7 +984,7 @@
                               <TextRun>
                                 <Value>=RunningValue(Fields!DateRun.Value, CountDistinct, Nothing)</Value>
                                 <Style>
-                                  <FontSize>9pt</FontSize>
+                                  <FontSize>8pt</FontSize>
                                 </Style>
                               </TextRun>
                             </TextRuns>
@@ -782,7 +1010,7 @@
                   <TablixMembers>
                     <TablixMember>
                       <TablixHeader>
-                        <Size>1.90299cm</Size>
+                        <Size>1.58549cm</Size>
                         <CellContents>
                           <Textbox Name="DateRun">
                             <CanGrow>true</CanGrow>
@@ -793,7 +1021,7 @@
                                   <TextRun>
                                     <Value>=Format(Fields!DateRun.Value, "dd/MM/yyyy")</Value>
                                     <Style>
-                                      <FontSize>9pt</FontSize>
+                                      <FontSize>8pt</FontSize>
                                     </Style>
                                   </TextRun>
                                 </TextRuns>
@@ -829,7 +1057,7 @@
                             </SortExpression>
                           </SortExpressions>
                           <TablixHeader>
-                            <Size>1.80639cm</Size>
+                            <Size>1.3022cm</Size>
                             <CellContents>
                               <Textbox Name="UserName1">
                                 <CanGrow>true</CanGrow>
@@ -840,7 +1068,7 @@
                                       <TextRun>
                                         <Value>=Fields!UserName.Value</Value>
                                         <Style>
-                                          <FontSize>9pt</FontSize>
+                                          <FontSize>8pt</FontSize>
                                         </Style>
                                       </TextRun>
                                     </TextRuns>
@@ -876,7 +1104,7 @@
                                 </SortExpression>
                               </SortExpressions>
                               <TablixHeader>
-                                <Size>1.86413cm</Size>
+                                <Size>1.3869cm</Size>
                                 <CellContents>
                                   <Textbox Name="LOTQC1">
                                     <CanGrow>true</CanGrow>
@@ -887,7 +1115,7 @@
                                           <TextRun>
                                             <Value>=Fields!LOTQC.Value</Value>
                                             <Style>
-                                              <FontSize>9pt</FontSize>
+                                              <FontSize>8pt</FontSize>
                                             </Style>
                                           </TextRun>
                                         </TextRuns>
@@ -930,7 +1158,7 @@
             <Top>3.06808cm</Top>
             <Left>0.60537cm</Left>
             <Height>1.79267cm</Height>
-            <Width>14.4698cm</Width>
+            <Width>15.41717cm</Width>
             <Style>
               <Border>
                 <Style>None</Style>

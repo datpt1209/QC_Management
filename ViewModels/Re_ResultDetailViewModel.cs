@@ -314,7 +314,11 @@ namespace QC_Management.ViewModels
                             idTest = item.IdTest,
                             Test = item.IdTestNavigation,
                             LOT = qcInfor.Lot,
-                            IdControlDetailNavigation = qcInfor
+                            IdControlDetailNavigation = qcInfor,
+                            // initialize new checkbox flags to false by default
+                            IsReagentReplaced = false,
+                            IsReagentLotChanged = false,
+                            IsCalLotChanged = false
                         };
 
                         if (item.IdTestNavigation.TestType == 1)
@@ -528,7 +532,11 @@ namespace QC_Management.ViewModels
                             TempResult = item.TempResult,
                             WestgardRule = string.IsNullOrWhiteSpace(item.WestgardRule) ? null : item.WestgardRule,
                             // Mark newly-detected problematic results as not-corrected; otherwise leave null
-                            IsCorrected = (!string.IsNullOrWhiteSpace(item.WestgardRule) || item.isOutRange) ? (bool?)false : null
+                            IsCorrected = (!string.IsNullOrWhiteSpace(item.WestgardRule) || item.isOutRange) ? (bool?)false : null,
+                            // Map new checkbox flags from UI into Result entity
+                            IsReagentReplaced = item.IsReagentReplaced,
+                            IsReagentLotChanged = item.IsReagentLotChanged,
+                            IsCalLotChanged = item.IsCalLotChanged
                         };
 
                         // Compute numeric Result1 and ZScore here (do not rely on VM transfer)

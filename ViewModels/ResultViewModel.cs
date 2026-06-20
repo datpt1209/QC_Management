@@ -527,7 +527,11 @@ namespace QC_Management.ViewModels
                                 SdNSX = qcInfor.SdNsx,
                                 Max = qcInfor.CurMean + 2 * qcInfor.SdApp,
                                 Min = qcInfor.CurMean - 2 * qcInfor.SdApp,
-                                IdControlDetailNavigation = qcInfor
+                                IdControlDetailNavigation = qcInfor,
+                                // initialize new checkbox flags to false by default
+                                IsReagentReplaced = false,
+                                IsReagentLotChanged = false,
+                                IsCalLotChanged = false
                             });
                         }
                     }
@@ -701,6 +705,10 @@ namespace QC_Management.ViewModels
                     IdControlDetailNavigation = item.IdControlDetailNavigation,
                     Comment = item.Comment,
                     TempResult = item.TempResult,
+                    // NEW: map checkbox flags from UI into Result entity
+                    IsReagentReplaced = item.IsReagentReplaced,
+                    IsReagentLotChanged = item.IsReagentLotChanged,
+                    IsCalLotChanged = item.IsCalLotChanged
                 };
 
                 var ctrl = item.IdControlDetailNavigation;

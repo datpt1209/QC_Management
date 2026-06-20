@@ -6,6 +6,7 @@
              mc:Ignorable="d" 
              xmlns:i="http://schemas.microsoft.com/xaml/behaviors"
              xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:helpers="clr-namespace:QC_Management.Helpers"
              TextElement.Foreground="{DynamicResource MaterialDesignBody}"
              TextElement.FontWeight="Regular"
              TextElement.FontSize="13"
@@ -15,6 +16,24 @@
              FontFamily="{DynamicResource MaterialDesignFont}"
              DataContext="{StaticResource ResultVM}"
              Name="Objectview" d:DesignHeight="600" d:DesignWidth="800">
+
+    <UserControl.Resources>
+        <helpers:VisibilityToColumnWidthConverter x:Key="VisibilityToColumnWidthConverter"/>
+
+        <DataTemplate x:Key="WrappedHeaderTemplate">
+            <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Margin="4,2" FontWeight="SemiBold"/>
+        </DataTemplate>
+
+        <!-- Apply header wrapping to all DataGridColumnHeader in this control -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="ContentTemplate" Value="{StaticResource WrappedHeaderTemplate}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Background" Value="#FFF3F6F9"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </UserControl.Resources>
 
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
@@ -71,7 +90,7 @@
                             </i:EventTrigger>
                         </i:Interaction.Triggers>
                     </ComboBox>
-                   
+
                     <ComboBox 
                         Margin="5"
                         ItemsSource="{Binding LevelList}"
@@ -84,7 +103,7 @@
                         Visibility="{Binding Visibility1, UpdateSourceTrigger=PropertyChanged}"
                         Style="{StaticResource MaterialDesignOutlinedComboBox}"
                         IsEditable="True" VerticalAlignment="Top" Width="150" Height="50">
-                        
+
                     </ComboBox>
 
                     <ComboBox
@@ -184,7 +203,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="0.7*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                
+
                 <materialDesign:Card   
                     Grid.Row="2" Margin="5" 
                     d:Visibility="Collapsed"
@@ -200,44 +219,28 @@
                         CanUserAddRows="False"
                         PreviewKeyDown="InputDataGrid_PreviewKeyDown">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
-                            <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Qualitative" CanUserSort="False" Binding="{Binding QualitativeMean, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
-                                <!-- HeaderTemplate: hide header when ShowQualitative == Collapsed -->
-                                <DataGridTextColumn.HeaderTemplate>
-                                    <DataTemplate>
-                                        <TextBlock Text="Qualitative"
-                                                   Visibility="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                                                   HorizontalAlignment="Center" />
-                                    </DataTemplate>
-                                </DataGridTextColumn.HeaderTemplate>
-
-                                <!-- Cell element: bind TextBlock.Visibility to VM.ShowQualitative -->
+                            <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" Width="2*" />
+                            <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" Width="*" />
+                            <!-- Width bind qua attached property: Visible→1* / Collapsed→0 -->
+                            <DataGridTextColumn x:Name="ColQualitative" Header="Qualitative" CanUserSort="False"
+                                helpers:DataGridColumnWidthHelper.BindableWidth="{Binding DataContext.ShowQualitative,
+                                    RelativeSource={RelativeSource AncestorType=UserControl},
+                                    Converter={StaticResource VisibilityToColumnWidthConverter}}"
+                                Binding="{Binding QualitativeMean, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="FontWeight" Value="Normal"/>
-                                        <Setter Property="Visibility" Value="Visible"/>
-                                        <Setter Property="Text" Value="{Binding QualitativeMean}"/>
-                                        <Setter Property="Visibility" Value="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Style.Triggers>
-                                            <!-- keep existing styling triggers -->
                                             <DataTrigger Binding="{Binding ResultType}" Value="1">
                                                 <Setter Property="FontWeight" Value="Bold"/>
                                             </DataTrigger>
                                         </Style.Triggers>
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
-
-                                <!-- Editing element (TextBox) visibility follows same VM flag -->
                                 <DataGridTextColumn.EditingElementStyle>
                                     <Style TargetType="TextBox">
-                                        <Setter Property="Padding" Value="0"/>
-                                        <Setter Property="FontWeight" Value="Normal"/>
                                         <Setter Property="IsReadOnly" Value="True"/>
-                                        <Setter Property="Visibility" Value="{Binding DataContext.ShowQualitative, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-                                        <Setter Property="Width" Value="{Binding DataContext.WidthColum, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
                                         <Style.Triggers>
                                             <DataTrigger Binding="{Binding ResultType}" Value="1">
                                                 <Setter Property="IsReadOnly" Value="False"/>
@@ -247,7 +250,7 @@
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Mean" CanUserSort="False" IsReadOnly="True" Binding="{Binding MeanApp}">
+                            <DataGridTextColumn Header="Mean" CanUserSort="False" IsReadOnly="True" Width="*" Binding="{Binding MeanApp}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontSize" Value="14"/>
@@ -262,7 +265,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="SD" CanUserSort="False" IsReadOnly="True" Binding="{Binding SdApp}">
+                            <DataGridTextColumn Header="SD" CanUserSort="False" IsReadOnly="True" Width="*" Binding="{Binding SdApp}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="FontSize" Value="14"/>
@@ -277,7 +280,7 @@
                                     </Style>
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding TempResult}">
+                            <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Width="*" Binding="{Binding TempResult}">
                                 <DataGridTextColumn.CellStyle>
                                     <Style TargetType="DataGridCell">
                                         <Setter Property="Background" Value="LightGray"/>
@@ -317,7 +320,7 @@
                             <DataGridTextColumn Header="Lỗi Westgard"
                                                 CanUserSort="False"
                                                 IsReadOnly="True"
-                                                Binding="{Binding WestgardRule}" Width="150">
+                                                Binding="{Binding WestgardRule}" Width="1.5*">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="TextWrapping" Value="Wrap"/>
@@ -336,11 +339,37 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
 
-                            <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                            <!-- NEW: checkbox columns for changes -->
+                            <DataGridTemplateColumn Header="Thay thuốc thử mới" CanUserSort="False" Width="55" MinWidth="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsReagentReplaced, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Thay LOT thuốc thử" CanUserSort="False" Width="55" MinWidth="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsReagentLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTemplateColumn Header="Thay LOT cal" CanUserSort="False" Width="55" MinWidth="50">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <CheckBox IsChecked="{Binding IsCalLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <DataGridTextColumn Header="Ghi chú" Width="1.5*" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </materialDesign:Card>
 
+                <!-- other cards / datagrids: set ColumnHeaderHeight="Auto" where needed -->
                 <materialDesign:Card   
                     d:Visibility="Visible"
                     Grid.Row="2" Margin="5" 
@@ -349,19 +378,19 @@
                     VerticalAlignment="Stretch">
                     <DataGrid 
                         Background="White"
-                        Name="calResultdtg" 
+                        Name="calresultdtg" 
                         ItemsSource="{Binding CalibInputList}" 
                         AutoGenerateColumns="False"
                         SelectedItem="{Binding SelectedCalibInput, Mode=OneWayToSource}"
                         CanUserAddRows="False">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" />
-                            <DataGridTextColumn Header="LOT" Binding="{Binding Lot }" CanUserSort="False" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Level" Binding="{Binding Level }" CanUserSort="False" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Min" Binding="{Binding Min }" CanUserSort="False" IsReadOnly="True" />
-                            <DataGridTextColumn Header="Max" Binding="{Binding Max }" CanUserSort="False" IsReadOnly="True" />
+                            <DataGridTextColumn Header="Xét nghiệm" CanUserSort="False" Binding="{Binding TestName}" IsReadOnly="True" Width="2*" />
+                            <DataGridTextColumn Header="LOT" Binding="{Binding Lot }" CanUserSort="False" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Header="Level" Binding="{Binding Level }" CanUserSort="False" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Header="Min" Binding="{Binding Min }" CanUserSort="False" IsReadOnly="True" Width="*" />
+                            <DataGridTextColumn Header="Max" Binding="{Binding Max }" CanUserSort="False" IsReadOnly="True" Width="*" />
 
-                            <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Binding="{Binding Result}">
+                            <DataGridTextColumn Header="Kết quả" CanUserSort="False" IsReadOnly="False" Width="*" Binding="{Binding Result}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="{x:Type TextBlock}">
                                         <Setter Property="Foreground" Value="Green" />
@@ -385,7 +414,7 @@
                                     </Style>
                                 </DataGridTextColumn.EditingElementStyle>
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Ghi chú" Width="auto" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
+                            <DataGridTextColumn Header="Ghi chú" Width="1.5*" IsReadOnly="False" Binding="{Binding Comment}"></DataGridTextColumn>
                         </DataGrid.Columns>
                     </DataGrid>
                 </materialDesign:Card>
@@ -411,7 +440,7 @@
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Thiết bị" Width="120" Binding="{Binding DeviceName}">
+                                    <DataGridTextColumn Header="Thiết bị" Width="*" Binding="{Binding DeviceName}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -419,7 +448,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Level" Width="90" Binding="{Binding LevelName}">
+                                    <DataGridTextColumn Header="Level" Width="*" Binding="{Binding LevelName}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -427,7 +456,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Lần QC" Width="90" Binding="{Binding Index}">
+                                    <DataGridTextColumn Header="Lần QC" Width="*" Binding="{Binding Index}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -435,7 +464,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Ngày" Width="110" Binding="{Binding DateTime, StringFormat={}{0:dd/MM/yyyy}}">
+                                    <DataGridTextColumn Header="Ngày" Width="*" Binding="{Binding DateTime, StringFormat={}{0:dd/MM/yyyy}}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -443,7 +472,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn Header="Giờ" Width="100" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
+                                    <DataGridTextColumn Header="Giờ" Width="*" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -455,7 +484,7 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </materialDesign:Card>
-                      
+
                     </Grid>
                     <Grid Grid.Row="1">
                         <materialDesign:Card Margin="5">
@@ -480,9 +509,9 @@
                                     </i:EventTrigger>
                                 </i:Interaction.Triggers>
                                 <DataGrid.Columns >
-                                    <DataGridTextColumn Header="Thiết bị" CanUserSort="False" Binding="{Binding DeviceName}" IsReadOnly="True" />
-                                    <DataGridTextColumn Header="Lần CAL" Binding="{Binding Index }" CanUserSort="False" IsReadOnly="True" />
-                                    <DataGridTextColumn IsReadOnly="True" Header="Ngày" Width="110" Binding="{Binding DateRun, StringFormat={}{0:dd/MM/yyyy}}">
+                                    <DataGridTextColumn Header="Thiết bị" CanUserSort="False" Binding="{Binding DeviceName}" IsReadOnly="True" Width="*" />
+                                    <DataGridTextColumn Header="Lần CAL" Binding="{Binding Index }" CanUserSort="False" IsReadOnly="True" Width="*" />
+                                    <DataGridTextColumn IsReadOnly="True" Header="Ngày" Width="*" Binding="{Binding DateRun, StringFormat={}{0:dd/MM/yyyy}}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>
@@ -490,7 +519,7 @@
                                             </Style>
                                         </DataGridTextColumn.ElementStyle>
                                     </DataGridTextColumn>
-                                    <DataGridTextColumn IsReadOnly="True" Header="Giờ" Width="100" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
+                                    <DataGridTextColumn IsReadOnly="True" Header="Giờ" Width="*" Binding="{Binding Time, StringFormat={}{0:hh\\:mm\\:ss}}">
                                         <DataGridTextColumn.ElementStyle>
                                             <Style TargetType="TextBlock">
                                                 <Setter Property="TextAlignment" Value="Center"/>

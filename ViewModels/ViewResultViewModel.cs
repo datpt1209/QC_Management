@@ -1,18 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QC_Management.Models;
+using QC_Management.Services;
 using QC_Management.Views;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
 using System.Security.AccessControl;
 using System.Text.Json;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Data;
 using System.Windows.Input;
 using XAct.Library.Settings;
-using System.ComponentModel;
-using System.Windows.Data;
 
 namespace QC_Management.ViewModels
 {
@@ -26,7 +27,6 @@ namespace QC_Management.ViewModels
         private ObservableCollection<Result> _ResultViewList;
         public ObservableCollection<Result> ResultViewList { get => _ResultViewList; set { _ResultViewList = value; OnPropertyChanged(); RefreshCollectionView(); } }
 
-        // Expose an ICollectionView so XAML can show grouping and the UI uses the sorted/grouped view
         private ICollectionView _ResultViewCollection;
         public ICollectionView ResultViewCollection { get => _ResultViewCollection; set { _ResultViewCollection = value; OnPropertyChanged(); } }
 
@@ -85,7 +85,6 @@ namespace QC_Management.ViewModels
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand OpenIncidentCommand { get; set; }
 
-        // New commands/properties for edit-mode
         public ICommand EnableEditCommand { get; set; }
         public ICommand CancelEditCommand { get; set; }
 
@@ -145,7 +144,6 @@ namespace QC_Management.ViewModels
                 _SelectedDevice = value;
                 OnPropertyChanged();
 
-                // When device changes, reload levels for the current SelectedDate and clear dependent selections.
                 if (_SelectedDevice != null)
                 {
                     SelectedLevel = null;
@@ -154,12 +152,15 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    // clear lists if device unset
                     LevelList = new List<LevelQc>();
                     IndexList = new List<int?>();
                 }
             }
         }
+
+        // Snapshot now includes the three flags (nullable bool)
+        private record ResultSnapshot(string? TempResult, string? Comment, string? WestgardRule, bool? IsExclude, double? Result1, bool? IsOutRange, string? QualitativeResult, bool? IsReagentReplaced, bool? IsReagentLotChanged, bool? IsCalLotChanged);
+        private readonly Dictionary<int, ResultSnapshot> _originalResultSnapshot = new();
 
         private LevelQc _SelectedLevel;
         public LevelQc? SelectedLevel
@@ -181,7 +182,6 @@ namespace QC_Management.ViewModels
                 _SelectedDate = value;
                 OnPropertyChanged();
 
-                // When date changes, reload levels for the current SelectedDevice and clear dependent selections.
                 if (SelectedDevice != null)
                 {
                     SelectedLevel = null;
@@ -197,30 +197,45 @@ namespace QC_Management.ViewModels
             SelectedResultType = "QC";
             _dbContext = new QcManagmentContext();
 
-            // initialize empty view
             ResultViewCollection = CollectionViewSource.GetDefaultView(ResultViewList ?? new ObservableCollection<Result>());
 
-            // default: not in edit mode
             IsEditing = false;
 
-            // command to enable edit mode
             EnableEditCommand = new RelayCommand<object>((p) =>
             {
-                // only allow enabling edit when QC list present
                 return ResultViewList != null && ResultViewList.Count > 0;
             }, (p) =>
             {
+                _originalResultSnapshot.Clear();
+                if (ResultViewList != null)
+                {
+                    foreach (var it in ResultViewList)
+                    {
+                        if (it == null) continue;
+                        _originalResultSnapshot[it.Id] = new ResultSnapshot(
+                            it.TempResult,
+                            it.Comment,
+                            it.WestgardRule,
+                            it.IsExclude,
+                            it.Result1,
+                            it.IsOutRange,
+                            it.QualitativeResult,
+                            it.IsReagentReplaced,
+                            it.IsReagentLotChanged,
+                            it.IsCalLotChanged
+                        );
+                    }
+                }
+
                 IsEditing = true;
             });
 
-            // command to cancel edit mode (revert view)
             CancelEditCommand = new RelayCommand<object>((p) =>
             {
                 return true;
             }, (p) =>
             {
                 IsEditing = false;
-                // reload to discard edits in UI (re-fetch from DB)
                 Reload();
             });
 
@@ -235,9 +250,6 @@ namespace QC_Management.ViewModels
 
             ViewCommand = new RelayCommand<ControlInfoDetail>((p) =>
             {
-                // Allow viewing when:
-                // - CALIB: SelectedDevice required
-                // - QC: SelectedDevice and SelectedLevel required; SelectedIndex is optional
                 if (SelectedResultType == "CALIB")
                 {
                     return SelectedDevice != null;
@@ -248,7 +260,6 @@ namespace QC_Management.ViewModels
                 }
             }, (p) =>
             {
-                // Always use a fresh DbContext to avoid stale tracked entities.
                 using var db = new QcManagmentContext();
 
                 if (SelectedResultType == "CALIB")
@@ -271,7 +282,6 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    // Use fresh context for FilterResults to get up-to-date data
                     FilterResults(db);
                 }
             });
@@ -310,7 +320,6 @@ namespace QC_Management.ViewModels
                 }
                 else
                 {
-                    // require a device to be selected; levels will be loaded for the selected date/device
                     return SelectedDevice != null;
                 }
             }, async (p) =>
@@ -336,7 +345,6 @@ namespace QC_Management.ViewModels
 
             EditCommand = new RelayCommand<object>((p) =>
             {
-                // keep same can-execute as before but make SelectedIndex optional for QC
                 if (SelectedResultType == "CALIB")
                 {
                     if (SelectedDevice == null || SelectedCalResult == null) return false;
@@ -359,11 +367,19 @@ namespace QC_Management.ViewModels
                     {
                         foreach (var item in CalList)
                         {
-                            var editResult = CalList.Where(s => s.Id == item.Id).FirstOrDefault();
-                            editResult = item;
+                            var editResult = DataProvider.Ins.DB.CalResults.Where(s => s.Id == item.Id).FirstOrDefault();
+                            if (editResult != null)
+                            {
+                                editResult.Result = item.Result;
+                                editResult.Comment = item.Comment;
+                                editResult.isOutOfRange = item.isOutOfRange;
+                            }
                         }
 
                         DataProvider.Ins.DB.SaveChanges();
+
+                        try { RefreshCollectionView(); } catch { }
+
                         saved = true;
                         MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     }
@@ -376,6 +392,7 @@ namespace QC_Management.ViewModels
                         if (saved)
                         {
                             IsEditing = false;
+                            _originalResultSnapshot.Clear();
                         }
                     }
                 }
@@ -383,26 +400,145 @@ namespace QC_Management.ViewModels
                 {
                     try
                     {
+                        var anyChanged = false;
+
                         foreach (var item in ResultViewList)
                         {
+                            if (item == null) continue;
+
+                            var changed = true;
+                            if (_originalResultSnapshot.TryGetValue(item.Id, out var orig))
+                            {
+                                bool seqEqual(string? a, string? b) => string.Equals(a ?? string.Empty, b ?? string.Empty, StringComparison.Ordinal);
+                                changed = !(
+                                    seqEqual(item.TempResult, orig.TempResult) &&
+                                    seqEqual(item.Comment, orig.Comment) &&
+                                    seqEqual(item.WestgardRule, orig.WestgardRule) &&
+                                    item.IsExclude == orig.IsExclude &&
+                                    NullableEquals(item.Result1, orig.Result1) &&
+                                    NullableEquals(item.IsOutRange, orig.IsOutRange) &&
+                                    seqEqual(item.QualitativeResult, orig.QualitativeResult) &&
+                                    NullableEquals(item.IsReagentReplaced, orig.IsReagentReplaced) &&
+                                    NullableEquals(item.IsReagentLotChanged, orig.IsReagentLotChanged) &&
+                                    NullableEquals(item.IsCalLotChanged, orig.IsCalLotChanged)
+                                );
+                            }
+
+                            if (!changed) continue;
+
+                            anyChanged = true;
+
                             var editResult = DataProvider.Ins.DB.Results.Where(s => s.Id == item.Id).FirstOrDefault();
                             if (editResult != null)
                             {
                                 editResult.TempResult = item.TempResult;
                                 editResult.Comment = item.Comment;
-                                editResult.WestgardRule = item.WestgardRule;
-                                editResult.IsExclude = item.IsExclude; // Cập nhật Exclude
-                                editResult.Result1 = item.Result1;
-                                editResult.IsOutRange = item.IsOutRange;
+                                editResult.WestgardRule = string.IsNullOrWhiteSpace(item.WestgardRule) ? null : item.WestgardRule;
+                                editResult.IsExclude = item.IsExclude;
+
+                                double? numeric = item.Result1;
+                                if (!numeric.HasValue && !string.IsNullOrWhiteSpace(item.TempResult))
+                                {
+                                    if (double.TryParse(item.TempResult.Trim(), out var parsed))
+                                        numeric = parsed;
+                                }
+                                editResult.Result1 = numeric;
+
                                 editResult.QualitativeResult = item.QualitativeResult;
-                                // Persist corrected status when editing
-                                editResult.IsCorrected = item.IsCorrected;
+
+                                editResult.IsOutRange = item.IsOutRange;
+
+                                // NEW: copy the three flags into tracked entity
+                                editResult.IsReagentReplaced = item.IsReagentReplaced;
+                                editResult.IsReagentLotChanged = item.IsReagentLotChanged;
+                                editResult.IsCalLotChanged = item.IsCalLotChanged;
+
+                                try
+                                {
+                                    ControlInfoDetail? ctrl = editResult.IdControlDetailNavigation;
+                                    if (ctrl == null && editResult.IdControlDetail.HasValue)
+                                    {
+                                        ctrl = DataProvider.Ins.DB.ControlInfoDetails
+                                                    .AsNoTracking()
+                                                    .FirstOrDefault(c => c.Id == editResult.IdControlDetail.Value);
+                                    }
+
+                                    if (numeric.HasValue && ctrl != null)
+                                    {
+                                        double? meanToApply = ctrl.CurMean ?? ctrl.MeanApp ?? ctrl.MeanNsx;
+                                        double? sdToApply = ctrl.CurSd ?? ctrl.SdApp ?? ctrl.SdNsx;
+                                        if (meanToApply.HasValue && sdToApply.HasValue)
+                                        {
+                                            var sdVal = sdToApply.Value == 0 ? 0.0001 : sdToApply.Value;
+                                            editResult.ZScore = Math.Round((numeric.Value - meanToApply.Value) / sdVal, 4);
+                                        }
+                                        else
+                                        {
+                                            editResult.ZScore = null;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        editResult.ZScore = null;
+                                    }
+                                }
+                                catch
+                                {
+                                }
+
+                                editResult.IsCorrected = (!string.IsNullOrWhiteSpace(editResult.WestgardRule) || editResult.IsOutRange == true)
+                                    ? (bool?)false
+                                    : null;
+
+                                try
+                                {
+                                    var isProblematic = editResult.IsOutRange == true || !string.IsNullOrWhiteSpace(editResult.WestgardRule);
+                                    if (isProblematic)
+                                    {
+                                        var exists = DataProvider.Ins.DB.InternalErrors.Any(i => i.ErroneousResultId == editResult.Id);
+                                        if (!exists)
+                                        {
+                                            var cid = editResult.IdControlDetailNavigation;
+                                            var ie = new InternalError
+                                            {
+                                                ErroneousResultId = editResult.Id,
+                                                TestId = editResult.IdTest,
+                                                DeviceId = editResult.IdDevice,
+                                                ControlInfoDetailId = editResult.IdControlDetail,
+                                                Lot = cid?.Lot,
+                                                WestgardDescription = !string.IsNullOrWhiteSpace(editResult.WestgardRule)
+                                                    ? editResult.WestgardRule
+                                                    : (editResult.IsOutRange == true ? "Out-of-range" : null),
+                                                RelatedResultsJson = System.Text.Json.JsonSerializer.Serialize(new { Id = editResult.Id, TestId = editResult.IdTest, TempResult = editResult.TempResult }),
+                                                IsResolved = false,
+                                                Status = "Đang chờ",
+                                                CreatedAt = editResult.DateRun == default ? DateTime.UtcNow : editResult.DateRun,
+                                                CreatedBy = UserManager.Instance?.CurrentUser?.DisplayName ?? UserManager.Instance?.CurrentUser?.Id.ToString()
+                                            };
+
+                                            DataProvider.Ins.DB.InternalErrors.Add(ie);
+                                        }
+                                    }
+                                }
+                                catch
+                                {
+                                }
                             }
                         }
 
-                        DataProvider.Ins.DB.SaveChanges();
-                        saved = true;
-                        MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        if (!anyChanged)
+                        {
+                            MessageBox.Show("Không có thay đổi để lưu.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
+                        else
+                        {
+                            DataProvider.Ins.DB.SaveChanges();
+
+                            try { RefreshCollectionView(); } catch { }
+
+                            saved = true;
+                            MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -413,10 +549,18 @@ namespace QC_Management.ViewModels
                         if (saved)
                         {
                             IsEditing = false;
+                            _originalResultSnapshot.Clear();
                         }
                     }
                 }
+
+                static bool NullableEquals<T>(T? a, T? b) where T : struct
+                {
+                    if (a.HasValue != b.HasValue) return false;
+                    return !a.HasValue || a.Value.Equals(b.Value);
+                }
             });
+
 
             AddCommand = new RelayCommand<Result>((p) =>
             {
@@ -615,15 +759,6 @@ namespace QC_Management.ViewModels
                     await UpdateLevelsByDeviceAsync(SelectedDevice.Id);
                 }
             });
-
-            //OpenIncidentCommand = new RelayCommand<Result>((p) =>
-            //{
-            //    return p != null;
-            //}, (p) =>
-            //{
-            //    OpenIncidentWindow(p);
-            //});
-
         }
         private List<int?> LoadIndexList(QcManagmentContext DB)
         {
@@ -639,7 +774,6 @@ namespace QC_Management.ViewModels
             }
             return IndexList;
         }
-
         public async Task UpdateLevelsByDeviceAsync(int deviceId)
         {
             using (var dbContext = new QcManagmentContext())
@@ -668,7 +802,6 @@ namespace QC_Management.ViewModels
                 FilterResults(DB);
             }
         }
-
         private async Task DeleteQCResult(Result result)
         {
             if (result == null) return;
@@ -802,7 +935,6 @@ namespace QC_Management.ViewModels
                 MessageBox.Show($"Error deleting result: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
-
         private async void DeleteCalResult(CalResult calResult)
         {
             if (calResult == null) return;
@@ -893,7 +1025,6 @@ namespace QC_Management.ViewModels
             CalList = new ObservableCollection<CalResult>();
             RefreshCollectionView();
         }
-
         // RefreshCollectionView: apply sorting and optional grouping by IndexQc when SelectedIndex is not chosen.
         private void RefreshCollectionView()
         {
@@ -924,5 +1055,230 @@ namespace QC_Management.ViewModels
             ResultViewCollection = view;
         }
 
+        // Add this helper method somewhere inside the ViewResultViewModel class (e.g. after RefreshCollectionView).
+        // It mirrors the Westgard evaluation in ResultViewModel but operates on the UI's Result instance (detached).
+        private async Task<(bool? isOutRange, string? westgardRule)> EvaluateWestgardForResultAsync(Result candidate)
+        {
+            if (candidate == null) return (null, null);
+
+            try
+            {
+                // Use non-nullable ids from candidate (Result.IdTest/IdDevice/IdLevel are int)
+                var testId = candidate.IdTest;
+                var deviceId = candidate.IdDevice;
+                var levelId = candidate.IdLevel;
+
+                // Guard: require positive ids
+                if (testId <= 0 || deviceId <= 0 || levelId <= 0)
+                {
+                    return (null, null);
+                }
+
+                // Prepare 'current' result object similar to ResultViewModel behavior
+                var current = new Result
+                {
+                    IdTest = candidate.IdTest,
+                    ResultType = candidate.ResultType,
+                    IdTestNavigation = candidate.IdTestNavigation,
+                    IdDevice = candidate.IdDevice,
+                    IdLevel = candidate.IdLevel,
+                    DateRun = candidate.DateRun == default ? DateTime.Now : candidate.DateRun,
+                    Time = candidate.Time,
+                    IdUser = candidate.IdUser,
+                    IndexQc = candidate.IndexQc,
+                    IdControlDetail = candidate.IdControlDetail,
+                    IdControlDetailNavigation = candidate.IdControlDetailNavigation,
+                    TempResult = candidate.TempResult
+                };
+
+                // compute ZScore if quantitative and numeric
+                if (current.ResultType == 2)
+                {
+                    if (current.TempResult != null && double.TryParse(current.TempResult, out var parsed))
+                    {
+                        current.Result1 = parsed;
+                        var ctrl = current.IdControlDetailNavigation;
+                        if (ctrl != null && ctrl.CurMean.HasValue && ctrl.CurSd.HasValue && ctrl.CurSd.Value != 0)
+                        {
+                            current.ZScore = Math.Round((parsed - ctrl.CurMean.Value) / ctrl.CurSd.Value, 4);
+                        }
+                        else current.ZScore = null;
+                    }
+                    else current.ZScore = null;
+                }
+                else
+                {
+                    current.ZScore = null;
+                }
+
+                // Load recent history (same device/test). Use a fresh context for history query.
+                List<Result> recent;
+                using (var db = new QcManagmentContext())
+                {
+                    recent = await db.Results
+                        .AsNoTracking()
+                        .Include(r => r.IdControlDetailNavigation)
+                        .Where(r => r.IdTest == testId && r.IdDevice == deviceId && r.IsExclude != true)
+                        .OrderByDescending(r => r.DateRun)
+                        .ThenByDescending(r => r.IndexQc ?? 0)
+                        .ThenByDescending(r => r.Time ?? TimeSpan.Zero)
+                        .Take(10)
+                        .ToListAsync();
+                }
+
+                var sameLevelPrev = recent.Where(r => r.IdLevel == levelId).ToList();
+                var crossLevelPrev = recent;
+
+                // Load per-device/test enabled rules from DeviceTest.WestgardRulesJson (if any)
+                IEnumerable<string>? enabledRules = null;
+                try
+                {
+                    using var db2 = new QcManagmentContext();
+                    var dt = await db2.DeviceTests
+                                     .AsNoTracking()
+                                     .Where(d => d.IdDevice == deviceId && d.IdTest == testId)
+                                     .Select(d => new { d.WestgardRulesJson })
+                                     .FirstOrDefaultAsync();
+
+                    if (dt != null && !string.IsNullOrWhiteSpace(dt.WestgardRulesJson))
+                    {
+                        try
+                        {
+                            var parsed = System.Text.Json.JsonSerializer.Deserialize<List<string>>(dt.WestgardRulesJson);
+                            if (parsed != null && parsed.Count > 0)
+                            {
+                                enabledRules = parsed.Select(s => s?.Trim()).Where(s => !string.IsNullOrEmpty(s)).ToList();
+                            }
+                            else enabledRules = null;
+                        }
+                        catch
+                        {
+                            enabledRules = null;
+                        }
+                    }
+                }
+                catch
+                {
+                    enabledRules = null;
+                }
+
+                var keysToEvaluate = (enabledRules != null)
+                    ? enabledRules.ToList()
+                    : new List<string> { "1_3S", "1_2S", "2_2S", "R-4s", "4_1S", "10X" };
+
+                var aggViolations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                bool aggIsOutRange = false;
+
+                foreach (var rk in keysToEvaluate)
+                {
+                    try
+                    {
+                        var part = LeveyJenningsChecker.EvaluateSingleRule(current, sameLevelPrev, crossLevelPrev, rk);
+                        if (part?.ViolatedRules != null)
+                        {
+                            foreach (var v in part.ViolatedRules)
+                                aggViolations.Add(v);
+                        }
+                        aggIsOutRange = aggIsOutRange || part.IsOutRange;
+                    }
+                    catch
+                    {
+                        // ignore rule failures
+                    }
+                }
+
+                var ordered = aggViolations.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+                if (ordered.Contains("1_2S") && ordered.Contains("1_3S"))
+                {
+                    ordered.Remove("1_2S");
+                    ordered.Insert(ordered.IndexOf("1_3S") + 1, "1_2S");
+                }
+
+                var westgardRule = ordered.Count > 0 ? string.Join(", ", ordered) : null;
+
+                // For qualitative tests, keep existing IsOutRange computed elsewhere (caller may have set),
+                // but if Levey check indicates out-of-range we reflect that as well.
+                return (aggIsOutRange ? (bool?)true : (bool?)false, westgardRule);
+            }
+            catch
+            {
+                return (null, null);
+            }
+        }
+        // Update CheckWestgardForItemAsync: refresh the ICollectionView instead of replacing the collection item.
+        public async Task CheckWestgardForItemAsync(Result item)
+        {
+            if (item == null) return;
+
+            try
+            {
+                // 1) For qualitative results attempt quick acceptability check from control detail (best-effort)
+                if (item.ResultType != 2)
+                {
+                    try
+                    {
+                        var ctrl = item.IdControlDetailNavigation;
+                        if (ctrl == null && item.IdControlDetail.HasValue)
+                        {
+                            using var db = new QcManagmentContext();
+                            ctrl = await db.ControlInfoDetails
+                                           .AsNoTracking()
+                                           .FirstOrDefaultAsync(c => c.Id == item.IdControlDetail.Value);
+                        }
+
+                        if (ctrl != null && !string.IsNullOrWhiteSpace(item.TempResult))
+                        {
+                            try
+                            {
+                                var acceptable = ctrl.IsQualitativeResultAcceptable(item.TempResult.Trim());
+                                item.IsOutRange = !acceptable;
+                            }
+                            catch
+                            {
+                                // ignore acceptance errors, fall back to Levey evaluation below
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        // swallow - best-effort
+                    }
+                }
+
+                // 2) Run Levey/Jennings evaluation to compute WestgardRule/isOutRange (mirrors ResultViewModel logic)
+                var eval = await EvaluateWestgardForResultAsync(item);
+
+                // Apply evaluation results to the item on UI thread and refresh collection so DataGrid updates.
+                Application.Current?.Dispatcher.Invoke(() =>
+                {
+                    if (eval.isOutRange.HasValue)
+                        item.IsOutRange = eval.isOutRange.Value;
+
+                    item.WestgardRule = string.IsNullOrWhiteSpace(eval.westgardRule) ? null : eval.westgardRule;
+
+                    // Recompute IsCorrected display state: follow existing policy (not-corrected if there is a rule or out-of-range)
+                    item.IsCorrected = (!string.IsNullOrWhiteSpace(item.WestgardRule) || item.IsOutRange == true) ? (bool?)false : null;
+
+                    // Refresh the view instead of replacing the item to avoid losing selection/grouping state
+                    try
+                    {
+                        ResultViewCollection?.Refresh();
+                    }
+                    catch
+                    {
+                        // fallback: update the observable collection element (only if refresh fails)
+                        var idx = ResultViewList?.IndexOf(item) ?? -1;
+                        if (idx >= 0)
+                        {
+                            ResultViewList[idx] = ResultViewList[idx];
+                        }
+                    }
+                });
+            }
+            catch
+            {
+                // non-fatal
+            }
+        }
     }
 }

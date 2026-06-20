@@ -91,8 +91,8 @@
         </Border>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="450"/>
-                <ColumnDefinition Width="10"/>
+                <ColumnDefinition Width="0.4*"/>
+                <ColumnDefinition Width="5"/>
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
@@ -373,8 +373,6 @@
                                     <GridViewColumn Header="LOT" Width="70" DisplayMemberBinding="{Binding Lot}"/>
                                     <GridViewColumn Header="Mean (Cur)" Width="100" DisplayMemberBinding="{Binding CurMean}"/>
                                     <GridViewColumn Header="SD (Cur)" Width="100" DisplayMemberBinding="{Binding CurSd}"/>
-                                    <GridViewColumn Header="MeanApp" Width="100" DisplayMemberBinding="{Binding MeanApp}"/>
-                                    <GridViewColumn Header="SdApp" Width="100" DisplayMemberBinding="{Binding SdApp}"/>
                                     <!-- Status column for each parameter/range -->
                                     <GridViewColumn Header="Status" Width="100">
                                         <GridViewColumn.CellTemplate>

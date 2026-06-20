@@ -4,30 +4,11 @@
              x:Name="Root"
              IsHitTestVisible="False"
              Visibility="Collapsed">
-
-    <!--
-        PulseDotsOverlay — overlay 2 trạng thái:
-          • IsLoading = true  → 3 chấm nhịp nhàng + nền mờ
-          • HasNoData  = true → icon + thông báo "Không có dữ liệu"
-
-        Cách dùng (đặt cùng cấp với CartesianChart trong một Grid):
-            <Grid>
-                <lvc:CartesianChart ... />
-                <local:PulseDotsOverlay
-                    IsLoading="{Binding IsLoading}"
-                    HasNoData="{Binding HasNoData}" />
-            </Grid>
-    -->
-
     <UserControl.Resources>
-
-        <!-- ── Màu dot ── -->
         <Color x:Key="DotColor">#1C8FC5</Color>
 
         <!-- ── Storyboard: 3 dots nhịp nhàng lần lượt ── -->
         <Storyboard x:Key="PulseSb" RepeatBehavior="Forever">
-
-            <!-- Dot 1 -->
             <DoubleAnimationUsingKeyFrames
                 Storyboard.TargetName="Dot1Scale"
                 Storyboard.TargetProperty="ScaleX">

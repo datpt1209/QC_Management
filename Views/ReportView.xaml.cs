@@ -65,6 +65,11 @@ namespace QC_Management
                         ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
                         SDs = (s.Result1 - (s.IdControlDetailNavigation?.CurMean ?? 0)) / (s.IdControlDetailNavigation?.CurSd ?? 1),
                         IsCorrected = s.IsCorrected,
+                        // NEW flags
+                        IsReagentReplaced = s.IsReagentReplaced,
+                        IsReagentLotChanged = s.IsReagentLotChanged,
+                        IsCalLotChanged = s.IsCalLotChanged
+
                     })
                 .OrderBy(s => s.DateRun.Month)
                 .ThenBy(s => s.DateRun.Day)
@@ -100,6 +105,10 @@ namespace QC_Management
                         ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
                         SDs = (s.Result1 - (s.IdControlDetailNavigation?.MeanNsx ?? 0)) / (s.IdControlDetailNavigation?.SdNsx ?? 1),
                         IsCorreted = s.IsCorrected,
+                        // NEW flags
+                        IsReagentReplaced = s.IsReagentReplaced,
+                        IsReagentLotChanged = s.IsReagentLotChanged,
+                        IsCalLotChanged = s.IsCalLotChanged
                     })
                 .OrderBy(s => s.DateRun.Month)
                 .ThenBy(s => s.DateRun.Day)
@@ -135,6 +144,10 @@ namespace QC_Management
                         ProductionDate = s.IdControlDetailNavigation?.IdControlInfoNavigation?.ProductionDate,
                         SDs = (s.Result1 - (s.IdControlDetailNavigation?.CurMean ?? 0)) / (s.IdControlDetailNavigation?.CurSd ?? 1),
                         IsCorreted = s.IsCorrected,
+                        // NEW flags
+                        IsReagentReplaced = s.IsReagentReplaced,
+                        IsReagentLotChanged = s.IsReagentLotChanged,
+                        IsCalLotChanged = s.IsCalLotChanged
                     })
                 .OrderBy(s => s.DateRun.Month)
                 .ThenBy(s => s.DateRun.Day)

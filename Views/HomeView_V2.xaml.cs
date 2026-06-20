@@ -19,25 +19,82 @@ namespace QC_Management.Views
         public HomeView_V2()
         {
             InitializeComponent();
+            Loaded += HomeView_V2_Loaded;
         }
-
-        private void HomeView_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        private void HomeView_V2_Loaded(object? sender, RoutedEventArgs e)
         {
-            var vm = DataContext as HomeViewModel_V2;
-            if (vm != null)
+            UpdateChartHeights();
+        }
+        private void HomeView_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            UpdateChartHeights();
+        }
+        private void UpdateChartHeights()
+        {
+            try
             {
-                double headerHeight = 130;
-                double margin = 20;
-                double availableHeight = e.NewSize.Height - headerHeight - margin;
-                vm.ChartHeight = availableHeight / 3;
+                // Đo chiều cao thực tế của vùng chứa chart
+                double available = ChartAreaGrid.ActualHeight;
 
-                // Cập nhật chiều rộng vùng chart để ViewModel tính SD line length đúng.
-                // Trừ: cột test list (130) + panel thống kê (130) + margins (~30)
-                double chartAreaWidth = e.NewSize.Width - 130 - 130 - 30;
-                if (chartAreaWidth > 0)
-                    vm.ChartAreaWidth = chartAreaWidth;
+                if (available <= 0)
+                    return;
+
+                // Overhead mỗi chart row (tính từ trong ra ngoài):
+                //   - Card outer Margin top+bottom : 5 + 5  = 10 px  (Margin="5")
+                //   - Card border/padding          : ~2 px
+                //   - ScrollViewer horizontal bar  : ~18 px (luôn hiển thị khi nội dung rộng)
+                //   ─────────────────────────────────────────
+                //   Tổng overhead mỗi chart        : ~30 px
+                const double overheadPerChart = 30;
+
+                // Chia đều cho 3 chart, trừ overhead
+                double perChart = Math.Floor((available / 3.0) - overheadPerChart);
+
+                // Giới hạn min/max hợp lý
+                double min = 140;
+                double max = 1200;
+                double final = Math.Max(min, Math.Min(max, perChart));
+
+                // Ghi vào ViewModel nếu có property ChartHeight
+                if (DataContext != null)
+                {
+                    var vm = DataContext;
+                    var prop = vm.GetType().GetProperty("ChartHeight");
+                    if (prop != null && prop.CanWrite)
+                    {
+                        prop.SetValue(vm, final);
+                        return;
+                    }
+                }
+
+                // Fallback: set trực tiếp lên Grid của từng chart
+                Chart1Grid.Height = final + overheadPerChart;
+                Chart2Grid.Height = final + overheadPerChart;
+                Chart3Grid.Height = final + overheadPerChart;
+                Chart4Grid.Height = final + overheadPerChart;
+            }
+            catch
+            {
+                // Bỏ qua lỗi layout tạm thời khi control chưa render xong
             }
         }
+        //private void HomeView_SizeChanged(object sender, System.Windows.SizeChangedEventArgs e)
+        //{
+        //    var vm = DataContext as HomeViewModel_V2;
+        //    if (vm != null)
+        //    {
+        //        double headerHeight = 130;
+        //        double margin = 20;
+        //        double availableHeight = e.NewSize.Height - headerHeight - margin;
+        //        vm.ChartHeight = availableHeight / 3;
+
+        //        // Cập nhật chiều rộng vùng chart để ViewModel tính SD line length đúng.
+        //        // Trừ: cột test list (130) + panel thống kê (130) + margins (~30)
+        //        double chartAreaWidth = e.NewSize.Width - 130 - 130 - 30;
+        //        if (chartAreaWidth > 0)
+        //            vm.ChartAreaWidth = chartAreaWidth;
+        //    }
+        //}
 
         private void ListView_PreviewMouseWheel(object sender, MouseWheelEventArgs e)
         {

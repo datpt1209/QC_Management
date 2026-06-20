@@ -137,27 +137,22 @@
         <!-- VÙNG BIỂU ĐỒ (cột phải) -->
         <Grid Grid.Column="1" Grid.Row="1">
             <materialDesign:Card Margin="5,5,5,10">
-                <Grid>
-                  
+                <Grid x:Name="ChartAreaGrid">
                     <!-- Các chart rows -->
                     <ScrollViewer x:Name="ChartsScrollViewer" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                                <RowDefinition Height="*"/>
-                            </Grid.RowDefinitions>
+                        <StackPanel>
+
+
 
                             <!-- ── Chart 1 ── -->
-                            <Grid Grid.Row="0" Visibility="{Binding Visibility1}">
+                            <Grid x:Name="Chart1Grid" Grid.Row="0" Visibility="{Binding Visibility1}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="130"/>
                                 </Grid.ColumnDefinitions>
                                 <materialDesign:Card Margin="5" Grid.Column="0">
                                     <Grid>
-                                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Visible">
                                             <lvc:CartesianChart
                                                 PreviewMouseWheel="Chart_PreviewMouseWheel"
                                                 Height="{Binding ChartHeight}"
@@ -204,14 +199,14 @@
                             </Grid>
 
                             <!-- ── Chart 2 ── -->
-                            <Grid Grid.Row="1" Visibility="{Binding Visibility2}">
+                            <Grid x:Name="Chart2Grid" Grid.Row="1" Visibility="{Binding Visibility2}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="130"/>
                                 </Grid.ColumnDefinitions>
                                 <materialDesign:Card Margin="5" Grid.Column="0">
                                     <Grid>
-                                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Visible">
                                             <lvc:CartesianChart
                                                 PreviewMouseWheel="Chart_PreviewMouseWheel"
                                                 Height="{Binding ChartHeight}"
@@ -258,14 +253,14 @@
                             </Grid>
 
                             <!-- ── Chart 3 ── -->
-                            <Grid Grid.Row="2" Visibility="{Binding Visibility3}">
+                            <Grid x:Name="Chart3Grid" Grid.Row="2" Visibility="{Binding Visibility3}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="130"/>
                                 </Grid.ColumnDefinitions>
                                 <materialDesign:Card Margin="5" Grid.Column="0">
                                     <Grid>
-                                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Visible">
                                             <lvc:CartesianChart
                                                 PreviewMouseWheel="Chart_PreviewMouseWheel"
                                                 Height="{Binding ChartHeight}"
@@ -312,14 +307,14 @@
                             </Grid>
 
                             <!-- ── Chart 4 ── -->
-                            <Grid Grid.Row="3" Visibility="{Binding Visibility4}">
+                            <Grid x:Name="Chart4Grid" Grid.Row="3" Visibility="{Binding Visibility4}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="130"/>
                                 </Grid.ColumnDefinitions>
                                 <materialDesign:Card Margin="5" Grid.Column="0">
                                     <Grid>
-                                        <ScrollViewer HorizontalScrollBarVisibility="Auto">
+                                        <ScrollViewer HorizontalScrollBarVisibility="Visible">
                                             <lvc:CartesianChart
                                                 PreviewMouseWheel="Chart_PreviewMouseWheel"
                                                 Height="{Binding ChartHeight}"
@@ -365,7 +360,7 @@
                                 </materialDesign:Card>
                             </Grid>
 
-                        </Grid>
+                        </StackPanel>
                     </ScrollViewer>
 
                     <!-- Panel "Không có dữ liệu" — ZIndex cao hơn, đè lên ScrollViewer -->

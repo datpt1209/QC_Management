@@ -19,11 +19,9 @@
     <UserControl.Resources>
         <SolidColorBrush x:Key="RowEvenBrush" Color="#FFF7F7F8"/>
         <SolidColorBrush x:Key="RowOddBrush" Color="White"/>
-        <!-- Optional small style for header buttons so triggers are localized -->
         <Style x:Key="EditToggleButtonStyle" TargetType="Button">
             <Setter Property="IsEnabled" Value="True"/>
             <Style.Triggers>
-                <!-- When VM.IsEditing == true disable the Sửa button -->
                 <DataTrigger Binding="{Binding IsEditing}" Value="True">
                     <Setter Property="IsEnabled" Value="False"/>
                     <Setter Property="Opacity" Value="0.6"/>
@@ -152,7 +150,7 @@
                 <!-- QC Results grid card -->
                 <materialDesign:Card Grid.Row="1"
                          Visibility="{Binding Visibility1}">
-                    <DataGrid ItemsSource="{Binding ResultViewCollection}"
+                <DataGrid ItemsSource="{Binding ResultViewCollection}"
                   AutoGenerateColumns="False"
                   IsReadOnly="{Binding IsGridReadOnly}"
                   SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
@@ -166,14 +164,15 @@
                   GridLinesVisibility="None"
                   BorderThickness="0"
                   HorizontalGridLinesBrush="Transparent"
-                  VerticalGridLinesBrush="Transparent" >
+                  VerticalGridLinesBrush="Transparent"
+                  CellEditEnding="DataGrid_CellEditEnding"
+                  RowEditEnding="DataGrid_RowEditEnding">
 
                         <DataGrid.Style>
                             <Style TargetType="DataGrid">
                                 <Setter Property="Opacity" Value="1"/>
                                 <Setter Property="Background" Value="White"/>
                                 <Style.Triggers>
-                                    <!-- dim and slightly desaturate when grid is read-only -->
                                     <DataTrigger Binding="{Binding IsReadOnly, RelativeSource={RelativeSource Self}}" Value="True">
                                         <Setter Property="Opacity" Value="0.65"/>
                                         <Setter Property="Background" Value="#FFF7F7F8"/>
@@ -183,14 +182,21 @@
                         </DataGrid.Style>
 
                         <DataGrid.Resources>
+                            <DataTemplate x:Key="WrappedHeaderTemplate">
+                                <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center"
+                                           Margin="4,2" FontWeight="SemiBold" />
+                            </DataTemplate>
                             <Style TargetType="DataGridColumnHeader">
                                 <Setter Property="Background" Value="#FFF3F6F9"/>
                                 <Setter Property="FontWeight" Value="SemiBold"/>
                                 <Setter Property="Padding" Value="8"/>
+                                <Setter Property="ContentTemplate" Value="{StaticResource WrappedHeaderTemplate}"/>
+                                <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                <Setter Property="VerticalContentAlignment" Value="Center"/>
                             </Style>
+                            
                         </DataGrid.Resources>
 
-                        <!-- Columns: added Index column (Lần QC) -->
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="Xét nghiệm" CanUserResize="False" Width="*" Binding="{Binding IdTestNavigation.Name ,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True">
                                 <DataGridTextColumn.ElementStyle>
@@ -218,7 +224,7 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
 
-                            <DataGridTemplateColumn Header="Qualitative" CanUserSort="False" CanUserResize="False" Width="1*">
+                            <DataGridTemplateColumn Header="Qualitative" CanUserSort="False" CanUserResize="False" Width="1.1*">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding IdControlDetailNavigation.QualitativeMean,UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" TextWrapping="Wrap" BorderThickness="0" Background="Transparent">
@@ -285,9 +291,10 @@
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <TextBox Text="{Binding TempResult, UpdateSourceTrigger=PropertyChanged}"
-                                     TextWrapping="Wrap" AcceptsReturn="True"
-                                     BorderThickness="0" Background="Transparent"
-                                     IsReadOnly="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}">
+                     TextWrapping="Wrap"
+                     BorderThickness="0" Background="Transparent"
+                     IsReadOnly="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}"
+                     PreviewKeyDown="TempResult_PreviewKeyDown">
                                             <TextBox.Style>
                                                 <Style TargetType="TextBox">
                                                     <Setter Property="Foreground" Value="Green" />
@@ -334,6 +341,70 @@
                                 </DataGridTextColumn.ElementStyle>
                             </DataGridTextColumn>
 
+                            <!-- NEW: three checkboxes for reagent/cal change flags -->
+                            <DataGridCheckBoxColumn Header="Thay thuốc thử" CanUserResize="False" Width="0.8*" Binding="{Binding IsReagentReplaced, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}" Value="False">
+                                                <Setter Property="IsHitTestVisible" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                                <DataGridCheckBoxColumn.EditingElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.EditingElementStyle>
+                            </DataGridCheckBoxColumn>
+
+                            <DataGridCheckBoxColumn Header="Thay LOT thuốc thử" CanUserResize="False" Width="0.9*" Binding="{Binding IsReagentLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}" Value="False">
+                                                <Setter Property="IsHitTestVisible" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                                <DataGridCheckBoxColumn.EditingElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.EditingElementStyle>
+                            </DataGridCheckBoxColumn>
+                            <DataGridCheckBoxColumn Header="Thay LOT Cal" CanUserResize="False" Width="0.8*" Binding="{Binding IsCalLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                                <DataGridCheckBoxColumn.ElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                        <Setter Property="IsHitTestVisible" Value="False"/>
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}" Value="False">
+                                                <Setter Property="IsHitTestVisible" Value="True"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </DataGridCheckBoxColumn.ElementStyle>
+                                <DataGridCheckBoxColumn.EditingElementStyle>
+                                    <Style TargetType="CheckBox">
+                                        <Setter Property="HorizontalAlignment" Value="Center"/>
+                                        <Setter Property="VerticalAlignment" Value="Center"/>
+                                    </Style>
+                                </DataGridCheckBoxColumn.EditingElementStyle>
+                            </DataGridCheckBoxColumn>
+
+
                             <DataGridTextColumn Header="Ghi chú" CanUserResize="False" Width="1.5*" Binding="{Binding Comment,UpdateSourceTrigger=PropertyChanged}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
@@ -358,7 +429,6 @@
                                         <Setter Property="VerticalAlignment" Value="Center"/>
                                         <Setter Property="IsHitTestVisible" Value="False"/>
                                         <Style.Triggers>
-                                            <!-- When grid is editable, allow interaction -->
                                             <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGrid}, Path=IsReadOnly}" Value="False">
                                                 <Setter Property="IsHitTestVisible" Value="True"/>
                                             </DataTrigger>

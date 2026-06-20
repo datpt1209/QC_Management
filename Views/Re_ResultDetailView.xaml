@@ -10,6 +10,22 @@
         WindowState="Maximized"
         Title="Danh sách kết quả QC" Height="450" Width="800">
 
+    <Window.Resources>
+        <DataTemplate x:Key="WrappedHeaderTemplate">
+            <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Margin="4,2" FontWeight="SemiBold"/>
+        </DataTemplate>
+
+        <!-- Apply header wrapping to all DataGridColumnHeader in this window -->
+        <Style TargetType="DataGridColumnHeader">
+            <Setter Property="ContentTemplate" Value="{StaticResource WrappedHeaderTemplate}"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="8"/>
+            <Setter Property="Background" Value="#FFF3F6F9"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+        </Style>
+    </Window.Resources>
+
     <i:Interaction.Triggers>
         <i:EventTrigger EventName="Loaded">
             <i:InvokeCommandAction Command="{Binding LoadCommand}">
@@ -97,7 +113,8 @@
                       AutoGenerateColumns="False"
                       SelectedItem="{Binding SelectedItem, Mode=OneWayToSource}"
                       CanUserAddRows="False"
-                      PreviewKeyDown="InputDataGrid_PreviewKeyDown"> <!-- wired handler -->
+                      PreviewKeyDown="InputDataGrid_PreviewKeyDown"
+                      > <!-- enable auto height for wrapped header -->
                 <DataGrid.Columns >
                     <!-- columns unchanged -->
                     <DataGridTextColumn Header="Xét nghiệm" 
@@ -214,6 +231,31 @@
                             </Style>
                         </DataGridTextColumn.ElementStyle>
                     </DataGridTextColumn>
+
+                    <!-- NEW: checkbox columns for changes -->
+                    <DataGridTemplateColumn Header="Thay thuốc thử mới" CanUserSort="False" Width="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsReagentReplaced, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Thay LOT thuốc thử" CanUserSort="False" Width="140">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsReagentLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <DataGridTemplateColumn Header="Thay LOT cal" CanUserSort="False" Width="120">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <CheckBox IsChecked="{Binding IsCalLotChanged, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Ghi chú" 
                                         Width="*" 
                                         IsReadOnly="False"

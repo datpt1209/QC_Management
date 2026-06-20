@@ -12,7 +12,7 @@ namespace QC_Management.Models
         private string? _TempResult;
         public string? TempResult
         {
-            get =>_TempResult;
+            get => _TempResult;
             set
             {
                 _TempResult = value;
@@ -23,7 +23,7 @@ namespace QC_Management.Models
 
 
         public int? ResultType { get; set; }
-        public Test? Test { get; set; } 
+        public Test? Test { get; set; }
         public string? LOT { get; set; }
         public int idTest { get; set; }
         public string? MeanApp { get; set; }
@@ -54,6 +54,40 @@ namespace QC_Management.Models
             set
             {
                 _isOutRange = value;
+                OnPropertyChanged();
+            }
+        }
+
+        // NEW CHECKBOX FLAGS for UI
+        private bool _isReagentReplaced;
+        public bool IsReagentReplaced
+        {
+            get => _isReagentReplaced;
+            set
+            {
+                _isReagentReplaced = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isReagentLotChanged;
+        public bool IsReagentLotChanged
+        {
+            get => _isReagentLotChanged;
+            set
+            {
+                _isReagentLotChanged = value;
+                OnPropertyChanged();
+            }
+        }
+
+        private bool _isCalLotChanged;
+        public bool IsCalLotChanged
+        {
+            get => _isCalLotChanged;
+            set
+            {
+                _isCalLotChanged = value;
                 OnPropertyChanged();
             }
         }

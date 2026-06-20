@@ -14,6 +14,9 @@ public partial class CalInfor
 
     public int IdCalType { get; set; }
 
+    // New status flag for CalInfor. When changed it should propagate to related CalDetails.
+    public bool Status { get; set; } = true;
+
     public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
 
     public virtual CalType IdCalTypeNavigation { get; set; } = null!;

@@ -440,6 +440,12 @@ namespace QC_Management {
             
             private global::System.Data.DataColumn columnIsCorrected;
             
+            private global::System.Data.DataColumn columnIsReagentReplaced;
+            
+            private global::System.Data.DataColumn columnIsReagentLotChanged;
+            
+            private global::System.Data.DataColumn columnIsCalLotChanged;
+            
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public dtResultDataTable() {
@@ -699,6 +705,30 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsReagentReplacedColumn {
+                get {
+                    return this.columnIsReagentReplaced;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsReagentLotChangedColumn {
+                get {
+                    return this.columnIsReagentLotChanged;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public global::System.Data.DataColumn IsCalLotChangedColumn {
+                get {
+                    return this.columnIsCalLotChanged;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             [global::System.ComponentModel.Browsable(false)]
             public int Count {
                 get {
@@ -762,7 +792,10 @@ namespace QC_Management {
                         string QualitativeRange, 
                         string IsOutRange, 
                         string Id, 
-                        string IsCorrected) {
+                        string IsCorrected, 
+                        string IsReagentReplaced, 
+                        string IsReagentLotChanged, 
+                        string IsCalLotChanged) {
                 dtResultRow rowdtResultRow = ((dtResultRow)(this.NewRow()));
                 object[] columnValuesArray = new object[] {
                         NameDevice,
@@ -792,7 +825,10 @@ namespace QC_Management {
                         QualitativeRange,
                         IsOutRange,
                         Id,
-                        IsCorrected};
+                        IsCorrected,
+                        IsReagentReplaced,
+                        IsReagentLotChanged,
+                        IsCalLotChanged};
                 rowdtResultRow.ItemArray = columnValuesArray;
                 this.Rows.Add(rowdtResultRow);
                 return rowdtResultRow;
@@ -843,6 +879,9 @@ namespace QC_Management {
                 this.columnIsOutRange = base.Columns["IsOutRange"];
                 this.columnId = base.Columns["Id"];
                 this.columnIsCorrected = base.Columns["IsCorrected"];
+                this.columnIsReagentReplaced = base.Columns["IsReagentReplaced"];
+                this.columnIsReagentLotChanged = base.Columns["IsReagentLotChanged"];
+                this.columnIsCalLotChanged = base.Columns["IsCalLotChanged"];
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -904,6 +943,12 @@ namespace QC_Management {
                 base.Columns.Add(this.columnId);
                 this.columnIsCorrected = new global::System.Data.DataColumn("IsCorrected", typeof(string), null, global::System.Data.MappingType.Element);
                 base.Columns.Add(this.columnIsCorrected);
+                this.columnIsReagentReplaced = new global::System.Data.DataColumn("IsReagentReplaced", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsReagentReplaced);
+                this.columnIsReagentLotChanged = new global::System.Data.DataColumn("IsReagentLotChanged", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsReagentLotChanged);
+                this.columnIsCalLotChanged = new global::System.Data.DataColumn("IsCalLotChanged", typeof(string), null, global::System.Data.MappingType.Element);
+                base.Columns.Add(this.columnIsCalLotChanged);
             }
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
@@ -2674,6 +2719,54 @@ namespace QC_Management {
             
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsReagentReplaced {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsReagentReplacedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsReagentReplaced\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsReagentReplacedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsReagentLotChanged {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsReagentLotChangedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsReagentLotChanged\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsReagentLotChangedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public string IsCalLotChanged {
+                get {
+                    try {
+                        return ((string)(this[this.tabledtResult.IsCalLotChangedColumn]));
+                    }
+                    catch (global::System.InvalidCastException e) {
+                        throw new global::System.Data.StrongTypingException("The value for column \'IsCalLotChanged\' in table \'dtResult\' is DBNull.", e);
+                    }
+                }
+                set {
+                    this[this.tabledtResult.IsCalLotChangedColumn] = value;
+                }
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public bool IsNameDeviceNull() {
                 return this.IsNull(this.tabledtResult.NameDeviceColumn);
             }
@@ -3006,6 +3099,42 @@ namespace QC_Management {
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
             public void SetIsCorrectedNull() {
                 this[this.tabledtResult.IsCorrectedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsReagentReplacedNull() {
+                return this.IsNull(this.tabledtResult.IsReagentReplacedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsReagentReplacedNull() {
+                this[this.tabledtResult.IsReagentReplacedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsReagentLotChangedNull() {
+                return this.IsNull(this.tabledtResult.IsReagentLotChangedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsReagentLotChangedNull() {
+                this[this.tabledtResult.IsReagentLotChangedColumn] = global::System.Convert.DBNull;
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public bool IsIsCalLotChangedNull() {
+                return this.IsNull(this.tabledtResult.IsCalLotChangedColumn);
+            }
+            
+            [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+            [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "17.0.0.0")]
+            public void SetIsCalLotChangedNull() {
+                this[this.tabledtResult.IsCalLotChangedColumn] = global::System.Convert.DBNull;
             }
         }
         

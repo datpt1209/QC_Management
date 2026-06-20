@@ -152,4 +152,26 @@ public partial class Result : BaseViewModel
         get => _appliedAt;
         set { _appliedAt = value; OnPropertyChanged(nameof(AppliedAt)); }
     }
+
+    // NEW persisted flags for reagent/cal changes (nullable to preserve backward compatibility)
+    private bool? _isReagentReplaced;
+    public bool? IsReagentReplaced
+    {
+        get => _isReagentReplaced;
+        set { _isReagentReplaced = value; OnPropertyChanged(nameof(IsReagentReplaced)); }
+    }
+
+    private bool? _isReagentLotChanged;
+    public bool? IsReagentLotChanged
+    {
+        get => _isReagentLotChanged;
+        set { _isReagentLotChanged = value; OnPropertyChanged(nameof(IsReagentLotChanged)); }
+    }
+
+    private bool? _isCalLotChanged;
+    public bool? IsCalLotChanged
+    {
+        get => _isCalLotChanged;
+        set { _isCalLotChanged = value; OnPropertyChanged(nameof(IsCalLotChanged)); }
+    }
 }

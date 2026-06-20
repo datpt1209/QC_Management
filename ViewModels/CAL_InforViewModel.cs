@@ -11,7 +11,6 @@ namespace QC_Management.ViewModels
 {
     public class CAL_InforViewModel : BaseViewModel
     {
-
         private List<CalInfor> _CALList;
         public List<CalInfor> CALList { get => _CALList; set { _CALList = value; OnPropertyChanged(); } }
         public ObservableCollection<CalInfor> CALListDB { get; set; }
@@ -56,12 +55,7 @@ namespace QC_Management.ViewModels
             get => _CALInfoList;
             set => SetProperty(ref _CALInfoList, value);
         }
-        private CalInfor _selectedCalInfo;
-        public CalInfor SelectedCalInfo
-        {
-            get => _selectedCalInfo;
-            set => SetProperty(ref _selectedCalInfo, value);
-        }
+
 
         private CalDetail? _selectedCalDetail;
         public CalDetail? SelectedCalDetail
@@ -75,15 +69,10 @@ namespace QC_Management.ViewModels
                 }
             }
         }
-        private ObservableCollection<CalInfor> _CALInfoListDB;
-        public ObservableCollection<CalInfor> CALInfoListDB
-        {
-            get => _CALInfoListDB;
-            set => SetProperty(ref _CALInfoListDB, value);
-        }
 
-        private List<CalDetail> _calDetail_list;
-        public List<CalDetail> CalDetail_List
+        // Changed CalDetail list to ObservableCollection so view updates like QC view
+        private ObservableCollection<CalDetail> _calDetail_list;
+        public ObservableCollection<CalDetail> CalDetail_List
         {
             get => _calDetail_list;
             set => SetProperty(ref _calDetail_list, value);
@@ -103,16 +92,18 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _DeviceTestList, value);
         }
 
-        private CalInfor? _CALSelectedItem;
-        public CalInfor? CALSelectedItem
+        private CalInfor? _selectedCalInfor;
+        public CalInfor? SelectedCalInfo
         {
-            get => _CALSelectedItem;
+            get => _selectedCalInfor;
             set
             {
-                _CALSelectedItem = value;
+                _selectedCalInfor = value;
                 OnPropertyChanged();
+
                 UpdateSelectedItemDetails();
-               
+                // When a CalInfo is selected, load its CalDetails (attached entities)
+                LoadDetailsForSelectedItem();
             }
         }
 
@@ -124,6 +115,9 @@ namespace QC_Management.ViewModels
             {
                 _selectedDevice = value;
                 OnPropertyChanged();
+                // when device changes update tests and filter details
+                UpdateTestList();
+                FilterDetailsByDevice();
             }
         }
 
@@ -143,6 +137,13 @@ namespace QC_Management.ViewModels
         {
             get => _testList;
             set => SetProperty(ref _testList, value);
+        }
+
+        private ObservableCollection<LevelQc> _levelList = new();
+        public ObservableCollection<LevelQc> LevelList
+        {
+            get => _levelList;
+            set => SetProperty(ref _levelList, value);
         }
 
         private double _min;
@@ -166,11 +167,25 @@ namespace QC_Management.ViewModels
             set => SetProperty(ref _isCalEnble, value);
         }
 
+        // New property to represent CalInfor.Status (left/master record)
+        private bool _calInfoIsEnable = true;
+        public bool CALInfoIsEnable
+        {
+            get => _calInfoIsEnable;
+            set => SetProperty(ref _calInfoIsEnable, value);
+        }
+
         private int _selectedLevel;
+        private ObservableCollection<CalInfor> _CALInfoListDB;
         public int SelectedLevel
         {
             get => _selectedLevel;
             set => SetProperty(ref _selectedLevel, value);
+        }
+        public ObservableCollection<CalInfor> CALInfoListDB
+        {
+            get => _CALInfoListDB;
+            set => SetProperty(ref _CALInfoListDB, value);
         }
         public CAL_InforViewModel()
         {
@@ -181,12 +196,10 @@ namespace QC_Management.ViewModels
             LoadedCommand = new RelayCommand<object>((p) =>
             {
                 return true;
-
             }, (p) =>
             {
                 LoadNew();
             });
-
 
             CALAddCommand = new RelayCommand<CalInfor>((p) =>
             {
@@ -199,13 +212,14 @@ namespace QC_Management.ViewModels
                     IdCalTypeNavigation = SelectedCalibType,
                     CalLot = CALLOT,
                     ExpirationDate = CALExpirationDate,
+                    Status = CALInfoIsEnable,
                 };
 
                 try
                 {
                     DataProvider.Ins.DB.CalInfors.Add(calInfor);
                     DataProvider.Ins.DB.SaveChanges();
-                    MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    MessageBox.Show("Thêm thông tin Cal thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     RefreshCalInforList();
                     ResetCalInforFields();
                 }
@@ -217,22 +231,30 @@ namespace QC_Management.ViewModels
 
             CALEditCommand = new RelayCommand<CalInfor>((p) =>
             {
-                return CALSelectedItem != null &&
-                       (CALSelectedItem.ExpirationDate != CALExpirationDate ||
-                        CALSelectedItem.CalLot != CALLOT ||
-                        CALSelectedItem.IdCalType != SelectedCalibType?.Id);
+                return SelectedCalInfo != null &&
+                       (SelectedCalInfo.ExpirationDate != CALExpirationDate ||
+                        SelectedCalInfo.CalLot != CALLOT ||
+                        SelectedCalInfo.IdCalType != SelectedCalibType?.Id ||
+                        SelectedCalInfo.Status != CALInfoIsEnable);
             }, (p) =>
             {
-                CALSelectedItem.CalLot = CALLOT;
-                CALSelectedItem.ExpirationDate = CALExpirationDate;
-                CALSelectedItem.IdCalType = SelectedCalibType.Id;
-                CALSelectedItem.IdCalTypeNavigation = SelectedCalibType;
+                SelectedCalInfo.CalLot = CALLOT;
+                SelectedCalInfo.ExpirationDate = CALExpirationDate;
+                SelectedCalInfo.IdCalType = SelectedCalibType.Id;
+                SelectedCalInfo.IdCalTypeNavigation = SelectedCalibType;
+                SelectedCalInfo.Status = CALInfoIsEnable;
 
                 try
                 {
+                    // propagate status change to related CalDetails
+                    var details = DataProvider.Ins.DB.CalDetails.Where(cd => cd.IdCalInfor == SelectedCalInfo.Id).ToList();
+                    foreach (var d in details)
+                        d.Status = CALInfoIsEnable;
+
                     DataProvider.Ins.DB.SaveChanges();
                     MessageBox.Show("Cập nhật thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                     RefreshCalInforList();
+                    RefreshCalDetailList();
                     ResetCalInforFields();
                 }
                 catch (Exception ex)
@@ -243,9 +265,8 @@ namespace QC_Management.ViewModels
 
             CalTypeSelectionChangedCommand = new RelayCommand<CalInfor>((p) =>
             {
-            if (CalibTypeList == null || SelectedCalibType == null)
+                if (CalibTypeList == null || SelectedCalibType == null)
                     return false;
-               
                 else
                     return true;
 
@@ -255,29 +276,28 @@ namespace QC_Management.ViewModels
                     .Where(s => s.IdCalType == SelectedCalibType.Id)
                     .Include(c => c.CalDetails)
                     .ToList();
+
+                RefreshCalInforList();
             });
 
             CALDeleteCommand = new RelayCommand<CalInfor>((p) =>
             {
-                return CALSelectedItem != null;
+                return SelectedCalInfo != null;
             }, (p) =>
             {
-                if (CALSelectedItem == null) return;
+                if (SelectedCalInfo == null) return;
 
-                var result = MessageBox.Show($"Bạn có muốn xóa thông tin QC: {CALSelectedItem.CalLot}?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
+                var result = MessageBox.Show($"Bạn có muốn xóa thông tin Cal: {SelectedCalInfo.CalLot}?", "Xác nhận", MessageBoxButton.YesNo, MessageBoxImage.Question);
                 if (result == MessageBoxResult.Yes)
                 {
                     try
                     {
-                        // Xóa các CalDetail liên quan
-                        var details = DataProvider.Ins.DB.CalDetails.Where(cd => cd.IdCalInfor == CALSelectedItem.Id).ToList();
+                        var details = DataProvider.Ins.DB.CalDetails.Where(cd => cd.IdCalInfor == SelectedCalInfo.Id).ToList();
                         DataProvider.Ins.DB.CalDetails.RemoveRange(details);
-
-                        // Xóa CalInfor
-                        DataProvider.Ins.DB.CalInfors.Remove(CALSelectedItem);
+                        DataProvider.Ins.DB.CalInfors.Remove(SelectedCalInfo);
                         DataProvider.Ins.DB.SaveChanges();
 
-                        MessageBox.Show("Xóa thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                        MessageBox.Show("Xóa thông tin Cal thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                         RefreshCalInforList();
                         ResetCalInforFields();
                     }
@@ -290,7 +310,7 @@ namespace QC_Management.ViewModels
         }
 
         private bool CanAdd(CalDetail p) =>
-           CALSelectedItem != null && SelectedDevice != null && SelectedTest != null && SelectedLevel != null && Max != 0;
+           SelectedCalInfo != null && SelectedDevice != null && SelectedTest != null && SelectedLevel != 0 && Max != 0;
 
         private void Add(CalDetail p)
         {
@@ -298,22 +318,21 @@ namespace QC_Management.ViewModels
             {
                 IdDevice = SelectedDevice.Id,
                 IdDeviceNavigation = SelectedDevice,
-                IdCalInfor = CALSelectedItem.Id,
-                IdCalInforNavigation = CALSelectedItem,
+                IdCalInfor = SelectedCalInfo.Id,
+                IdCalInforNavigation = SelectedCalInfo,
                 Level = SelectedLevel,
                 IdTestNavigation = SelectedTest,
                 IdTest = SelectedTest.Id,
                 MinValue = Min,
                 MaxValue = Max,
                 Status = CALIsEnable,
-
             };
 
             try
             {
                 DataProvider.Ins.DB.CalDetails.Add(calDetail);
                 DataProvider.Ins.DB.SaveChanges();
-                MessageBox.Show("Thêm thông tin QC thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Thêm CalDetail thành công!", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
                 RefreshCalDetailList();
                 ResetCalDetailFields();
             }
@@ -325,7 +344,7 @@ namespace QC_Management.ViewModels
 
         private bool CanEdit(CalDetail p) =>
             SelectedCalDetail != null &&
-            (SelectedCalDetail.IdCalInforNavigation != SelectedCalInfo ||
+            (SelectedCalDetail.IdCalInfor != SelectedCalInfo?.Id ||
             SelectedCalDetail.Level != SelectedLevel ||
             SelectedCalDetail.IdTestNavigation != SelectedTest ||
             SelectedCalDetail.MinValue != Min ||
@@ -335,8 +354,10 @@ namespace QC_Management.ViewModels
 
         private void Edit(CalDetail p)
         {
-            SelectedCalDetail.IdCalInfor = CALSelectedItem.Id;
-            SelectedCalDetail.IdCalInforNavigation = CALSelectedItem;
+            if (SelectedCalDetail == null) return;
+
+            SelectedCalDetail.IdCalInfor = SelectedCalInfo.Id;
+            SelectedCalDetail.IdCalInforNavigation = SelectedCalInfo;
             SelectedCalDetail.Level = SelectedLevel;
             SelectedCalDetail.IdTest = SelectedTest.Id;
             SelectedCalDetail.MinValue = Min;
@@ -359,11 +380,12 @@ namespace QC_Management.ViewModels
 
         private void Delete(CalDetail p)
         {
-            var deleteItem = DataProvider.Ins.DB.CalDetails.FirstOrDefault(s => s.Id == SelectedCalDetail.Id);
+            if (SelectedCalDetail == null) return;
 
+            var deleteItem = DataProvider.Ins.DB.CalDetails.FirstOrDefault(s => s.Id == SelectedCalDetail.Id);
             if (deleteItem == null) return;
 
-            var result = MessageBox.Show($"Bạn có muốn xóa thông tin QC: {SelectedCalDetail.IdCalInforNavigation} LOT: {SelectedCalDetail.IdCalInforNavigation.CalLot} Level: {SelectedCalDetail.Level}?", "Confirmation", MessageBoxButton.YesNo);
+            var result = MessageBox.Show($"Bạn có muốn xóa thông tin Cal: {SelectedCalDetail.IdCalInforNavigation?.CalLot} Level: {SelectedCalDetail.Level}?", "Confirmation", MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes)
             {
                 try
@@ -380,72 +402,105 @@ namespace QC_Management.ViewModels
                 }
             }
         }
+
         private void LoadNew()
         {
             CalibTypeList = new ObservableCollection<CalType>(DataProvider.Ins.DB.CalTypes);
             DeviceList = new ObservableCollection<Device>(DataProvider.Ins.DB.Devices);
             DeviceTestList = new ObservableCollection<DeviceTest>();
-            CALListDB = new ObservableCollection<CalInfor>();
-            CALList = new List<CalInfor>();
+            CALListDB = new ObservableCollection<CalInfor>(DataProvider.Ins.DB.CalInfors.Include(c => c.CalDetails));
+            CALList = CALListDB.ToList();
+            LevelList = new ObservableCollection<LevelQc>(DataProvider.Ins.DB.LevelQcs);
+            // initialize empty details
+            CalDetail_List = new ObservableCollection<CalDetail>();
+            // default new cal info status
+            CALInfoIsEnable = true;
         }
+
         private void UpdateSelectedItemDetails()
         {
             ResetCalDetailFields();
-            if (CALSelectedItem != null)
+            if (SelectedCalInfo != null)
             {
-                CALExpirationDate = CALSelectedItem.ExpirationDate;
-                CALLOT = CALSelectedItem.CalLot;
-                CalDetail_List = DataProvider.Ins.DB.CalDetails
-                                    .Where(cd => cd.IdCalInforNavigation.Id == CALSelectedItem.Id)
+                CALExpirationDate = SelectedCalInfo.ExpirationDate;
+                CALLOT = SelectedCalInfo.CalLot;
+                // reflect CalInfor status to UI
+                CALInfoIsEnable = SelectedCalInfo.Status;
+                // reflect CalInfor's type to the editor (so CalType combobox updates)
+                SelectedCalibType = SelectedCalInfo.IdCalTypeNavigation;
+                // load attached CalDetails and set observable
+                var details = DataProvider.Ins.DB.CalDetails
+                                    .Where(cd => cd.IdCalInfor == SelectedCalInfo.Id)
                                     .Include(cd => cd.IdTestNavigation)
                                     .Include(cd => cd.IdDeviceNavigation)
                                     .Include(cd => cd.IdCalInforNavigation).ToList();
+
+                CalDetail_List = new ObservableCollection<CalDetail>(details);
+            }
+            else
+            {
+                CalDetail_List = new ObservableCollection<CalDetail>();
             }
         }
 
         private void UpdateSelectedCalDetails()
         {
-            SelectedLevel = (int)SelectedCalDetail.Level;
-            SelectedTest = SelectedCalDetail.IdTestNavigation;
-            Min = (double)SelectedCalDetail.MinValue;
-            Max = (double)SelectedCalDetail.MaxValue;
-            SelectedDevice = SelectedCalDetail.IdDeviceNavigation;
-            CALIsEnable = (bool)SelectedCalDetail.Status;
+            if (SelectedCalDetail == null) return;
+
+            // cache values so setter side-effects won't change what we apply
+            var level = SelectedCalDetail.Level ?? 0;
+            var test = SelectedCalDetail.IdTestNavigation;
+            var min = SelectedCalDetail.MinValue ?? 0;
+            var max = SelectedCalDetail.MaxValue ?? 0;
+            var device = SelectedCalDetail.IdDeviceNavigation;
+            var status = SelectedCalDetail.Status;
+
+            // apply simple properties first
+            SelectedLevel = level;
+            Min = min;
+            Max = max;
+
+            // set backing field directly for device to avoid triggering SelectedDevice setter
+            _selectedDevice = device;
+            OnPropertyChanged(nameof(SelectedDevice));
+
+            // update tests for the device (without filtering details which would clear SelectedCalDetail)
+            UpdateTestList();
+
+            // now set selected test and status
+            SelectedTest = test;
+            CALIsEnable = status;
         }
+
         private void RefreshCalInforList()
         {
             if (SelectedCalibType == null)
             {
                 CALList = new List<CalInfor>();
+                CALInfoListDB = new ObservableCollection<CalInfor>();
                 return;
             }
-            CALListDB = new ObservableCollection<CalInfor>(DataProvider.Ins.DB.CalInfors
+            CALInfoListDB = new ObservableCollection<CalInfor>(DataProvider.Ins.DB.CalInfors
                 .Where(c => c.IdCalType == SelectedCalibType.Id)
                 .Include(c => c.CalDetails));
-            CALList = CALListDB.ToList();
+            CALList = CALInfoListDB.ToList();
         }
 
         private void RefreshCalDetailList()
         {
             if (SelectedCalInfo != null)
             {
-                CalDetail_List = DataProvider.Ins.DB.CalDetails
+                var details = DataProvider.Ins.DB.CalDetails
                     .Where(cd => cd.IdCalInfor == SelectedCalInfo.Id)
                     .Include(cd => cd.IdTestNavigation)
                     .Include(cd => cd.IdDeviceNavigation)
                     .ToList();
-            }
-            else if (CALSelectedItem != null)
-            {
-                CalDetail_List = DataProvider.Ins.DB.CalDetails
-                    .Where(cd => cd.IdCalInfor == CALSelectedItem.Id)
-                    .Include(cd => cd.IdTestNavigation)
-                    .Include(cd => cd.IdDeviceNavigation)
-                    .ToList();
+
+                CalDetail_List = new ObservableCollection<CalDetail>(details);
             }
             else
             {
-                CalDetail_List = new List<CalDetail>();
+                CalDetail_List = new ObservableCollection<CalDetail>();
             }
         }
 
@@ -453,6 +508,7 @@ namespace QC_Management.ViewModels
         {
             CALLOT = string.Empty;
             CALExpirationDate = DateTime.Now;
+            CALInfoIsEnable = true;
         }
 
         private void ResetCalDetailFields()
@@ -465,6 +521,7 @@ namespace QC_Management.ViewModels
             CALIsEnable = false;
             SelectedCalDetail = null;
         }
+
         private void UpdateTestList()
         {
             if (SelectedDevice == null)
@@ -476,6 +533,55 @@ namespace QC_Management.ViewModels
                 .Where(s => s.IdDevice == SelectedDevice.Id)
                 .Select(s => s.IdTestNavigation)
                 .OrderBy(s => s.Index));
+            // after updating tests, keep selected test if it's still in the list
+            if (SelectedTest != null && !TestList.Any(t => t.Id == SelectedTest.Id))
+                SelectedTest = null;
+        }
+
+        // Filtering details by selected device (mirrors QC flow)
+        private void FilterDetailsByDevice()
+        {
+            if (SelectedCalInfo == null)
+            {
+                CalDetail_List = new ObservableCollection<CalDetail>();
+                return;
+            }
+
+            try
+            {
+                var query = DataProvider.Ins.DB.CalDetails
+                    .Include(cd => cd.IdTestNavigation)
+                    .Include(cd => cd.IdDeviceNavigation)
+                    .Where(cd => cd.IdCalInfor == SelectedCalInfo.Id);
+
+                if (SelectedDevice != null)
+                    query = query.Where(cd => cd.IdDevice == SelectedDevice.Id);
+
+                var details = query.OrderBy(cd => cd.IdDeviceNavigation.Name).ThenBy(cd => cd.Level).ThenBy(cd => cd.IdTest).ToList();
+                CalDetail_List = new ObservableCollection<CalDetail>(details);
+                SelectedCalDetail = null;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Filter cal detail failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+        private void LoadDetailsForSelectedItem()
+        {
+            if (SelectedCalInfo != null)
+            {
+                var details = DataProvider.Ins.DB.CalDetails
+                    .Where(cd => cd.IdCalInfor == SelectedCalInfo.Id)
+                    .Include(cd => cd.IdTestNavigation)
+                    .Include(cd => cd.IdDeviceNavigation)
+                    .ToList();
+
+                CalDetail_List = new ObservableCollection<CalDetail>(details);
+            }
+            else
+            {
+                CalDetail_List = new ObservableCollection<CalDetail>();
+            }
         }
     }
 }

@@ -105,6 +105,12 @@ public partial class QcManagmentContext : DbContext
                 .HasColumnName("CalLOT");
             entity.Property(e => e.ExpirationDate).HasColumnType("date");
 
+            // Map new Status column (bit) with default true
+            entity.Property(e => e.Status)
+                .HasColumnName("Status")
+                .HasColumnType("bit")
+                .HasDefaultValue(true);
+
             entity.HasOne(d => d.IdCalTypeNavigation).WithMany(p => p.CalInfors)
                 .HasForeignKey(d => d.IdCalType)
                 .OnDelete(DeleteBehavior.ClientSetNull)
@@ -391,6 +397,17 @@ public partial class QcManagmentContext : DbContext
 
             // map IsCorrected to a bit column (nullable)
             entity.Property(e => e.IsCorrected).HasColumnName("IsCorrected").HasColumnType("bit");
+
+            // NEW: map new checkbox flags to bit columns
+            entity.Property(e => e.IsReagentReplaced)
+                .HasColumnName("IsReagentReplaced")
+                .HasColumnType("bit");
+            entity.Property(e => e.IsReagentLotChanged)
+                .HasColumnName("IsReagentLotChanged")
+                .HasColumnType("bit");
+            entity.Property(e => e.IsCalLotChanged)
+                .HasColumnName("IsCalLotChanged")
+                .HasColumnType("bit");
 
             // --- NEW: persisted applied mean/sd/at columns ---
             entity.Property(e => e.AppliedMean)
