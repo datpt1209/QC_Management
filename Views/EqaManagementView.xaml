@@ -1,0 +1,122 @@
+﻿<UserControl x:Class="QC_Management.Views.EqaManagementView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d"
+             MinHeight="600" MinWidth="900">
+    <Grid Margin="12">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="260"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="260"/>
+            <ColumnDefinition Width="12"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- Header / Filters -->
+        <StackPanel Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,12">
+            <TextBlock Text="QUẢN LÝ NGOẠI KIỂM XÉT NGHIỆM (EQA)" FontSize="18" FontWeight="Bold" VerticalAlignment="Center"/>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="24,0,0,0">
+                <Button Content="+ NHẬP KẾT QUẢ MỚI" Width="160" Height="34" Margin="12,0,0,0" Command="{Binding NewResultCommand}"/>
+            </StackPanel>
+        </StackPanel>
+
+        <!-- Filters row -->
+        <StackPanel Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,0,0,12" >
+            <ComboBox Width="160" ItemsSource="{Binding Programs}" SelectedItem="{Binding SelectedProgram}" Margin="0,0,8,0" />
+            <ComboBox Width="100" ItemsSource="{Binding Years}" SelectedItem="{Binding SelectedYear}" Margin="0,0,8,0"/>
+            <ComboBox Width="140" ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}" Margin="0,0,8,0"/>
+            <ComboBox Width="160" ItemsSource="{Binding Devices}" SelectedItem="{Binding SelectedDevice}" DisplayMemberPath="Name" Margin="0,0,8,0"/>
+            <TextBox Width="220" Text="{Binding SearchText}" Margin="0,0,8,0"  />
+            <Button Content="Xuất Excel" Command="{Binding ExportCommand}" Width="100"/>
+        </StackPanel>
+
+        <!-- Left: test list -->
+        <Border Grid.Row="2" Grid.Column="0" CornerRadius="6" BorderBrush="#E0E0E0" BorderThickness="1" Padding="8">
+            <StackPanel>
+                <TextBox Text="{Binding TestSearch}" Margin="0,0,0,8"/>
+                <ListBox ItemsSource="{Binding TestList}" SelectedItem="{Binding SelectedTest}" DisplayMemberPath="Name" />
+            </StackPanel>
+        </Border>
+
+        <!-- center area: summary cards + chart -->
+        <StackPanel Grid.Row="2" Grid.Column="2" Orientation="Vertical">
+            <!-- summary cards -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" Margin="0,0,0,12">
+                <Border Width="140" Height="64" Margin="0,0,12,0" Background="#FFF" CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="8">
+                    <StackPanel>
+                        <TextBlock Text="Tổng số xét nghiệm" FontSize="12"/>
+                        <TextBlock Text="{Binding SummaryTotal}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Width="140" Height="64" Margin="0,0,12,0" Background="#E8FFF0" CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="8">
+                    <StackPanel>
+                        <TextBlock Text="Đạt" FontSize="12"/>
+                        <TextBlock Text="{Binding SummaryPassedText}" FontSize="18" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Width="140" Height="64" Margin="0,0,12,0" Background="#FFF8E0" CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="8">
+                    <StackPanel>
+                        <TextBlock Text="Cần xem xét" FontSize="12"/>
+                        <TextBlock Text="{Binding SummaryReviewText}" FontSize="16" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+                <Border Width="140" Height="64" Margin="0,0,12,0" Background="#FFEFEF" CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="8">
+                    <StackPanel>
+                        <TextBlock Text="Không đạt" FontSize="12"/>
+                        <TextBlock Text="{Binding SummaryFailedText}" FontSize="16" FontWeight="Bold"/>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+
+            <!-- Chart placeholder -->
+            <Border CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="12" Background="White">
+                <Grid Height="240">
+                    <TextBlock Text="BIỂU ĐỒ SDI (placeholder)" HorizontalAlignment="Left" VerticalAlignment="Top" FontWeight="Bold"/>
+                    <ItemsControl ItemsSource="{Binding ChartPoints}" VerticalAlignment="Center" Margin="0,32,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Stretch" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Ellipse Width="8" Height="8" Fill="#1976D2" Margin="8,0"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </Border>
+        </StackPanel>
+
+        <!-- bottom: results grid -->
+        <Border Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="3" CornerRadius="6" BorderBrush="#E8E8E8" BorderThickness="1" Padding="8" Background="White">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="KẾT QUẢ NGOẠI KIỂM" FontWeight="Bold" Margin="4"/>
+                <DataGrid Grid.Row="1" ItemsSource="{Binding ExternalResults}" AutoGenerateColumns="False" CanUserAddRows="False" Margin="0,8,0,0">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Đợt" Binding="{Binding Batch}" Width="80"/>
+                        <DataGridTextColumn Header="Ngày thực hiện" Binding="{Binding Date, StringFormat=d}" Width="120"/>
+                        <DataGridTextColumn Header="Level" Binding="{Binding Level}" Width="100"/>
+                        <DataGridTextColumn Header="Kết quả" Binding="{Binding LabValue}" Width="100"/>
+                        <DataGridTextColumn Header="Đơn vị" Binding="{Binding Unit}" Width="80"/>
+                        <DataGridTextColumn Header="Target" Binding="{Binding Target}" Width="100"/>
+                        <DataGridTextColumn Header="SDI" Binding="{Binding SDI}" Width="80"/>
+                        <DataGridTextColumn Header="Bias (%)" Binding="{Binding BiasPercent}" Width="90"/>
+                        <DataGridTextColumn Header="Đánh giá" Binding="{Binding Evaluation}" Width="120"/>
+                        <DataGridTextColumn Header="Ghi chú" Binding="{Binding Note}" Width="*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
