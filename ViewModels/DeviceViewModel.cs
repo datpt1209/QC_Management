@@ -35,7 +35,7 @@ namespace QC_Management.ViewModels
         public ICommand AddCommand { get; set; }
         public ICommand EditCommand { get; set; }
         public ICommand DeleteCommand { get; set; }
-        public ICommand RomoveCommand { get; set; }
+        public ICommand RemoveCommand { get; set; }
         public ICommand DeviceSelectionChangedCommand { get; set; }
         public ICommand CategorySelectionChangedCommand { get; set; }
         public ICommand AddTestCommand { get; set; }
@@ -176,7 +176,7 @@ namespace QC_Management.ViewModels
 
             }, (p) =>
             {
-                var device = new Device() { Name = DisplayName, IdCategory = SelectedCategory?.Id, IdCategoryNavigation = SelectedCategory };
+                var device = new Device() { Name = DisplayName, IdCategory = SelectedCategory?.Id };
 
                 try
                 {
@@ -337,7 +337,7 @@ namespace QC_Management.ViewModels
                 List = new ObservableCollection<Device>(ListDB.Where(s => s.IdCategory == SelectedCategory.Id));
             });
 
-            RomoveCommand = new RelayCommand<DeviceTest>((p) =>
+            RemoveCommand = new RelayCommand<DeviceTest>((p) =>
             {
                 if (SelectedDeviceTest == null) return false;
                 else return true;

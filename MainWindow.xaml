@@ -146,8 +146,7 @@
 
                                     <materialDesign:PackIcon Grid.Column="0" Kind="HomeOutline" Margin="6,0,6,0" Height="22" Width="28" VerticalAlignment="Center"/>
                                     <TextBlock Grid.Column="1" Text="Home" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
-                                    <TextBlock Grid.Column="2" Text="1" Margin="8,0,0,0" Foreground="#777" VerticalAlignment="Center"
-                                               Visibility="{Binding ElementName=NavDrawer, Path=IsLeftDrawerOpen, Converter={StaticResource BoolToVis}}"/>
+                                    
                                 </Grid>
 
                                 <ListViewItem.ToolTip>
@@ -267,6 +266,50 @@
 
                                 <ListViewItem.ToolTip>
                                     <ToolTip x:Name="Cal_range" Content="Thông tin Cal" Style="{StaticResource tt_style}"/>
+                                </ListViewItem.ToolTip>
+                            </ListViewItem>
+                            <!-- add this ListViewItem near the other menu items (e.g. after "Xem kết quả") -->
+                            <ListViewItem MouseEnter="ListViewItem_MouseEnter">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Selected">
+                                        <i:InvokeCommandAction Command="{Binding LoadExternalReviewCommand}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+                                <Grid Margin="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="ChartBar" Margin="6,0,6,0" Height="22" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Review Ngoại kiểm" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <ListViewItem.ToolTip>
+                                    <ToolTip Content="Xem lại kết quả ngoại kiểm" Style="{StaticResource tt_style}"/>
+                                </ListViewItem.ToolTip>
+                            </ListViewItem>
+
+                            <!-- NEW: Biểu đồ Ngoại kiểm -->
+                            <ListViewItem MouseEnter="ListViewItem_MouseEnter">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Selected">
+                                        <i:InvokeCommandAction Command="{Binding LoadExternalResultChartCommand}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                                <Grid Margin="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:PackIcon Grid.Column="0" Kind="ChartLine" Margin="6,0,6,0" Height="22" Width="28" VerticalAlignment="Center"/>
+                                    <TextBlock Grid.Column="1" Text="Biểu đồ Ngoại kiểm" Style="{StaticResource font_style}" VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <ListViewItem.ToolTip>
+                                    <ToolTip Content="Xem biểu đồ kết quả ngoại kiểm" Style="{StaticResource tt_style}"/>
                                 </ListViewItem.ToolTip>
                             </ListViewItem>
 

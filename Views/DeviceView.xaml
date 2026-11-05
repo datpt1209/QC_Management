@@ -121,7 +121,7 @@
                 <!-- Center add/remove -->
                 <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="8,0">
                     <Button Command="{Binding AddTestCommand}" CommandParameter="{Binding SelectedTest}" Content="Add ▶" Margin="4" Width="100" />
-                    <Button Command="{Binding RomoveCommand}" CommandParameter="{Binding SelectedDeviceTest}" Content="◀ Remove" Margin="4" Width="100" />
+                    <Button Command="{Binding RemoveCommand}" CommandParameter="{Binding SelectedDeviceTest}" Content="◀ Remove" Margin="4" Width="100" />
                 </StackPanel>
 
                 <!-- Assigned tests for selected device -->

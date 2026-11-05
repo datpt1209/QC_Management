@@ -58,20 +58,30 @@ namespace QC_Management.ViewModels
         public DateTime? ResultSavedAt => Model.ResultSavedAt;
 
         // SigmaP stored as string (user input)
+        // defensive getters to avoid runtime cast issues
         public string? SigmaP
         {
-            get => Model.SigmaP;
+            get => Model.SigmaP?.ToString(CultureInfo.InvariantCulture);
             set
             {
-                if (Model.SigmaP == value) return;
-                Model.SigmaP = value;
-                // Recompute when sigma changes
+                // parse user input back to numeric stored in model
+                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+                {
+                    if (Model.SigmaP == d) return;
+                    Model.SigmaP = d;
+                }
+                else
+                {
+                    if (Model.SigmaP == null && string.IsNullOrWhiteSpace(value)) return;
+                    Model.SigmaP = null;
+                }
                 Model.ApplyReferenceEvaluation();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ZScore));
                 OnPropertyChanged(nameof(Status));
             }
         }
+
 
         // Editable string result - user types here.
         public string? TempResult
@@ -92,11 +102,19 @@ namespace QC_Management.ViewModels
         // Reference/target value stored as string
         public string? ReferenceValue
         {
-            get => Model.ReferenceValue;
+            get => Model.ReferenceValue?.ToString(CultureInfo.InvariantCulture);
             set
             {
-                if (Model.ReferenceValue == value) return;
-                Model.ReferenceValue = value;
+                if (double.TryParse(value, NumberStyles.Any, CultureInfo.InvariantCulture, out var d))
+                {
+                    if (Model.ReferenceValue == d) return;
+                    Model.ReferenceValue = d;
+                }
+                else
+                {
+                    if (Model.ReferenceValue == null && string.IsNullOrWhiteSpace(value)) return;
+                    Model.ReferenceValue = null;
+                }
                 Model.ApplyReferenceEvaluation();
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(ZScore));
@@ -130,5 +148,6 @@ namespace QC_Management.ViewModels
                 OnPropertyChanged();
             }
         }
+
     }
 }

@@ -18,6 +18,7 @@ public partial class QcManagmentContext : DbContext
 
 
     public virtual DbSet<CalDetail> CalDetails { get; set; }
+    public virtual DbSet<TestType> TestTypes { get; set; }
 
     public virtual DbSet<CalInfor> CalInfors { get; set; }
 
@@ -463,6 +464,7 @@ public partial class QcManagmentContext : DbContext
             entity.HasOne(d => d.TestTypeNavigation).WithMany(p => p.Tests)
                .HasForeignKey(d => d.TestType)
                .HasConstraintName("FK_Test_TestType");
+
         });
 
         modelBuilder.Entity<TestType>(entity =>

@@ -1,5 +1,6 @@
 ﻿using QC_Management.Models;
 using QC_Management.ViewModels;
+using System;
 using System.Windows;
 using System.Windows.Input;
 
@@ -89,5 +90,6 @@ namespace QC_Management
                 e.Cancel = true;
             }
         }
+
     }
 }

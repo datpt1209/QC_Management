@@ -39,14 +39,7 @@
                       SelectedItem="{Binding SelectedDevice, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                       DisplayMemberPath="Name"
                       Style="{StaticResource MaterialDesignOutlinedComboBox}"
-                      materialDesign:HintAssist.Hint="Thiết bị" >
-                <i:Interaction.Triggers>
-                    <i:EventTrigger EventName="SelectionChanged">
-                        <i:InvokeCommandAction Command="{Binding LoadTestsCommand}" CommandParameter="{Binding SelectedDevice}" />
-                    </i:EventTrigger>
-                </i:Interaction.Triggers>
-            </ComboBox>
-
+                      materialDesign:HintAssist.Hint="Thiết bị" />
             <!-- Date + Time picker for DateRun -->
             <DatePicker Width="140" Margin="0,0,8,0"
                         SelectedDate="{Binding SelectedDateTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
@@ -77,6 +70,7 @@
             <Button Content="Delete" Width="80" Command="{Binding DeleteCommand}" Margin="0,0,8,0"/>
             <Button Content="Refresh" Width="80" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
             <Button Content="Manage Programs" Width="140" Margin="12,0,0,0" Command="{Binding OpenProgramCommand}" />
+            <Button Content="Import Excel" Width="120" Margin="8,0,0,0" Command="{Binding ImportExcelCommand}" />
         </StackPanel>
 
         <DataGrid ItemsSource="{Binding NewResults}" SelectedItem="{Binding SelectedResult}" AutoGenerateColumns="False" CanUserAddRows="False">
@@ -123,4 +117,4 @@
             </DataGrid.Columns>
         </DataGrid>
     </DockPanel>
-</UserControl>  
+</UserControl>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace QC_Management.Models;
 
@@ -20,6 +21,10 @@ public partial class Test
     public int? TestType { get; set; }
     // TEa in percent (e.g. 10 means 10%). Nullable for backward compatibility.
     public double? TEaPercent { get; set; }
+
+    // Expose as ParameterName in the model, map to existing DB column "AlinityName" in the context
+    [MaxLength(250)]
+    public string? ParameterName { get; set; }
 
     public virtual ICollection<CalDetail> CalDetails { get; set; } = new List<CalDetail>();
 

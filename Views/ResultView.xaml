@@ -19,6 +19,8 @@
 
     <UserControl.Resources>
         <helpers:VisibilityToColumnWidthConverter x:Key="VisibilityToColumnWidthConverter"/>
+        <!-- Binding proxy to expose DataContext to DataGridColumn bindings -->
+        <helpers:BindingProxy x:Key="ViewModelProxy" Data="{Binding}" />
 
         <DataTemplate x:Key="WrappedHeaderTemplate">
             <TextBlock Text="{Binding}" TextWrapping="Wrap" TextAlignment="Center" Margin="4,2" FontWeight="SemiBold"/>
@@ -223,10 +225,10 @@
                             <DataGridTextColumn Header="LOT QC" Binding="{Binding LOT }" CanUserSort="False" IsReadOnly="True" Width="*" />
                             <!-- Width bind qua attached property: Visible→1* / Collapsed→0 -->
                             <DataGridTextColumn x:Name="ColQualitative" Header="Qualitative" CanUserSort="False"
-                                helpers:DataGridColumnWidthHelper.BindableWidth="{Binding DataContext.ShowQualitative,
-                                    RelativeSource={RelativeSource AncestorType=UserControl},
-                                    Converter={StaticResource VisibilityToColumnWidthConverter}}"
-                                Binding="{Binding QualitativeMean, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
+        helpers:DataGridColumnWidthHelper.BindableWidth="{Binding Data.ShowQualitative,
+            Source={StaticResource ViewModelProxy},
+            Converter={StaticResource VisibilityToColumnWidthConverter}}"
+        Binding="{Binding QualitativeMean, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}">
                                 <DataGridTextColumn.ElementStyle>
                                     <Style TargetType="TextBlock">
                                         <Setter Property="HorizontalAlignment" Value="Center"/>

@@ -32,15 +32,18 @@ namespace QC_Management.ViewModels
         public ICommand LoadTestViewCommand { get; set; }
         public ICommand LoadDeviceViewCommand { get; set; }
         public ICommand LoadCALViewCommand { get; set; }
-        public ICommand LoadCALDetailViewCommand { get; set; }
+        public ICommand LoadExternalReviewCommand { get; set; }
 
         // New command to open Incident / CorrectiveAction management
         public ICommand LoadIncidentManagementViewCommand { get; set; }
 
         // New: command to open ExternalProgram (Ngoại kiểm - chương trình)
-        public ICommand LoadExternalProgramViewCommand { get; set; }
+        public ICommand LoadExternalProgramViewCommand { get; set; }    
 
         public ICommand LoadExternalResultViewCommand { get; set; }
+
+        // Add near other public ICommand declarations
+        public ICommand LoadExternalResultChartCommand { get; set; }
 
         public BaseViewModel CurrentView
         {
@@ -86,6 +89,9 @@ namespace QC_Management.ViewModels
             // Initialize ExternalProgram command to open the ExternalProgramViewModel
             LoadExternalProgramViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalProgramViewModel()));
             LoadExternalResultViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultViewModel()));
+            LoadExternalReviewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultReviewViewModel()));
+
+            LoadExternalResultChartCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultChartViewModel()));
         }
 
         private void LoadWindow(Window window)

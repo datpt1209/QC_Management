@@ -16,8 +16,8 @@ public class ExternalResult
 
     // User-entered values stored as strings
     public string? TempResult { get; set; }         // user-entered result text
-    public string? ReferenceValue { get; set; }     // stored as text (user-entered)
-    public string? SigmaP { get; set; }             // σp stored as text (user-entered)
+    public double? ReferenceValue { get; set; } // if numeric
+    public double? SigmaP { get; set; }    // if DB is float
 
     // Computed/persistent fields
     public double? ZScore { get; set; }
@@ -48,8 +48,8 @@ public class ExternalResult
         if (testType == 2)
         {
             if (double.TryParse(TempResult, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var res)
-                && double.TryParse(ReferenceValue, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var reference)
-                && double.TryParse(SigmaP, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var sigma)
+                && double.TryParse(ReferenceValue.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var reference)
+                && double.TryParse(SigmaP.ToString(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.CurrentCulture, out var sigma)
                 && Math.Abs(sigma) > double.Epsilon)
             {
                 var z = (res - reference) / sigma;
@@ -65,10 +65,10 @@ public class ExternalResult
         }
         else
         {
-            if (!string.IsNullOrWhiteSpace(TempResult) && !string.IsNullOrWhiteSpace(ReferenceValue))
+            if (!string.IsNullOrWhiteSpace(TempResult) && !string.IsNullOrWhiteSpace(ReferenceValue.ToString()))
             {
                 var t = TempResult.Trim();
-                var r = ReferenceValue.Trim();
+                var r = ReferenceValue.ToString().Trim();
                 IsDefect = !string.Equals(t, r, StringComparison.CurrentCultureIgnoreCase);
             }
             else

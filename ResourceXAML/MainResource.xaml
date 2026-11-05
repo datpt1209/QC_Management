@@ -117,6 +117,16 @@
         <views:ExternalResultView />
     </DataTemplate>
 
+    <DataTemplate DataType="{x:Type viewmodel:ExternalResultReviewViewModel}">
+        <views:ExternalResultReviewView />
+    </DataTemplate>
+
+
+    <!-- DataTemplate for ExternalResultChartViewModel -->
+    <DataTemplate DataType="{x:Type viewmodel:ExternalResultChartViewModel}">
+        <views:ExternalResultChartView />
+    </DataTemplate>
+
 
     <Style TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />
