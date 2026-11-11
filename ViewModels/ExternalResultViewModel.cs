@@ -15,6 +15,9 @@ using ExcelDataReader;
 using Microsoft.Win32;
 using System.Text;
 using System.Data;
+using System.Text.RegularExpressions;
+using System.Collections.Generic;
+using UglyToad.PdfPig;
 
 namespace QC_Management.ViewModels
 {
@@ -136,11 +139,13 @@ namespace QC_Management.ViewModels
         public ICommand OpenProgramCommand { get; }
         public ICommand ImportExcelCommand { get; }
         public ICommand ExportCsvCommand { get; }
+        public ICommand ImportPdfCommand { get; }
 
         public ExternalResultViewModel()
         {
             LoadedCommand = new RelayCommand<object>((p) => true, _ => { /* no auto-load */ });
 
+            ImportPdfCommand = new RelayCommand<object>((p) => true, (p) => ImportFromPdf());
             LoadTestsCommand = new RelayCommand<object>(
                 (p) => SelectedDevice != null && SelectedProgram != null,
                 (p) => LoadTestsForDevice());
@@ -195,6 +200,269 @@ namespace QC_Management.ViewModels
             {
                 MessageBox.Show($"Load lookup failed: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
             }
+        }
+        // ------------------- PDF import -------------------
+        private static readonly Regex PdfRowRegex = new(
+            @"^(?<name>.+?)\s+" +
+            @"(?<unit>\S+)\s+" +
+            @"(?<res>[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][-+]?\d+)?)\s+" +
+            @"(?<ref>[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][-+]?\d+)?)\s+" +
+            @"(?<sigma>[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][-+]?\d+)?)" +
+            @"(?:\s+(?<z>[-+]?(?:\d+(?:[.,]\d*)?|[.,]\d+)(?:[eE][-+]?\d+)?))?\s*$",
+            RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+        private void ImportFromPdf()
+        {
+            try
+            {
+                if (SelectedProgram == null)
+                {
+                    MessageBox.Show("Vui lòng chọn Chương trình trước.", "Thông báo", MessageBoxButton.OK, MessageBoxImage.Information);
+                    return;
+                }
+
+                var dlg = new Microsoft.Win32.OpenFileDialog
+                {
+                    Filter = "PDF files (*.pdf)|*.pdf",
+                    Title = "Chọn file kết quả ngoại kiểm (PDF)"
+                };
+                if (dlg.ShowDialog() != true) return;
+
+                var lines = ReadPdfLines(dlg.FileName);
+                var allTests = DataProvider.Ins.DB.Tests.ToList();
+
+                NewResults.Clear();
+                var unmatched = new List<string>();
+                int created = 0, parsedLines = 0;
+
+                foreach (var line in lines)
+                {
+                    var match = PdfRowRegex.Match(line);
+
+                    if (!match.Success)
+                        continue;
+
+                    parsedLines++;
+
+                    var rawTest = match.Groups["name"].Value.Trim();
+                    var test = FindMatchingTest(allTests, rawTest);
+
+                    if (test == null)
+                    {
+                        unmatched.Add(rawTest);
+                        continue;
+                    }
+
+                    if (NewResults.Any(row => row.Model.IdTest == test.Id))
+                        continue;
+
+                    var resultText = match.Groups["res"].Value.Trim();
+                    var reference = ParseNumber(match.Groups["ref"].Value);
+                    var sigma = ParseNumber(match.Groups["sigma"].Value);
+
+                    var model = new ExternalResult
+                    {
+                        ExternalProgramId = SelectedProgram.Id,
+                        ExternalProgram = SelectedProgram,
+                        Batch = Batch,
+                        DateRun = DateRun,
+                        IdDevice = SelectedDevice?.Id,
+                        IdDeviceNavigation = SelectedDevice,
+                        IdTest = test.Id,
+                        IdTestNavigation = test,
+                        Sample = SharedSample,
+                        ReceivedAt = SharedReceivedAt,
+
+                        // Giữ nguyên dạng chuỗi kết quả từ PDF.
+                        // Ví dụ: "33.000".
+                        TempResult = resultText,
+
+                        // Cột "Giá trị ấn định".
+                        ReferenceValue = reference,
+
+                        // Cột "σp".
+                        SigmaP = sigma
+                    };
+
+                    // Không lấy Z-score từ PDF.
+                    // Tính lại theo Result, ReferenceValue và SigmaP.
+                    model.ApplyReferenceEvaluation();
+
+                    NewResults.Add(new ExternalResultRow(model));
+                    created++;
+                }
+
+                if (parsedLines == 0)
+                {
+                    MessageBox.Show("Không nhận dạng được dòng dữ liệu nào trong PDF.\n" +
+                                    "File có thể là bản scan (ảnh) hoặc bố cục bảng khác mẫu.",
+                                    "Nhập PDF", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                var msg = $"Đã nhập {created} dòng từ PDF.";
+                if (unmatched.Any())
+                    msg += $"\nKhông khớp xét nghiệm: {string.Join(", ", unmatched.Distinct().Take(20))}" +
+                           (unmatched.Distinct().Count() > 20 ? " ..." : "");
+                MessageBox.Show(msg, "Nhập PDF", MessageBoxButton.OK,
+                    unmatched.Any() ? MessageBoxImage.Warning : MessageBoxImage.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Nhập PDF thất bại: {ex.Message}", "Lỗi", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        // Gom các chữ có cùng độ cao (±3pt) thành từng dòng, theo thứ tự từ trên xuống
+        private static List<string> ReadPdfLines(string path)
+        {
+            var result = new List<string>();
+
+            using var document = PdfDocument.Open(path);
+
+            foreach (var page in document.GetPages())
+            {
+                var words = page.GetWords()
+                    .OrderByDescending(word => word.BoundingBox.Bottom)
+                    .ToList();
+
+                // Chỉ đọc trang có bảng kết quả ngoại kiểm.
+                if (!IsExternalResultTablePage(words))
+                    continue;
+
+                result.AddRange(BuildPdfLines(words));
+            }
+
+            return result;
+        }
+
+        private static List<string> BuildPdfLines(
+            List<UglyToad.PdfPig.Content.Word> words)
+        {
+            var result = new List<string>();
+            var currentLine = new List<UglyToad.PdfPig.Content.Word>();
+            double? currentY = null;
+
+            void FlushLine()
+            {
+                if (currentLine.Count == 0)
+                    return;
+
+                var line = string.Join(
+                    " ",
+                    currentLine
+                        .OrderBy(word => word.BoundingBox.Left)
+                        .Select(word => word.Text));
+
+                if (!string.IsNullOrWhiteSpace(line))
+                    result.Add(line.Trim());
+
+                currentLine.Clear();
+            }
+
+            foreach (var word in words)
+            {
+                /*
+                 * Các chữ trên cùng một dòng có thể lệch nhau một ít
+                 * do vị trí tọa độ trong PDF.
+                 */
+                if (currentY.HasValue &&
+                    Math.Abs(currentY.Value - word.BoundingBox.Bottom) > 3)
+                {
+                    FlushLine();
+                }
+
+                if (currentLine.Count == 0)
+                    currentY = word.BoundingBox.Bottom;
+
+                currentLine.Add(word);
+            }
+
+            FlushLine();
+
+            return result;
+        }
+
+        private static bool IsExternalResultTablePage(
+            List<UglyToad.PdfPig.Content.Word> words)
+        {
+            var pageText = string.Join(
+                " ",
+                words.Select(word => word.Text));
+
+            var normalizedText = NormalizePdfText(pageText);
+
+            /*
+             * Trang được xem là trang dữ liệu nếu có các tiêu đề
+             * đặc trưng của bảng VEQAS trong hình.
+             */
+            return normalizedText.Contains("thong so") &&
+                   normalizedText.Contains("đon vi đo") &&
+                   normalizedText.Contains("gia tri an đinh") &&
+                   normalizedText.Contains("z-score");
+        }
+
+        private static string NormalizePdfText(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return string.Empty;
+
+            var normalized = value.Normalize(NormalizationForm.FormD);
+            var builder = new StringBuilder();
+
+            foreach (var character in normalized)
+            {
+                var category = CharUnicodeInfo.GetUnicodeCategory(character);
+
+                if (category != UnicodeCategory.NonSpacingMark)
+                    builder.Append(character);
+            }
+
+            return Regex.Replace(
+                builder.ToString()
+                    .Normalize(NormalizationForm.FormC)
+                    .ToLowerInvariant(),
+                @"\s+",
+                " ")
+                .Trim();
+        }
+
+        private static double? ParseNumber(string value)
+        {
+            if (string.IsNullOrWhiteSpace(value))
+                return null;
+
+            var normalized = value
+                .Trim()
+                .Replace("≤", string.Empty)
+                .Replace("≥", string.Empty)
+                .Replace("<", string.Empty)
+                .Replace(">", string.Empty)
+                .Replace(",", ".");
+
+            return double.TryParse(
+                normalized,
+                NumberStyles.Float,
+                CultureInfo.InvariantCulture,
+                out var number)
+                ? number
+                : null;
+        }
+
+        // Cùng quy tắc khớp với nhập Excel: ưu tiên ParameterName, sau đó Name
+        private static Test? FindMatchingTest(List<Test> tests, string raw)
+        {
+            return tests.FirstOrDefault(t =>
+            {
+                foreach (var candidate in new[] { t.ParameterName?.Trim(), t.Name?.Trim() })
+                {
+                    if (string.IsNullOrWhiteSpace(candidate)) continue;
+                    if (string.Equals(candidate, raw, StringComparison.CurrentCultureIgnoreCase)) return true;
+                    if (candidate.IndexOf(raw, StringComparison.CurrentCultureIgnoreCase) >= 0) return true;
+                    if (raw.IndexOf(candidate, StringComparison.CurrentCultureIgnoreCase) >= 0) return true;
+                }
+                return false;
+            });
         }
 
         // Build one row for each test on the selected device

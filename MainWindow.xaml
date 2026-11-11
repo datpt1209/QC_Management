@@ -223,6 +223,43 @@
                                 </ListViewItem.ToolTip>
                             </ListViewItem>-->
 
+                            <!-- Six Sigma -->
+                            <ListViewItem MouseEnter="ListViewItem_MouseEnter">
+                                <i:Interaction.Triggers>
+                                    <i:EventTrigger EventName="Selected">
+                                        <i:InvokeCommandAction
+                Command="{Binding LoadSixSigmaViewCommand}" />
+                                    </i:EventTrigger>
+                                </i:Interaction.Triggers>
+
+                                <Grid Margin="6">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="36"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <materialDesign:PackIcon
+            Grid.Column="0"
+            Kind="ChartBellCurveCumulative"
+            Margin="6,0,6,0"
+            Height="22"
+            Width="28"
+            VerticalAlignment="Center"/>
+
+                                    <TextBlock
+            Grid.Column="1"
+            Text="Six Sigma"
+            Style="{StaticResource font_style}"
+            VerticalAlignment="Center"/>
+                                </Grid>
+
+                                <ListViewItem.ToolTip>
+                                    <ToolTip
+            Content="Quản lý Six Sigma"
+            Style="{StaticResource tt_style}"/>
+                                </ListViewItem.ToolTip>
+                            </ListViewItem>
+
                             <!-- QC Infor -->
                             <ListViewItem Visibility="{Binding Visibility1}" MouseEnter="ListViewItem_MouseEnter">
                                 <i:Interaction.Triggers>
@@ -554,6 +591,16 @@
                             <materialDesign:PackIcon Kind="Database" Width="24" Height="24"/>
                         </Button>
 
+                        <!-- Six Sigma -->
+                        <Button Style="{StaticResource MaterialDesignIconButton}"
+        Command="{Binding LoadSixSigmaViewCommand}"
+        ToolTipService.ToolTip="Six Sigma"
+        Margin="0,6">
+                            <materialDesign:PackIcon
+        Kind="ChartBar"
+        Width="24"
+        Height="24"/>
+                        </Button>
                         <!-- NEW: Quản lý Lỗi / Khắc phục (Incident Management) -->
                         <Button Style="{StaticResource MaterialDesignIconButton}"
                                 Command="{Binding LoadIncidentManagementViewCommand}"

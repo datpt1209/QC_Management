@@ -45,6 +45,9 @@ namespace QC_Management.ViewModels
         // Add near other public ICommand declarations
         public ICommand LoadExternalResultChartCommand { get; set; }
 
+        // New command to open Six Sigma view
+        public ICommand LoadSixSigmaViewCommand { get; set; }
+
         public BaseViewModel CurrentView
         {
             get { return _currentView; }
@@ -90,8 +93,9 @@ namespace QC_Management.ViewModels
             LoadExternalProgramViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalProgramViewModel()));
             LoadExternalResultViewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultViewModel()));
             LoadExternalReviewCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultReviewViewModel()));
-
-            LoadExternalResultChartCommand = new RelayCommand<object>((p) => true, (p) => LoadView(new ExternalResultChartViewModel()));
+            LoadSixSigmaViewCommand = new RelayCommand<object>(
+    parameter => true,
+    parameter => LoadView(new SixSigmaViewModel()));
         }
 
         private void LoadWindow(Window window)

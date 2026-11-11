@@ -71,6 +71,7 @@
             <Button Content="Refresh" Width="80" Command="{Binding RefreshCommand}" Margin="0,0,8,0"/>
             <Button Content="Manage Programs" Width="140" Margin="12,0,0,0" Command="{Binding OpenProgramCommand}" />
             <Button Content="Import Excel" Width="120" Margin="8,0,0,0" Command="{Binding ImportExcelCommand}" />
+            <Button Content="Import PDF" Width="110" Margin="8,0,0,0" Command="{Binding ImportPdfCommand}" />
         </StackPanel>
 
         <DataGrid ItemsSource="{Binding NewResults}" SelectedItem="{Binding SelectedResult}" AutoGenerateColumns="False" CanUserAddRows="False">

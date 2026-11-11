@@ -24,6 +24,7 @@
     <viewmodel:AddResultViewModel x:Key="AddResultVM"></viewmodel:AddResultViewModel>
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
     <viewmodel:IncidentManagementViewModel x:Key="IncidentManagementVM"></viewmodel:IncidentManagementViewModel>
+    <viewmodel:SixSigmaViewModel x:Key="SixSigmaVM" />
     
 
     <!-- ExternalProgram VM added -->
@@ -49,6 +50,9 @@
 
     <DataTemplate DataType="{x:Type viewmodel:AddResultViewModel}">
         <views:AddResultWindow></views:AddResultWindow>
+    </DataTemplate>
+    <DataTemplate DataType="{x:Type viewmodel:SixSigmaViewModel}">
+        <views:SixSigmaView />
     </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodel:ChangePasswordViewModel}">
@@ -120,13 +124,6 @@
     <DataTemplate DataType="{x:Type viewmodel:ExternalResultReviewViewModel}">
         <views:ExternalResultReviewView />
     </DataTemplate>
-
-
-    <!-- DataTemplate for ExternalResultChartViewModel -->
-    <DataTemplate DataType="{x:Type viewmodel:ExternalResultChartViewModel}">
-        <views:ExternalResultChartView />
-    </DataTemplate>
-
 
     <Style TargetType="{x:Type GridViewColumnHeader}">
         <Setter Property="HorizontalContentAlignment" Value="Center" />

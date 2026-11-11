@@ -61,6 +61,7 @@ public partial class QcManagmentContext : DbContext
     // Added external QC tables
     public virtual DbSet<ExternalProgram> ExternalPrograms { get; set; }
     public virtual DbSet<ExternalResult> ExternalResults { get; set; }
+    public virtual DbSet<SigmaMetric> SigmaMetrics { get; set; }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
@@ -569,6 +570,43 @@ public partial class QcManagmentContext : DbContext
             entity.HasIndex(e => e.IdTest).HasDatabaseName("IX_ExternalResult_IdTest");
             entity.HasIndex(e => e.IdDevice).HasDatabaseName("IX_ExternalResult_IdDevice");
             entity.HasIndex(e => e.DateRun).HasDatabaseName("IX_ExternalResult_DateRun");
+        });
+
+        modelBuilder.Entity<SigmaMetric>(entity =>
+        {
+            entity.ToTable("SigmaMetrics");
+
+            entity.HasKey(e => e.Id);
+
+            entity.Property(e => e.TEaPercent)
+                .HasColumnType("float");
+
+            entity.Property(e => e.BiasPercent)
+                .HasColumnType("float");
+
+            entity.Property(e => e.CvPercent)
+                .HasColumnType("float");
+
+            entity.Property(e => e.Sigma)
+                .HasColumnType("float");
+
+            entity.Property(e => e.Qgi)
+                .HasColumnType("float");
+
+            entity.Property(e => e.PeriodStart)
+                .HasColumnType("date");
+
+            entity.Property(e => e.PeriodEnd)
+                .HasColumnType("date");
+
+            entity.Property(e => e.ComputedAt)
+                .HasColumnType("datetime2");
+
+            entity.Property(e => e.Grade)
+                .HasMaxLength(100);
+
+            entity.Property(e => e.ComputedBy)
+                .HasMaxLength(250);
         });
 
         OnModelCreatingPartial(modelBuilder);
