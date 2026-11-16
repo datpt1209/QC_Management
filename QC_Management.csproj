@@ -13,6 +13,7 @@
     <None Remove="Report\CorrectiveActionReport.rdlc" />
     <None Remove="Report\ExternalResulReport.rdlc" />
     <None Remove="Report\InternalErrorsReportrt1.rdlc" />
+    <None Remove="Report\SigmaReport.rdlc" />
   </ItemGroup>
 
 
@@ -42,6 +43,7 @@
     <EmbeddedResource Include="Report\ChartReport.rdlc">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
+    <EmbeddedResource Include="Report\SigmaReport.rdlc" />
   </ItemGroup>
 
   <ItemGroup>

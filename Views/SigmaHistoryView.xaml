@@ -1,0 +1,558 @@
+﻿<UserControl x:Class="QC_Management.Views.SigmaHistoryView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             MinWidth="1000"
+             MinHeight="600">
+
+    <Grid Background="#F4F6F9"
+          Margin="12">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="58"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Tiêu đề -->
+        <Border Grid.Row="0"
+                Background="#202B3A"
+                CornerRadius="8"
+                Padding="16">
+
+            <TextBlock Text="Lịch sử kết quả Six Sigma"
+                       Foreground="White"
+                       FontSize="16"
+                       FontWeight="SemiBold"
+                       VerticalAlignment="Center"/>
+        </Border>
+
+        <!-- Bộ lọc -->
+        <Border Grid.Row="1"
+                Background="White"
+                BorderBrush="#D9E0E8"
+                BorderThickness="1"
+                Padding="12"
+                Margin="0,10,0,10">
+
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="190"/>
+                    <ColumnDefinition Width="180"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="120"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0"
+                            Margin="0,0,10,0">
+
+                    <TextBlock Text="Thiết bị"
+                               FontSize="11"
+                               Foreground="#667085"/>
+
+                    <ComboBox ItemsSource="{Binding Devices}"
+                              SelectedItem="{Binding SelectedDevice, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              Height="32"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1"
+                            Margin="0,0,10,0">
+
+                    <TextBlock Text="Xét nghiệm"
+                               FontSize="11"
+                               Foreground="#667085"/>
+
+                    <ComboBox ItemsSource="{Binding Tests}"
+                              SelectedItem="{Binding SelectedTest, Mode=TwoWay}"
+                              DisplayMemberPath="Name"
+                              Height="32"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2"
+                            Margin="0,0,10,0">
+
+                    <TextBlock Text="Từ ngày"
+                               FontSize="11"
+                               Foreground="#667085"/>
+
+                    <DatePicker SelectedDate="{Binding PeriodStart, Mode=TwoWay}"
+                                Height="32"/>
+                </StackPanel>
+
+                <StackPanel Grid.Column="3"
+                            Margin="0,0,10,0">
+
+                    <TextBlock Text="Đến ngày"
+                               FontSize="11"
+                               Foreground="#667085"/>
+
+                    <DatePicker SelectedDate="{Binding PeriodEnd, Mode=TwoWay}"
+                                Height="32"/>
+                </StackPanel>
+
+                <Button Grid.Column="4"
+                        Content="Tìm kiếm"
+                        Width="85"
+                        Height="32"
+                        Margin="0,14,8,0"
+                        Command="{Binding LoadCommand}"
+                        Background="#1976D2"
+                        Foreground="White"
+                        BorderThickness="0"/>
+
+                <Button Grid.Column="5"
+                        Content="Xóa lọc"
+                        Width="75"
+                        Height="32"
+                        Margin="0,14,8,0"
+                        Command="{Binding ClearCommand}"
+                        Background="#667085"
+                        Foreground="White"
+                        BorderThickness="0"/>
+
+                <TextBlock Grid.Column="6"
+                           Text="{Binding SummaryText}"
+                           VerticalAlignment="Center"
+                           TextWrapping="Wrap"
+                           Foreground="#667085"
+                           FontSize="11"/>
+            </Grid>
+        </Border>
+
+        <!-- Thẻ thống kê -->
+        <UniformGrid Grid.Row="2"
+                     Columns="4"
+                     Margin="0,0,0,10">
+
+            <Border Background="White"
+                    BorderBrush="#2E7D32"
+                    BorderThickness="0,3,0,0"
+                    Padding="10"
+                    Margin="0,0,8,0">
+
+                <StackPanel>
+                    <TextBlock Text="Sigma ≥ 5"
+                               Foreground="#667085"
+                               FontSize="11"/>
+
+                    <TextBlock Text="{Binding ExcellentCount}"
+                               Foreground="#2E7D32"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White"
+                    BorderBrush="#1976D2"
+                    BorderThickness="0,3,0,0"
+                    Padding="10"
+                    Margin="0,0,8,0">
+
+                <StackPanel>
+                    <TextBlock Text="Sigma 4 - 5"
+                               Foreground="#667085"
+                               FontSize="11"/>
+
+                    <TextBlock Text="{Binding GoodCount}"
+                               Foreground="#1976D2"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White"
+                    BorderBrush="#F59E0B"
+                    BorderThickness="0,3,0,0"
+                    Padding="10"
+                    Margin="0,0,8,0">
+
+                <StackPanel>
+                    <TextBlock Text="Sigma 3 - 4"
+                               Foreground="#667085"
+                               FontSize="11"/>
+
+                    <TextBlock Text="{Binding BorderlineCount}"
+                               Foreground="#A55B00"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+
+            <Border Background="White"
+                    BorderBrush="#D62828"
+                    BorderThickness="0,3,0,0"
+                    Padding="10">
+
+                <StackPanel>
+                    <TextBlock Text="Sigma &lt; 3"
+                               Foreground="#667085"
+                               FontSize="11"/>
+
+                    <TextBlock Text="{Binding FailedCount}"
+                               Foreground="#C62828"
+                               FontSize="22"
+                               FontWeight="Bold"/>
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+
+        <!-- Bảng và chi tiết -->
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="1.25*"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Bảng lịch sử -->
+            <Border Grid.Column="0"
+                    Background="White"
+                    BorderBrush="#D9E0E8"
+                    BorderThickness="1"
+                    CornerRadius="6"
+                    Padding="8"
+                    Margin="0,0,8,0">
+
+                <DataGrid ItemsSource="{Binding Metrics}"
+                          SelectedItem="{Binding SelectedMetric, Mode=TwoWay}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          CanUserAddRows="False"
+                          GridLinesVisibility="Horizontal"
+                          BorderThickness="0"
+                          RowHeight="34"
+                          AlternatingRowBackground="#F7F9FC">
+
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Thiết bị"
+                                            Binding="{Binding DeviceName}"
+                                            Width="1.2*"/>
+
+                        <DataGridTextColumn Header="Xét nghiệm"
+                                            Binding="{Binding TestName}"
+                                            Width="1.3*"/>
+
+                        <DataGridTextColumn Header="Level"
+                                            Binding="{Binding LevelText}"
+                                            Width="0.6*"/>
+
+                        <DataGridTextColumn Header="TEa"
+                                            Binding="{Binding TeaText}"
+                                            Width="0.7*"/>
+
+                        <DataGridTextColumn Header="Bias (n)"
+                                            Binding="{Binding BiasText}"
+                                            Width="1*"/>
+
+                        <DataGridTextColumn Header="CV (n)"
+                                            Binding="{Binding CvText}"
+                                            Width="1*"/>
+
+                        <DataGridTextColumn Header="Sigma"
+                                            Binding="{Binding SigmaText}"
+                                            Width="0.8*"/>
+
+                        <DataGridTextColumn Header="QGI"
+                                            Binding="{Binding QgiText}"
+                                            Width="0.8*"/>
+
+                        <DataGridTextColumn Header="Đánh giá"
+                                            Binding="{Binding Metric.Grade}"
+                                            Width="1.2*"/>
+
+                        <DataGridTextColumn Header="Khoảng thời gian"
+                                            Binding="{Binding PeriodText}"
+                                            Width="1.5*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- Chi tiết -->
+                <Border Grid.Row="0"
+        
+                        Background="White"
+         
+                        BorderBrush="#D9E0E8"
+         BorderThickness="1"
+         CornerRadius="6"
+         Padding="12">
+
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="{Binding SelectedMetric.DetailTitle,
+                                       TargetNullValue=Chọn một kết quả để xem chi tiết}"
+                        FontSize="14"
+                        FontWeight="SemiBold"
+                        Foreground="#344054"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,12"/>
+
+                            <TextBlock Text="{Binding SelectedMetric.DetailBiasText}"
+                        Foreground="#475467"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,8"/>
+
+                            <TextBlock Text="{Binding SelectedMetric.DetailSigmaText}"
+                        Foreground="{Binding SelectedMetric.SigmaBrush}"
+                        FontWeight="SemiBold"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,8"/>
+
+                            <TextBlock Text="{Binding SelectedMetric.DetailQgiText}"
+                        Foreground="#475467"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,8"/>
+
+                            <Border Background="{Binding SelectedMetric.GradeBackground}"
+                     CornerRadius="10"
+                     Padding="8,4"
+                     HorizontalAlignment="Left">
+
+                                <TextBlock Text="{Binding SelectedMetric.DetailGradeText}"
+                            Foreground="{Binding SelectedMetric.GradeForeground}"
+                            FontWeight="SemiBold"/>
+                            </Border>
+
+                            <TextBlock Text="{Binding SelectedMetric.PeriodText,
+                                       TargetNullValue=Khoảng thời gian chưa chọn}"
+                        Foreground="#667085"
+                        FontSize="10"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,8"/>
+
+                            <TextBlock Text="{Binding SelectedMetric.ComputedAtText,
+                                       TargetNullValue=Ngày lưu chưa có}"
+                        Foreground="#667085"
+                        FontSize="10"
+                        TextWrapping="Wrap"
+                        Margin="0,0,0,8"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+
+
+                <!-- Biểu đồ quyết định phương pháp -->
+                <Border 
+                    Grid.Row="1"
+                    Background="White"
+                BorderBrush="#D9E0E8"
+                BorderThickness="1"
+                CornerRadius="6"
+                Padding="10"
+                Margin="0,12,0,0">
+
+                    <StackPanel>
+                        <TextBlock Text="Biểu đồ quyết định phương pháp"
+                           FontSize="13"
+                           FontWeight="SemiBold"
+                           Foreground="#344054"
+                           Margin="0,0,0,8"/>
+
+                        <Canvas Width="330"
+                        Height="270"
+                        Background="White"
+                        ClipToBounds="False"
+                        HorizontalAlignment="Center">
+
+                            <!-- Nền Sigma < 3 -->
+                            <Rectangle Canvas.Left="45"
+                               Canvas.Top="25"
+                               Width="255"
+                               Height="180"
+                               Fill="#F8C7CD"
+                               Panel.ZIndex="1"/>
+
+                            <!-- Sigma 3 đến dưới 4 -->
+                            <Polygon Points="45,95 300,205 45,135"
+                             Fill="#F9DDA9"
+                             Panel.ZIndex="2"/>
+
+                            <!-- Sigma 4 đến dưới 5 -->
+                            <Polygon Points="45,135 300,205 45,163"
+                             Fill="#B8D5F5"
+                             Panel.ZIndex="2"/>
+
+                            <!-- Sigma 5 đến dưới 6 -->
+                            <Polygon Points="45,163 300,205 45,180"
+                             Fill="#C5E4BE"
+                             Panel.ZIndex="2"/>
+
+                            <!-- Sigma >= 6 -->
+                            <Polygon Points="45,180 300,205 45,205"
+                             Fill="#B5D9AC"
+                             Panel.ZIndex="2"/>
+
+                            <!-- Đường giới hạn -->
+                            <Line X1="45"
+                          Y1="95"
+                          X2="300"
+                          Y2="205"
+                          Stroke="#A56A2A"
+                          StrokeThickness="1.2"
+                          Panel.ZIndex="5"/>
+
+                            <Line X1="45"
+                          Y1="135"
+                          X2="300"
+                          Y2="205"
+                          Stroke="#356EA8"
+                          StrokeThickness="1.2"
+                          Panel.ZIndex="5"/>
+
+                            <Line X1="45"
+                          Y1="163"
+                          X2="300"
+                          Y2="205"
+                          Stroke="#39733A"
+                          StrokeThickness="1.2"
+                          Panel.ZIndex="5"/>
+
+                            <Line X1="45"
+                          Y1="180"
+                          X2="300"
+                          Y2="205"
+                          Stroke="#28652D"
+                          StrokeThickness="1.2"
+                          Panel.ZIndex="5"/>
+
+                            <!-- Khung biểu đồ -->
+                            <Rectangle Canvas.Left="45"
+                               Canvas.Top="25"
+                               Width="255"
+                               Height="180"
+                               Fill="Transparent"
+                               Stroke="#667085"
+                               StrokeThickness="1"
+                               Panel.ZIndex="6"/>
+
+                            <!-- Chú thích Sigma -->
+                            <TextBlock Canvas.Left="49"
+                               Canvas.Top="88"
+                               Text="σ=3"
+                               FontSize="9"
+                               Foreground="#9C5C20"
+                               Panel.ZIndex="10"/>
+
+                            <TextBlock Canvas.Left="49"
+                               Canvas.Top="127"
+                               Text="σ=4"
+                               FontSize="9"
+                               Foreground="#356EA8"
+                               Panel.ZIndex="10"/>
+
+                            <TextBlock Canvas.Left="49"
+                               Canvas.Top="155"
+                               Text="σ=5"
+                               FontSize="9"
+                               Foreground="#39733A"
+                               Panel.ZIndex="10"/>
+
+                            <TextBlock Canvas.Left="49"
+                               Canvas.Top="172"
+                               Text="σ≥6"
+                               FontSize="9"
+                               Foreground="#28652D"
+                               Panel.ZIndex="10"/>
+
+                            <!-- Nhãn trục -->
+                            <TextBlock Canvas.Left="-12"
+                               Canvas.Top="102"
+                               Width="95"
+                               Text="CV (% của TEa)"
+                               TextAlignment="Center"
+                               FontSize="9"
+                               Foreground="#667085"
+                               Panel.ZIndex="30"
+                               RenderTransformOrigin="0.5,0.5">
+
+                                <TextBlock.RenderTransform>
+                                    <RotateTransform Angle="-90"/>
+                                </TextBlock.RenderTransform>
+                            </TextBlock>
+
+                            <TextBlock Canvas.Left="135"
+                               Canvas.Top="222"
+                               Text="Bias (% của TEa)"
+                               FontSize="9"
+                               Foreground="#667085"
+                               Panel.ZIndex="10"/>
+
+                            <!-- Tất cả kết quả trong bảng -->
+                            <ItemsControl ItemsSource="{Binding Metrics}"
+                                  Width="330"
+                                  Height="220"
+                                  Panel.ZIndex="20">
+
+                                <ItemsControl.ItemContainerStyle>
+                                    <Style TargetType="ContentPresenter">
+                                        <Setter Property="Canvas.Left"
+                                        Value="{Binding BiasChartX}"/>
+
+                                        <Setter Property="Canvas.Top"
+                                        Value="{Binding CvChartY}"/>
+                                    </Style>
+                                </ItemsControl.ItemContainerStyle>
+
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Width="85"
+                                      Height="24">
+
+                                            <Ellipse Width="10"
+                                             Height="10"
+                                             Fill="{Binding SigmaBrush}"
+                                             Stroke="White"
+                                             StrokeThickness="1"/>
+
+                                            <TextBlock Text="{Binding TestName}"
+                                               Canvas.Left="13"
+                                               Canvas.Top="-4"
+                                               FontSize="8"
+                                               FontWeight="SemiBold"
+                                               Foreground="{Binding SigmaBrush}"
+                                               MaxWidth="70"
+                                               TextTrimming="CharacterEllipsis"/>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+
+                            <!-- Làm nổi bật kết quả đang chọn -->
+                            <Ellipse Width="18"
+                             Height="18"
+                             Canvas.Left="{Binding SelectedMetric.SelectedBiasChartX}"
+                             Canvas.Top="{Binding SelectedMetric.SelectedCvChartY}"
+                             Fill="{Binding SelectedMetric.SigmaBrush}"
+                             Stroke="#202B3A"
+                             StrokeThickness="2"
+                             Visibility="{Binding SelectedPointVisibility}"
+                             Panel.ZIndex="50"/>
+                        </Canvas>
+
+                        <TextBlock Text="Điểm càng gần góc dưới bên trái thì Sigma càng cao."
+                           FontSize="9"
+                           Foreground="#667085"
+                           TextWrapping="Wrap"
+                           Margin="0,8,0,0"/>
+                    </StackPanel>
+                </Border>
+            </Grid>
+        </Grid>
+
+    </Grid>
+</UserControl>

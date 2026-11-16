@@ -22,6 +22,7 @@ public partial class DeviceTest : BaseViewModel
     public double? LastBiasPercent { get; set; }
     public double? LastSigma { get; set; }
     public DateTime? LastBiasUpdatedAt { get; set; }
+    public int? LastBiasN { get; set; }
 
     // New: JSON-serialized selected Westgard rule keys for this device-test mapping.
     // Example: '["1_2S","1_3S","R-4s"]'

@@ -8,5 +8,6 @@ namespace QC_Management.Views
         {
             InitializeComponent();
         }
+
     }
 }

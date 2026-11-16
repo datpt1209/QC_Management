@@ -25,7 +25,7 @@
     <viewmodel:CAL_InforViewModel x:Key="CalInforVM"></viewmodel:CAL_InforViewModel>
     <viewmodel:IncidentManagementViewModel x:Key="IncidentManagementVM"></viewmodel:IncidentManagementViewModel>
     <viewmodel:SixSigmaViewModel x:Key="SixSigmaVM" />
-    
+    <viewmodel:SigmaHistoryViewModel x:Key="SigmaHistoryVM" />
 
     <!-- ExternalProgram VM added -->
     <viewmodel:ExternalProgramViewModel x:Key="ExternalProgramVM" />
@@ -47,6 +47,9 @@
     <!--<DataTemplate DataType="{x:Type viewmodel:CorrectiveActionViewModel}">
         <views:CorrectActionWindow></views:CorrectActionWindow>
     </DataTemplate>-->
+    <DataTemplate DataType="{x:Type viewmodel:SigmaHistoryViewModel}">
+        <views:SigmaHistoryView/>
+    </DataTemplate>
 
     <DataTemplate DataType="{x:Type viewmodel:AddResultViewModel}">
         <views:AddResultWindow></views:AddResultWindow>

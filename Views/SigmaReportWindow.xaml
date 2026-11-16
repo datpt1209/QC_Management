@@ -1,0 +1,38 @@
+﻿<Window x:Class="QC_Management.Views.SigmaReportWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:winforms="clr-namespace:Microsoft.Reporting.WinForms;assembly=Microsoft.ReportViewer.WinForms"
+        Title="Báo cáo Six Sigma"
+        Width="1200"
+        Height="800"
+        WindowStartupLocation="CenterOwner">
+
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Margin="8">
+
+            <Button Content="In báo cáo"
+                    Width="100"
+                    Height="30"
+                    Margin="0,0,8,0"
+                    Click="PrintReport_Click"/>
+
+            <Button Content="Xuất PDF"
+                    Width="100"
+                    Height="30"
+                    Margin="0,0,8,0"
+                    Click="ExportPdf_Click"/>
+
+            <Button Content="Đóng"
+                    Width="80"
+                    Height="30"
+                    Click="Close_Click"/>
+        </StackPanel>
+
+        <WindowsFormsHost>
+            <winforms:ReportViewer x:Name="ReportViewer"/>
+        </WindowsFormsHost>
+    </DockPanel>
+</Window>

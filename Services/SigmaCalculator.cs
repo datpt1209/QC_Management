@@ -27,12 +27,13 @@ namespace QC_Management.Services
             double.TryParse(s, NumberStyles.Float, CultureInfo.CurrentCulture, out var d) ||
             double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d) ? d : null;
 
-        // Rule Westgard đề xuất theo Sigma (key trùng với DeviceViewModel._availableRules)
+        // Rule Westgard đề xuất theo Sigma
         public static string[] SuggestRules(double sigma) =>
             sigma >= 6 ? new[] { "1_3S" } :
             sigma >= 5 ? new[] { "1_3S", "2_2S", "R-4s" } :
             sigma >= 4 ? new[] { "1_3S", "2_2S", "R-4s", "4_1S" } :
-                         new[] { "1_3S", "2_2S", "R-4s", "4_1S", "10X" };
+            sigma >= 3 ? new[] { "1_3S", "2_2S", "R-4s", "4_1S", "10X" } :
+                         new[] { "1_2S", "1_3S", "2_2S", "R-4s", "4_1S", "10X" };
 
         public static List<SigmaMetric> Compute(QcManagmentContext db, int deviceId, int testId,
                                                 DateTime from, DateTime to)

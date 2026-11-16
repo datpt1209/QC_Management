@@ -48,6 +48,9 @@ namespace QC_Management.ViewModels
         // New command to open Six Sigma view
         public ICommand LoadSixSigmaViewCommand { get; set; }
 
+        // New command to open Sigma History view
+        public ICommand LoadSigmaHistoryViewCommand { get; set; }
+
         public BaseViewModel CurrentView
         {
             get { return _currentView; }
@@ -96,6 +99,9 @@ namespace QC_Management.ViewModels
             LoadSixSigmaViewCommand = new RelayCommand<object>(
     parameter => true,
     parameter => LoadView(new SixSigmaViewModel()));
+            LoadSigmaHistoryViewCommand = new RelayCommand<object>(
+    parameter => true,
+    parameter => LoadView(new SigmaHistoryViewModel()));
         }
 
         private void LoadWindow(Window window)
